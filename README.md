@@ -1,3 +1,2 @@
-# Bakalaura darbs
 # Virtuālās laboratorijas izveide ar tīmekļa tehnoloģijām
-## Development of a virtual laboratory using web technologies
+Development of a virtual laboratory using web technologies
