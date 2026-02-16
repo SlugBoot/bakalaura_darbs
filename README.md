@@ -15,3 +15,9 @@ Izveidot mācību platformu tīmekļa pārlūkprogrammā, kurā ir iespējams ap
 4. Izveidot autentificēšanos sistēmu, lai var ar lietotāja kontu pieslēgties portālam. Attiecīgais lietotājs tiks pārvietots uz attiecīgo portālu - studenta vai pasniedzēja.
 
 5. Automatizēt laboratorijas vižu izveidi un pārraudzību.
+
+
+# Pagaidām izdarītais Git Repozitorijā
+
+1. Izveidots Java Spring Starter projekts, jo Apache Guacamole ir pieejams API Java valodā
+    - Pievienots Lombok, Thymeleaf, Spring Web, Spring DevTools, Spring DataJPA
