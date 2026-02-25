@@ -20,3 +20,10 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 1. Izveidots Java Spring Starter projekts, jo Apache Guacamole ir pieejams API Java valodā
     - Pievienots Lombok, Thymeleaf, Spring Web, Spring DevTools, Spring DataJPA
+
+2. Izveidots savienojums ar PostgreSQL datubāzi
+
+3. Pievienota papildus atkarība
+    - Spring Boot Starter Validation
+
+4. Izveidots primitīvs modelis datubāzes savienojuma pārbaudei
