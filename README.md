@@ -18,12 +18,24 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 # Pagaidām izdarītais Git Repozitorijā
 
+## 12. februāris
+
 1. Izveidots Java Spring Starter projekts, jo Apache Guacamole ir pieejams API Java valodā
     - Pievienots Lombok, Thymeleaf, Spring Web, Spring DevTools, Spring DataJPA
 
+## 16. februāris
 2. Izveidots savienojums ar PostgreSQL datubāzi
 
 3. Pievienota papildus atkarība
     - Spring Boot Starter Validation
+    
+## 25. februāris
 
 4. Izveidots primitīvs modelis datubāzes savienojuma pārbaudei
+
+## 3. marts
+
+5. Veiktas izmaiņas Person klasē - skatīt iesniegumu
+6. Izveidotas 2 jaunas modeļu klases:
+    - Student
+    - Course
