@@ -35,26 +35,38 @@ public class Person {
 	private UUID person_id;
 	
 	@Column(name="FirstName")
-	@Pattern(regexp="[[:upper:]]([[:alpha:]]1-44)")
+	@Pattern(regexp="([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
 	@NotNull
 	private String name;
 	
 	@Column(name="MiddleName")
-	@Pattern(regexp="[[:upper:]]([[:alpha:]]1-44)")
+	@Pattern(regexp="([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
 	private String middleName;
 	
 	@Column(name="LastName")
-	@Pattern(regexp="[[:upper:]]([[:alpha:]]1-44)")
+	@Pattern(regexp="([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
 	@NotNull
 	private String surname;
 	
-	public Person(String name, String surname) {
+	@Column(name="username")
+//	@Pattern(regexp="")
+	private String username;
+	
+	// NOTE: Iespējams var uzlabot ar vienu "kontaktinformācijas" klasi
+	@Column(name="email")
+	@Pattern(regexp="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+	// avots RegEx: https://colinhacks.com/essays/reasonable-email-regex
+	private String email;
+	
+	public Person(String name, String surname, String email) {
 		setName(name);
 		setSurname(surname);
+		setEmail(email);
 	}
-	public Person(String name, String middleName, String surname) {
+	public Person(String name, String middleName, String surname, String email) {
 		setName(name);
 		setMiddleName(middleName);
 		setSurname(surname);
+		setEmail(email);
 	}
 }
