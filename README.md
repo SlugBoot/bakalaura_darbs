@@ -49,5 +49,5 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 ## 11. marts
 
 10. Instalēts [Proxmox VE](docs/Proxmox.md)
-11. Papildus darbības [Proxmox VE](docs/Proxmox.md#lxc-konteiners-un-ssh-atslega)
+11. Papildus darbības [Proxmox VE](docs/Proxmox.md#lxc-konteiners-un-ssh-atslēga)
 
