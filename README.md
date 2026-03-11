@@ -45,3 +45,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 7. Izveidoti virspusēji repozitoriji (t.i., bez filtriem)
 8. Izveidotas jaunas modeļu klases un izmaiņas esošajās
 9. Pārbaudīta datu ievade PostgreSQL datubāzē
+
+## 11. marts
+
+10. Instalēts [Proxmox VE](docs/Proxmox.md)
