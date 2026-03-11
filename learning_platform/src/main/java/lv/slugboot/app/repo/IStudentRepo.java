@@ -8,4 +8,6 @@ import lv.slugboot.app.models.Student;
 
 public interface IStudentRepo extends JpaRepository<Student, UUID>{
 
+	boolean existsByNameAndMiddleNameAndSurnameAndEmail(String name, String middleName, String surname, String email);
+
 }
