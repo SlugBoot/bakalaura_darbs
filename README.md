@@ -51,3 +51,5 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 10. Instalēts [Proxmox VE](docs/Proxmox.md)
 11. Papildus darbības [Proxmox VE](docs/Proxmox.md#lxc-konteiners-un-ssh-atslēga)
 
+12. Izveidots primitīvs Studentu CRUD portāla aplikācijai
+
