@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lv.slugboot.app.models.Student;
+import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentCRUDService;
 
@@ -14,6 +15,7 @@ import lv.slugboot.app.service.IStudentCRUDService;
 public class StudentCRUDServiceImpl implements IStudentCRUDService{
 
 	@Autowired private IStudentRepo studentRepo;
+	@Autowired private IPersonRepo personRepo;
 
 	@Override
 	public void createStudent(String name, String middleName, String surname, String email) throws Exception {
@@ -24,6 +26,9 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService{
 		
 		if (studentRepo.existsByNameAndMiddleNameAndSurnameAndEmail(name,middleName,surname,email)) {
 			throw new Exception("A student with that info already exists");
+		}
+		if (personRepo.existsByEmail(email)) {
+			throw new Exception("The email has already been used for a different account");
 		}
 		else {
 			Student newStudent = new Student(name, middleName, surname, email);
@@ -60,6 +65,10 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService{
 		
 		if (name == null || !name.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
 			throw new Exception("First Name must be valid");
+		}
+		
+		if (middleName != null && !middleName.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")){
+			throw new Exception("Middle name must be valid");
 		}
 
 		if (surname == null || !surname.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {

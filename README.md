@@ -53,3 +53,8 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 12. Izveidots primitīvs Studentu CRUD portāla aplikācijai
 
+## 13. marts
+
+13. Pielabots Studentu CRUD
+14. Izveidots primitīvs Profesoru CRUD protāla aplikācijai
+

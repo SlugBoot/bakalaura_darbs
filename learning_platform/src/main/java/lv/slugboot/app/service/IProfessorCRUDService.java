@@ -1,0 +1,19 @@
+package lv.slugboot.app.service;
+
+import java.util.ArrayList;
+import java.util.UUID;
+
+import lv.slugboot.app.models.Professor;
+
+public interface IProfessorCRUDService {
+
+	public abstract void createProfessor(String name, String middleName, String surname, String email) throws Exception;
+	
+	public abstract ArrayList<Professor> retrieveAll() throws Exception;
+	
+	public abstract Professor retrieveById(UUID id) throws Exception;
+	
+	public abstract void updateProfessorById(UUID id, String name, String middleName, String surname, String email) throws Exception;
+
+	public abstract void deleteProfessorById(UUID id) throws Exception;
+}

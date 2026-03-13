@@ -10,4 +10,6 @@ public interface IStudentRepo extends JpaRepository<Student, UUID>{
 
 	boolean existsByNameAndMiddleNameAndSurnameAndEmail(String name, String middleName, String surname, String email);
 
+	boolean existsByEmail(String email);
+
 }

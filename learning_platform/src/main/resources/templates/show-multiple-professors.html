@@ -1,0 +1,15 @@
+<html xmlns:th="https://www.thymeleaf.org">
+  <body>
+    <p>Informācija par vairākiem profesoriem</p>
+    <table border="1px">
+      <tr th:each="temp : ${professor}">
+        <td th:text="${temp.getPerson_id()}"></td>
+        <td th:text="${temp.getName()}"></td>
+        <td th:text="${temp.getMiddleName()}"></td>
+        <td th:text="${temp.getSurname()}"></td>
+        <td th:text="${temp.getEmail()}"></td>
+		<td th:text="${temp.getUsername()}"></td>
+      </tr>
+    </table>
+  </body>
+</html>
