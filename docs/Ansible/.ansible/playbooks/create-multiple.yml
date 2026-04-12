@@ -28,4 +28,4 @@
       memory: 512
       features: "nesting=1"
       loop:
-        - {{ items }}
+        - "{{ items }}"
