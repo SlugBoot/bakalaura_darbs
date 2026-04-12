@@ -6,7 +6,7 @@
   vars_files:
     - ~/.ansible/variables/proxmox_info.yml
     - ~/.ansible/variables/rsa_key.yml
-    = ~/.ansible/variables/multi-container.yml
+    - ~/.ansible/variables/multi-container.yml
 
   tasks:
   - name: Create new container with specific options
