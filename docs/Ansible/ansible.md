@@ -5,3 +5,5 @@
 - Izveidots primitīvs "hosts" fails
 - Izveidots testa "playbook"
 - Izveidots "playbook", kas savienojas ar Proxmox un izveido LXC konteineri
+
+- Izmainīta failu struktūra, lai būtu vieglāk izmantot mainīgos

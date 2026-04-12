@@ -62,4 +62,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 ## 12. aprīlis
 
-1. Izveidoti [Ansible](/docs/Ansible/ansible.md#12-aprīlis) "playbook"
+1. Izveidoti daži [Ansible](/docs/Ansible/ansible.md#12-aprīlis) "playbook"

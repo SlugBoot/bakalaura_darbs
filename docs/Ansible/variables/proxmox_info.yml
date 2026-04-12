@@ -1,0 +1,5 @@
+---
+proxmox_api_user: root@pam
+proxmox_api_host: 192.168.0.112
+proxmox_api_token_id: ansible-token
+proxmox_api_token_secret: e7c7ea4a-8e10-4547-acd6-c145da35e1d3
