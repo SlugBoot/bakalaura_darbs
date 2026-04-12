@@ -1,8 +1,8 @@
 ---
 items:
   - vmid: 101
-    hostname: vm-1
+    hostname: 'vm-1'
   - vmid: 102
-    hostname: vm-2
+    hostname: 'vm-2'
   - vmid: 103
-    hostname: vm-3
+    hostname: 'vm-3'
