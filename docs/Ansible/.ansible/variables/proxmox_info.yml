@@ -1,4 +1,5 @@
 ---
+proxmox_node: prox_bak
 proxmox_api_user: root@pam
 proxmox_api_host: 192.168.0.112
 proxmox_api_token_id: ansible-token

@@ -11,7 +11,7 @@
   tasks:
   - name: Create multiple containers with specific options
     community.proxmox.proxmox:
-      node: prox-bak
+      node: "{{ proxmox_node }} "
       api_user: "{{ proxmox_api_user }}"
       api_host: "{{ proxmox_api_host }}"
       api_token_id: "{{ proxmox_api_token_id }}"
