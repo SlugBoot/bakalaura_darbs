@@ -27,4 +27,4 @@
       cores: 1
       memory: 512
       features: "nesting=1"
-      loop: "{{ containers }}"
+    loop: "{{ containers }}"
