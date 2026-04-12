@@ -19,3 +19,7 @@
       state: absent
 
     loop: "{{ containers }}"
+  - name: Delete VM_inventory file
+    ansible.builtin.file:
+      path: ~/.ansible/inventories/vm_inventory.yml
+      state: absent
