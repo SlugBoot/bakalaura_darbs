@@ -17,5 +17,6 @@
       api_token_id: "{{ proxmox_api_token_id }}"
       api_token_secret: "{{ proxmox_api_token_secret }}"
       vmid: "{{ item.vmid }}"
+      state: absent
 
     loop: "{{ containers }}"
