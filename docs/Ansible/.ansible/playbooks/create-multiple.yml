@@ -9,7 +9,7 @@
     - ~/.ansible/variables/multi-container.yml
 
   tasks:
-  - name: Create new container {{ containers.vmid }} with specific options
+  - name: Create new container {{ item.hostname }} with specific options
     community.proxmox.proxmox:
       node: prox-bak
       api_user: "{{ proxmox_api_user }}"
@@ -27,5 +27,4 @@
       cores: 1
       memory: 512
       features: "nesting=1"
-      loop:
-        - "{{ containers }}"
+      loop: "{{ containers }}"
