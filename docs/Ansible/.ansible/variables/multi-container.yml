@@ -1,5 +1,5 @@
 ---
-items:
+containers:
   - vmid: 101
     hostname: 'vm-1'
   - vmid: 102

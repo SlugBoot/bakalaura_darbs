@@ -9,15 +9,15 @@
     - ~/.ansible/variables/multi-container.yml
 
   tasks:
-  - name: Create new container with specific options
+  - name: Create new container {{ containers.vmid }} with specific options
     community.proxmox.proxmox:
       node: prox-bak
       api_user: "{{ proxmox_api_user }}"
       api_host: "{{ proxmox_api_host }}"
       api_token_id: "{{ proxmox_api_token_id }}"
       api_token_secret: "{{ proxmox_api_token_secret }}"
-      hostname: "{{ items.hostname }}"
-      vmid: "{{ items.vmid }}"
+      hostname: "{{ containers.hostname }}"
+      vmid: "{{ containers.vmid }}"
       password: passw
       ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
       pubkey: "{{ rsa_pub_key }}"
@@ -28,4 +28,4 @@
       memory: 512
       features: "nesting=1"
       loop:
-        - "{{ items }}"
+        - "{{ containers }}"
