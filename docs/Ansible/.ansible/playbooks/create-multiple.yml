@@ -1,0 +1,31 @@
+---
+- name: Create 3 CT containers
+  hosts: proxmox
+  remote_user: root
+
+  vars_files:
+    - ~/.ansible/variables/proxmox_info.yml
+    - ~/.ansible/variables/rsa_key.yml
+    = ~/.ansible/variables/multi-container.yml
+
+  tasks:
+  - name: Create new container with specific options
+    community.proxmox.proxmox:
+      node: prox-bak
+      api_user: "{{ proxmox_api_user }}"
+      api_host: "{{ proxmox_api_host }}"
+      api_token_id: "{{ proxmox_api_token_id }}"
+      api_token_secret: "{{ proxmox_api_token_secret }}"
+      hostname: "{{ item.hostnames }}"
+      vmid: "{{ item.vmids }}"
+      password: passw
+      ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
+      pubkey: "{{ rsa_pub_key }}"
+      disk_volume:
+        storage: local-lvm
+        size: 30
+      cores: 1
+      memory: 512
+      features: "nesting=1"
+      loop: 
+        - "{{ item }}"

@@ -1,0 +1,10 @@
+---
+item:
+  vmids:
+    - 101
+    - 102
+    - 103
+  hostnames:
+    - vm-1
+    - vm-2
+    - vm-3
