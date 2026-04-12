@@ -30,10 +30,19 @@
       features: "nesting=1"
     loop: "{{ containers }}"
 
+  - name: Recreate VM host list
+    ansible.builtin.file:
+      path: ~/.ansible/inventories/vm_inventory.yml
+      state: absent
+    ansible.builtin.lineinfile:
+      path: ~/.ansible/inventories/vm_inventory.yml
+      line: [containers]
+      create: yes
+
   - name: Update VM host list
     ansible.builtin.blockinfile:
       path: ~/.ansible/inventories/vm_inventory.yml
       block: |
-        {{ item.ip }} {{ item.hostname }}
+        - {{ item.ip }} {{ item.hostname }}
       marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.hostname }}"
     loop: "{{ containers }}"
