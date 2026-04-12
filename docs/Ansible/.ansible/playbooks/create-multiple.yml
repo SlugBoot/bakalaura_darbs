@@ -37,4 +37,4 @@
       block: |
         {{ item.ip }} {{ item.hostname }}
       marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.hostname }}"
-      loop: "{{ containers }}"
+    loop: "{{ containers }}"
