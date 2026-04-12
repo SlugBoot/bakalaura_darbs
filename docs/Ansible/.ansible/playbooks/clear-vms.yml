@@ -1,7 +1,6 @@
 ---
 - name: Remove all generated VMs
-  hosts: proxmox
-  remote_user: root
+  hosts: localhost
 
   vars_files:
     - ~/.ansible/variables/proxmox_info.yml

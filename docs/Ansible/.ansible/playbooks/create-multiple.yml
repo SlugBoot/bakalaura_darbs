@@ -1,7 +1,6 @@
 ---
 - name: Create 3 CT containers
-  hosts: proxmox
-  remote_user: root
+  hosts: localhost
 
   vars_files:
     - ~/.ansible/variables/proxmox_info.yml
