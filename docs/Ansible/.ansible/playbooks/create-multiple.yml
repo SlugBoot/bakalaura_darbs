@@ -30,10 +30,11 @@
       features: "nesting=1"
     loop: "{{ containers }}"
 
-  - name: Recreate VM host list
+  - name: Delete VM host list
     ansible.builtin.file:
       path: ~/.ansible/inventories/vm_inventory.yml
       state: absent
+  - name: Recreate VM host list
     ansible.builtin.lineinfile:
       path: ~/.ansible/inventories/vm_inventory.yml
       line: [containers]
