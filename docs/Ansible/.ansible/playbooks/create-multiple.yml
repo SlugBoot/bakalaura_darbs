@@ -18,6 +18,8 @@
       api_token_secret: "{{ proxmox_api_token_secret }}"
       hostname: "{{ item.hostname }}"
       vmid: "{{ item.vmid }}"
+      netif:
+          net0: "name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0"
       password: passw
       ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
       pubkey: "{{ rsa_pub_key }}"

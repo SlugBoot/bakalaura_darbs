@@ -2,7 +2,10 @@
 containers:
   - vmid: 101
     hostname: vm-1
+    ip: 192.168.0.201
   - vmid: 102
     hostname: vm-2
+    ip: 192.168.0.202
   - vmid: 103
     hostname: vm-3
+    ip: 192.168.0.202

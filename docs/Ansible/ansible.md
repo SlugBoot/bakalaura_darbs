@@ -6,4 +6,5 @@
 - Izveidots testa "playbook"
 - Izveidots "playbook", kas savienojas ar Proxmox un izveido LXC konteineri
 
-- Izmainīta failu struktūra, lai būtu vieglāk izmantot mainīgos
+- Izmainīta failu struktūra, lai būtu vieglāk izmantot mainīgos (simboliskas saites ar gnu-stow)
+- Izveidots "playbook", kas izveido vairākus LXC konteinerus, izmantojot vārdnīcas sarakstu
