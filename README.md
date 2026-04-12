@@ -1,20 +1,21 @@
 # Virtuālās laboratorijas izveide ar tīmekļa tehnoloģijām
+
 Development of a virtual laboratory using web technologies
 
-
 # Bakalaura darba mērķis
-Izveidot mācību platformu, kas pieejama tīmekļa pārlūkprogrammā. 
+
+Izveidot mācību platformu, kas pieejama tīmekļa pārlūkprogrammā.
 Tajā būs iespējams apgūt un pilnveidot zināšanas par Linux sistēmu un citiem rīkiem virtuālā laboratorijas vidē.
 Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ierīces, students var šos uzdevumus izpildīt sev parocīgā vietā un vidē.
 
 # Bakalaura darba uzdevumi
+
 1. Izpētīt pieejamās tīmekļa un izstrādes tehnoloģijas ar kurām varētu pilnveidot virtuālās laboratorijas izveidi.
 2. Izveidot virtuālo laboratoriju izveides sistēmu, lai varētu ātri un parocīgi izveidot dažāda veida un izmēra laboratorijas.
 3. Izveidot pasniedzējiem portālu, kas ir atverams tīmekļa pārlūkprogrammā, kurā varētu izveidot, dzēst un citādā veidā pārvaldīt virtuālās ierīces laboratorijas vidē. Šajā portālā pasniedzējs var arī novērtēt studentu darbus, kā arī atvērt jaunus darbus studentiem.
 4. Izveidot studentu portālu, kas ir atverams tīmekļa pārlūkprogrammā, kur var apskatīt atvērtos un izpildītos uzdevumus, to termiņus un izpildīto uzdevumu rezultātus. Šajā portālā var arī izvēlēties nākamo uzdevumu, kuru students vēlas pildīt.
 5. Izveidot autorizēšanās sistēmu, lai var ar lietotāja kontu pieslēgties portālam. Pēc autorizēšanās lietotājam tiks piešķirtas attiecīgas tiesības veikt darbības sistēmā.
 6. Automatizēt laboratorijas vižu izveidi un pārraudzību.
-
 
 # Pagaidām izdarītais Git Repozitorijā
 
@@ -24,37 +25,41 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
     - Pievienots Lombok, Thymeleaf, Spring Web, Spring DevTools, Spring DataJPA
 
 ## 16. februāris
-2. Izveidots savienojums ar PostgreSQL datubāzi
 
-3. Pievienota papildus atkarība
+1. Izveidots savienojums ar PostgreSQL datubāzi
+
+2. Pievienota papildus atkarība
     - Spring Boot Starter Validation
-    
+
 ## 25. februāris
 
-4. Izveidots primitīvs modelis datubāzes savienojuma pārbaudei
+1. Izveidots primitīvs modelis datubāzes savienojuma pārbaudei
 
 ## 3. marts
 
-5. Veiktas izmaiņas Person klasē - skatīt iesniegumu
-6. Izveidotas 2 jaunas modeļu klases:
+1. Veiktas izmaiņas Person klasē - skatīt iesniegumu
+2. Izveidotas 2 jaunas modeļu klases:
     - Student
     - Course
-    
+
 ## 6. marts
 
-7. Izveidoti virspusēji repozitoriji (t.i., bez filtriem)
-8. Izveidotas jaunas modeļu klases un izmaiņas esošajās
-9. Pārbaudīta datu ievade PostgreSQL datubāzē
+1. Izveidoti virspusēji repozitoriji (t.i., bez filtriem)
+2. Izveidotas jaunas modeļu klases un izmaiņas esošajās
+3. Pārbaudīta datu ievade PostgreSQL datubāzē
 
 ## 11. marts
 
-10. Instalēts [Proxmox VE](docs/Proxmox.md)
-11. Papildus darbības [Proxmox VE](docs/Proxmox.md#lxc-konteiners-un-ssh-atslēga)
+1. Instalēts [Proxmox VE](docs/Proxmox.md)
+2. Papildus darbības [Proxmox VE](docs/Proxmox.md#lxc-konteiners-un-ssh-atslēga)
 
-12. Izveidots primitīvs Studentu CRUD portāla aplikācijai
+3. Izveidots primitīvs Studentu CRUD portāla aplikācijai
 
 ## 13. marts
 
-13. Pielabots Studentu CRUD
-14. Izveidots primitīvs Profesoru CRUD protāla aplikācijai
+1. Pielabots Studentu CRUD
+2. Izveidots primitīvs Profesoru CRUD protāla aplikācijai
 
+## 12. aprīlis
+
+1. Izveidoti [Ansible](/docs/Ansible/ansible.md#12-aprīlis) "playbook"

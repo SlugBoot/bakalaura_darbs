@@ -1,0 +1,26 @@
+---
+- name: Create CT container
+  hosts: proxmox
+  remote_user: root
+
+  vars:
+    rsa_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUvNQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFCyT>
+
+  tasks:
+  - name: Create new container with specific options
+    community.proxmox.proxmox:
+      node: prox-bak
+      api_user: root@pam
+      api_host: 192.168.0.112
+      api_token_id: ansible-token
+      api_token_secret: e7c7ea4a-8e10-4547-acd6-c145da35e1d3
+      hostname: ansible-created-container
+      password: passw
+      ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
+      pubkey: "{{ rsa_key }}"
+      disk_volume:
+        storage: local-lvm
+        size: 30
+      cores: 1
+      memory: 512
+      features: "nesting=1"

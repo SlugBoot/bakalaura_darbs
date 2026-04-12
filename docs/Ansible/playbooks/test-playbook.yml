@@ -1,0 +1,13 @@
+---
+- name: Update all
+  hosts: proxmox
+  remote_user: root
+
+  tasks:
+  - name: Run "apt update" on Debian-based systems
+    ansible.builtin.apt:
+      update_cache: yes
+  - name: Run "apt upgrade" on Debian-based systems
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
