@@ -8,12 +8,14 @@
     - ~/.ansible/variables/rsa_key.yml
     - ~/.ansible/variables/multi-container.yml
 
-  community.proxmox.proxmox:
-    node: "{{ proxmox_node }}"
-    api_user: "{{ proxmox_api_user }}"
-    api_host: "{{ proxmox_api_host }}"
-    api_token_id: "{{ proxmox_api_token_id }}"
-    api_token_secret: "{{ proxmox_api_token_secret }}"
-    vmid: "{{ item.vmid }}"
+  tasks:
+    - name: remove VM
+      community.proxmox.proxmox:
+        node: "{{ proxmox_node }}"
+        api_user: "{{ proxmox_api_user }}"
+        api_host: "{{ proxmox_api_host }}"
+        api_token_id: "{{ proxmox_api_token_id }}"
+        api_token_secret: "{{ proxmox_api_token_secret }}"
+        vmid: "{{ item.vmid }}"
 
-  loop: "{{ containers }}"
+      loop: "{{ containers }}"
