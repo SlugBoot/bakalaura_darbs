@@ -30,3 +30,11 @@
       memory: 512
       features: "nesting=1"
     loop: "{{ containers }}"
+
+  - name: Update VM host list
+    ansible.builtin.blockinfile:
+      path: ~/.ansible/inventories/vm_inventory
+      block: |
+        {{ item.ip }} {{ item.hostname }}
+      marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.hostname }}"
+      loop: "{{ containers }}"
