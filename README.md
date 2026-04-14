@@ -64,9 +64,10 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 1. Izveidoti daži [Ansible](/docs/Ansible/ansible.md#12-aprīlis) "playbook"
 
-## 13. aprīlis
+## 14. aprīlis
 
 1. Izveidota primitīva portāla sākumlapa profesoriem
     - Izveidots kontrolieris un serviss
 2. Izmaiņas modeļu klasēs, lai labāk sakristu ar vajadzībām
 3. Izmaiņas aplikācijas testēšanas datu izveidē
+4. Papildināts Professoru CRUD

@@ -27,6 +27,10 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
     if (professorRepo.existsByNameAndMiddleNameAndSurnameAndEmail(name, middleName, surname, email)) {
       throw new Exception("Professor with those details already exists");
     }
+    
+    if (middleName != null && middleName.trim().isEmpty()) {
+    	middleName = null;
+    }
 
     if (personRepo.existsByEmail(email)) {
       throw new Exception("The email has already been used for a different account");
@@ -62,15 +66,15 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
       throws Exception {
     Professor professorToUpdate = retrieveById(id);
 
-    if (name == null || !name.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (name == null || !name.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("First Name must be valid");
     }
 
-    if (middleName != null && !middleName.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (middleName != null && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("Middle name must be valid");
     }
 
-    if (surname == null || !surname.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (surname == null || !surname.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("Surname must be valid");
     }
 
