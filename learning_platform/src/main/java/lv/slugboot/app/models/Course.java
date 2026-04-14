@@ -42,7 +42,6 @@ public class Course {
 	@Column(name="CourseDescription")
 	private String courseDesc;
 	
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name="ProfessorId")
 	private Professor professor;

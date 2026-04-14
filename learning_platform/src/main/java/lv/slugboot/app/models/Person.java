@@ -28,7 +28,6 @@ import lombok.ToString;
 public class Person {
   // TODO: Pārbaudīt RegEx darbību, kad izveidots repo
   @Id
-  @NotNull
   @GeneratedValue(strategy = GenerationType.UUID)
   @Setter(value = AccessLevel.NONE)
   private UUID personId;
@@ -39,7 +38,7 @@ public class Person {
   private String name;
 
   @Column(name = "MiddleName")
-  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
+  @Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?")
   private String middleName;
 
   @Column(name = "LastName")

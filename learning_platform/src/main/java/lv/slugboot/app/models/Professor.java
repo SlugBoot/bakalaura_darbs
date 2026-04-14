@@ -3,6 +3,10 @@ package lv.slugboot.app.models;
 import java.text.Normalizer;
 import java.util.Collection;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 
@@ -22,12 +26,14 @@ public class Professor extends Person {
 
   @ToString.Exclude
   @OneToMany(mappedBy = "professor")
+  @OnDelete(action= OnDeleteAction.CASCADE)
   private Collection<Course> course;
 
   private String createUsername() {
     // Lietotāja vards.uzvards
     String usernameBase = this.getSurname().toLowerCase().concat(".").concat(
         this.getName().toLowerCase());
+    
     if (this.getMiddleName() != null) {
       usernameBase = usernameBase.concat(".").concat(this.getMiddleName().toLowerCase());
     }
