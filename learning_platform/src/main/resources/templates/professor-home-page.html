@@ -1,6 +1,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 	<head></head>
 	<body>
+		<button onclick="history.back()">Back</button>
 		<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
 		<table border = 1px>
 			<tr>

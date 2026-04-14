@@ -22,7 +22,7 @@ public class ProfessorHomeController {
 	@Autowired private IProfessorHomeService professorHomeService;
 	@Autowired private IProfessorCRUDService professorCRUDService;
 
-	@GetMapping("{uuid}")
+	@GetMapping("/{uuid}")
 	public String getControllerProfessorHomePage(@PathVariable(name="uuid") UUID professorId,Model model) {
 		try {
 			Professor professor = professorCRUDService.retrieveById(professorId);
@@ -37,4 +37,6 @@ public class ProfessorHomeController {
 			return "show-error";
 		}
 	}
+	
+	
 }
