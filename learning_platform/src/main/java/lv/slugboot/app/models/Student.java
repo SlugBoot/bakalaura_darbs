@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Collection;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -20,9 +21,9 @@ import lombok.ToString;
 @Table(name = "StudentTable")
 public class Student extends Person {
 
-  @ManyToOne
+  @ManyToMany
   @ToString.Exclude
-  private Course course;
+  private Collection<Course> course;
 
   @OneToMany(mappedBy = "student")
   private Collection<Grade> grades;

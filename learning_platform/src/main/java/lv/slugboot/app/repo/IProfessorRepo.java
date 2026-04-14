@@ -12,4 +12,5 @@ public interface IProfessorRepo extends JpaRepository<Professor, UUID>{
 
 	boolean existsByEmail(String email);
 
+
 }

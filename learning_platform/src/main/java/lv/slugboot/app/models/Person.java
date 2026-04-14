@@ -31,7 +31,7 @@ public class Person {
   @NotNull
   @GeneratedValue(strategy = GenerationType.UUID)
   @Setter(value = AccessLevel.NONE)
-  private UUID person_id;
+  private UUID personId;
 
   @Column(name = "FirstName")
   @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")

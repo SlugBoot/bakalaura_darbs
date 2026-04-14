@@ -1,5 +1,6 @@
 package lv.slugboot.app.models;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -8,7 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -41,9 +43,12 @@ public class Course {
 	private String courseDesc;
 	
 	@NotNull
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="ProfessorId")
 	private Professor professor;
+	
+	@ManyToMany(mappedBy = "course")
+	private Collection<Student> students;
 	
 	public Course(String courseName, Professor professor) {
 		setCourseName(courseName);

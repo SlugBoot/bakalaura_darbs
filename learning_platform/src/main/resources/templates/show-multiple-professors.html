@@ -2,8 +2,16 @@
   <body>
     <p>Informācija par vairākiem profesoriem</p>
     <table border="1px">
+		<tr> 
+			<td>UUID</td>
+			<td>First Name</td>
+			<td>Middle Name</td>
+			<td>Surname</td>
+			<td>Email</td>
+			<td>Username</td>
+		</tr>
       <tr th:each="temp : ${professor}">
-        <td th:text="${temp.getPerson_id()}"></td>
+        <td th:text="${temp.getPersonId()}"></td>
         <td th:text="${temp.getName()}"></td>
         <td th:text="${temp.getMiddleName()}"></td>
         <td th:text="${temp.getSurname()}"></td>

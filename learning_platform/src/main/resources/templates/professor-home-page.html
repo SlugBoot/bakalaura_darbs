@@ -1,0 +1,18 @@
+<html xmlns:th="https://www.thymeleaf.org">
+	<head></head>
+	<body>
+		<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
+		<table border = 1px>
+			<tr>
+				<td>Course ID</td>
+				<td>Course Name</td>
+				<td>Course Description</td>
+			</tr>
+			<tr th:each="course : ${filtered_courses}">
+				<td th:text="${course.getCId()}"></td>
+				<td th:text="${course.getCourseName()}"></td>
+				<td th:text="${course.getCourseDesc()}"></td>
+			</tr>
+		</table>
+	</body>
+</html>

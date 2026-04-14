@@ -1,8 +1,11 @@
 package lv.slugboot.app.models;
 
 import java.text.Normalizer;
+import java.util.Collection;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +21,8 @@ import lombok.ToString;
 public class Professor extends Person {
 
   @ToString.Exclude
-  @OneToOne(mappedBy = "professor")
-  private Course course;
+  @OneToMany(mappedBy = "professor")
+  private Collection<Course> course;
 
   private String createUsername() {
     // Lietotāja vards.uzvards
