@@ -20,12 +20,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class ProfessorCRUDController {
 
   @Autowired
-  private IProfessorCRUDService professorService;
+  private IProfessorCRUDService professorCRUDService;
 
   @GetMapping("/all")
   public String getControllerGetAllprofessors(Model model) {
     try {
-      model.addAttribute("professor", professorService.retrieveAll());
+      model.addAttribute("professor", professorCRUDService.retrieveAll());
       return "show-multiple-professors";
     } catch (Exception e) {
       model.addAttribute("error", e.getMessage());
@@ -46,7 +46,7 @@ public class ProfessorCRUDController {
     }
 
     try {
-      professorService.createProfessor(professor.getName(), professor.getMiddleName(), professor.getSurname(),
+      professorCRUDService.createProfessor(professor.getName(), professor.getMiddleName(), professor.getSurname(),
           professor.getEmail());
       return "redirect:/professor/crud/all";
     } catch (Exception e) {
@@ -58,8 +58,8 @@ public class ProfessorCRUDController {
   @GetMapping("/delete/{uuid}")
   public String getControllerDeleteProfessorById(@PathVariable(name="uuid") UUID professorId, Model model) {
 	  try {
-		professorService.deleteProfessorById(professorId);
-		model.addAttribute("professor", professorService.retrieveAll());
+		professorCRUDService.deleteProfessorById(professorId);
+		model.addAttribute("professor", professorCRUDService.retrieveAll());
 		return "show-multiple-professors";
 	} catch (Exception e) {
 	      model.addAttribute("error", e.getMessage());
