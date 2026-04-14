@@ -13,10 +13,21 @@ import lv.slugboot.app.models.Course;
 import lv.slugboot.app.service.ICourseCRUDService;
 
 @Controller
-@RequestMapping("/course")
+@RequestMapping("/course/crud")
 public class CourseCRUDController {
 
 	@Autowired ICourseCRUDService courseCRUDService;
+	
+	@GetMapping("/all")
+	public String getControllerAllCourses(Model model) {
+		try {
+			model.addAttribute("courses", courseCRUDService.retrieveAll());
+			return "course-list";
+		} catch (Exception e) {
+			model.addAttribute("error", e.getMessage());
+			return "show-error";
+		}
+	}
 	
 	@GetMapping("/{uuid}")
 	public String getControllerCourseInfo(@PathVariable(name="uuid") UUID courseId, Model model) {
@@ -30,10 +41,12 @@ public class CourseCRUDController {
 		}
 	}
 	
-	@GetMapping("")
-	public String getMappingAddStudentToCourse(Model model) {
+	@GetMapping("/{uuid}/student-list")
+	public String getMappingAllStudentsInCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
-			return "student-list";
+			Course course = courseCRUDService.retrieveById(courseId);
+			model.addAttribute("students", course.getStudents());
+			return "show-multiple-students";
 		} catch (Exception e) {
 			model.addAttribute("error", e.getMessage());
 			return "show-error";

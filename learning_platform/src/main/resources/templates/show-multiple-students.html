@@ -1,10 +1,18 @@
 <html xmlns:th="https://www.thymeleaf.org">
   <body>
 	<button onclick="history.back()">Back</button>
-    <p>Informācija par vairākiem studentiem</p>
+    <p>Information about all students</p>
     <table border="1px">
+	  <tr>
+		<td>Student ID</td>
+		<td>Student Name</td>
+		<td>Student Middle Name</td>
+		<td>Student Surname</td>
+		<td>Student Email</td>
+		<td>Student Username</td>
+	  </tr>
       <tr th:each="temp : ${student}">
-        <td th:text="${temp.getPerson_id()}"></td>
+        <td th:text="${temp.getPersonId()}"></td>
         <td th:text="${temp.getName()}"></td>
         <td th:text="${temp.getMiddleName()}"></td>
         <td th:text="${temp.getSurname()}"></td>
