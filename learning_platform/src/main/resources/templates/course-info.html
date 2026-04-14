@@ -1,0 +1,30 @@
+<html xmlns:th="https://www.thymeleaf.org">
+	<head></head>
+	<body>
+		<button onclick="history.back()">Back</button>
+		<h1 th:text="${course.getCourseName()}"></h1>
+		<h2 th:text="${course.getCourseDesc()}"></h2>
+		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
+		<table border = 1px>
+			<tr>
+				<td>Student ID</td>
+				<td>Student Name</td>
+				<td>Student Middle Name</td>
+				<td>Student Surname</td>
+				<td>Student Email</td>
+				<td>Student Username</td>
+			</tr>
+			<tr th:each="student : ${course.getStudents()}">
+				<td th:text="${student.getPersonId()}"></td>
+				<td th:text="${course.getName()}"></td>
+				<td th:text="${course.getMiddleName()}"></td>
+				<td th:text="${course.getSurname()}"></td>
+				<td th:text="${course.getEmail()}"></td>
+				<td th:text="${course.getUsername()}"></td>
+			</tr>
+			<tr>
+				<td colspan="6"><a th:href="@{/course/{uuid}(uuid=${course.getCId()})/student-list}"><button type="button">Add student to Course</button></a></td>
+			</tr>
+		</table>
+	</body>
+</html>

@@ -8,11 +8,13 @@
 				<td>Course ID</td>
 				<td>Course Name</td>
 				<td>Course Description</td>
+				<td>Course Info</td>
 			</tr>
 			<tr th:each="course : ${filtered_courses}">
 				<td th:text="${course.getCId()}"></td>
 				<td th:text="${course.getCourseName()}"></td>
 				<td th:text="${course.getCourseDesc()}"></td>
+				<td><a th:href="@{/course/{uuid}(uuid=${course.getCId()})}"><button type="button">Info</button></a></td>
 			</tr>
 		</table>
 	</body>

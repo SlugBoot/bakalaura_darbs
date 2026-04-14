@@ -25,6 +25,10 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 			throw new Exception("Course Name must not be null");
 		}
 		
+		if (professorId == null) {
+			throw new Exception("Professor must be set for course to exist");
+		}
+		
 	    if (courseDesc != null && courseDesc.trim().isEmpty()) {
 	    	courseDesc = null;
 	    }
@@ -54,20 +58,56 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 
 	@Override
 	public Course retrieveById(UUID id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (id == null) {
+			throw new Exception("Course ID cannot be null");
+		}
+		
+		
+		if (!courseRepo.existsById(id)) {
+			throw new Exception("Course with id " + id + "does not exist");
+		}
+		
+		return courseRepo.findById(id).get();
 	}
 
 	@Override
-	public void updateCourseById(UUID id) throws Exception {
-		// TODO Auto-generated method stub
+	public void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId) throws Exception {		
+		if (courseName == null) {
+			throw new Exception("Course name cannot be empty");
+		}
 		
+		Professor professor;
+		
+		if (!professorRepo.existsById(professorId)) {
+			throw new Exception("This professor does not exist");
+		}
+		
+		professor = professorRepo.findById(professorId).get();
+		
+		Course courseToUpdate = retrieveById(id);
+		
+		if(!courseToUpdate.getCourseName().equals(courseName)) {
+			courseToUpdate.setCourseName(courseName);
+		}
+		
+		if(!courseToUpdate.getCourseDesc().equals(courseDesc)) {
+			courseToUpdate.setCourseName(courseDesc);
+		}
+		
+		if(courseToUpdate.getProfessor() != professor) {
+			courseToUpdate.setProfessor(professor);
+		}
+		
+		courseRepo.save(courseToUpdate);
 	}
 
 	@Override
 	public void deleteCourseById(UUID id) throws Exception {
-		// TODO Auto-generated method stub
+		Course courseToDelete = retrieveById(id);
 		
+		courseRepo.delete(courseToDelete);
 	}
+
+
 
 }

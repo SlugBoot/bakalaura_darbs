@@ -29,7 +29,6 @@ public class Course {
 	
 	// TODO: Papildināt kursa klasi
 	@Id
-	@NotNull
 	@Setter(value=AccessLevel.NONE)
 	@GeneratedValue(strategy=GenerationType.UUID)
 	@Column(name="CourseId")

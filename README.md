@@ -73,3 +73,5 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 4. Papildināts Professoru CRUD
 5. Minimālas izmaiņas modeļu klasēs
 6. Iesākts CRUD kursiem
+7. Papildināts kursu CRUD
+8. Izveidoti papildus testa dati datubāzes pārbaudei

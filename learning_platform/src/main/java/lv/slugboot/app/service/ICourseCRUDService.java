@@ -12,7 +12,7 @@ public interface ICourseCRUDService {
 	
 	public abstract Course retrieveById(UUID id) throws Exception;
 	
-	public abstract void updateCourseById(UUID id) throws Exception;
+	public abstract void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId) throws Exception;
 	
 	public abstract void deleteCourseById(UUID id) throws Exception;
 }
