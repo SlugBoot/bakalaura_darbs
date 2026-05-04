@@ -18,14 +18,22 @@ public class CourseCRUDController {
 
 	@Autowired ICourseCRUDService courseCRUDService;
 	
+	private String courseList = "show-multiple-courses";
+	private String courseInfoPage = "course-info";
+	private String errorPage = "show-error";
+	private String studentsListPage = "show-multiple-students";
+	
+	private String courseAttribute = "course";
+	private String errorAttribute = "error";
+	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
 		try {
-			model.addAttribute("courses", courseCRUDService.retrieveAll());
-			return "course-list";
+			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
+			return courseList;
 		} catch (Exception e) {
-			model.addAttribute("error", e.getMessage());
-			return "show-error";
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
 		}
 	}
 	
@@ -33,23 +41,35 @@ public class CourseCRUDController {
 	public String getControllerCourseInfo(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			Course course = courseCRUDService.retrieveById(courseId);
-			model.addAttribute("course", course);
-			return "course-info";
+			model.addAttribute(courseAttribute, course);
+			return courseInfoPage;
 		} catch (Exception e) {
-			model.addAttribute("error", e.getMessage());
-			return "show-error";
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
 		}
 	}
 	
-	@GetMapping("/{uuid}/student-list")
+	@GetMapping("/delete/{uuid}")
+	public String getControllerDeleteCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
+		try {
+			courseCRUDService.deleteCourseById(courseId);
+			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
+			return courseList;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@GetMapping("/{uuid}/addstudent")
 	public String getMappingAllStudentsInCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			Course course = courseCRUDService.retrieveById(courseId);
 			model.addAttribute("students", course.getStudents());
-			return "show-multiple-students";
+			return studentsListPage;
 		} catch (Exception e) {
-			model.addAttribute("error", e.getMessage());
-			return "show-error";
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
 		}
 	}
 }

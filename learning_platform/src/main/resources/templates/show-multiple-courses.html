@@ -1,0 +1,27 @@
+<html xmlns:th="https://www.thymeleaf.org">
+	<head></head>
+	<body>
+		<button onclick="history.back()">Back</button>
+		<h1>All courses</h1>
+		<table border = 1px>
+			<tr>
+				<td>Course ID</td>
+				<td>Course Name</td>
+				<td>Course Description</td>
+				<td>Teaching Professor</td>
+				<td>Student List</td>
+				<td>Delete</td>
+				<td>Update</td>
+			</tr>
+			<tr th:each="temp : ${course}">
+				<td th:text="${temp.getCId()}"></td>
+				<td th:text="${temp.getCourseName()}"></td>
+				<td th:text="${temp.getCourseDesc()}"></td>
+				<td th:text="${temp.getProfessor().getName()} + ' ' + ${temp.getProfessor().getSurname()}"></td>
+				<td><a th:href="@{/course/crud/{uuid}(uuid=${temp.getCId()})}"><button type="button">Student List</button></a></td>
+				<td><a th:href="@{/course/crud/delete/{uuid}(uuid=${temp.getCId()})}"><button type="button">Delete</button></a></td>
+				<td><a th:href="@{/course/crud/update/{uuid}(uuid=${temp.getCId()})}"><button type="button">Update</button></a></td>
+			</tr>
+		</table>
+	</body>
+</html>
