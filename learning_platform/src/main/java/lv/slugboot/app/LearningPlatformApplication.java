@@ -1,6 +1,5 @@
 package lv.slugboot.app;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.boot.CommandLineRunner;
