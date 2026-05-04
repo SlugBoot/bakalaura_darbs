@@ -70,8 +70,8 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
       throw new Exception("First Name must be valid");
     }
 
-    if (middleName != null && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
-      throw new Exception("Middle name must be valid");
+    if (middleName != null && !middleName.isEmpty() && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+        throw new Exception("Middle name must be valid");
     }
 
     if (surname == null || !surname.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
@@ -85,9 +85,11 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
     if (!professorToUpdate.getName().equals(name)) {
       professorToUpdate.setName(name);
     }
-    if (!professorToUpdate.getMiddleName().equals(middleName)) {
-      professorToUpdate.setMiddleName(middleName);
-    }
+    if (middleName != null && !middleName.equals(professorToUpdate.getMiddleName())) {
+        professorToUpdate.setMiddleName(middleName);
+      } else if (middleName == null && professorToUpdate.getMiddleName() != null) {
+      	professorToUpdate.setMiddleName(null);
+      }
     if (!professorToUpdate.getSurname().equals(surname)) {
       professorToUpdate.setSurname(surname);
     }

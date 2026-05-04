@@ -80,3 +80,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 1. Pievienoti priekšaizstāvēšanas faili
 2. Papildināts studentu CRUD
+3. Papildināts profesoru CRUD
