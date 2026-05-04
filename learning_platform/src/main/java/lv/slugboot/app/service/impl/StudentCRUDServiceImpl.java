@@ -62,15 +62,15 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
       throws Exception {
     Student studentToUpdate = retrieveById(id);
 
-    if (name == null || !name.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (name == null || !name.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("First Name must be valid");
     }
 
-    if (middleName != null && !middleName.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (middleName != null && !middleName.isEmpty() && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("Middle name must be valid");
     }
 
-    if (surname == null || !surname.matches("[A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (surname == null || !surname.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
       throw new Exception("Surname must be valid");
     }
 
@@ -81,8 +81,10 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
     if (!studentToUpdate.getName().equals(name)) {
       studentToUpdate.setName(name);
     }
-    if (!studentToUpdate.getMiddleName().equals(middleName)) {
+    if (middleName != null && !middleName.equals(studentToUpdate.getMiddleName())) {
       studentToUpdate.setMiddleName(middleName);
+    } else if (middleName == null && studentToUpdate.getMiddleName() != null) {
+    	studentToUpdate.setMiddleName(null);
     }
     if (!studentToUpdate.getSurname().equals(surname)) {
       studentToUpdate.setSurname(surname);

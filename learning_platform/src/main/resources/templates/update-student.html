@@ -1,0 +1,42 @@
+<html xmlns:th="https://www.thymeleaf.org">
+  <head>
+    
+  </head>
+  <body>
+	<button onclick="history.back()">Back</button>
+    <h1>Update info about Student:</h1>
+	<h2 th:text="${student.getName()} + ' ' + ${student.getSurname()}"></h2>
+    <form
+      action="#"
+      th:action="@{/student/crud/update/{uuid}(uuid=${student.personId})}"
+      th:object="${student}"
+      method="post"
+    >
+      <table>
+        <tr>
+          <td>First Name:</td>
+          <td><input type="text" th:field="*{name}"/></td>
+		  <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
+        </tr>
+        <tr>
+          <td>Middle Name:</td>
+          <td><input type="text" th:field="*{middleName}" /></td>
+		  <td th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></td>
+        </tr>
+        <tr>
+          <td>Surname:</td>
+          <td><input type="text" th:field="*{surname}" /></td>
+		  <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></td>
+        </tr>
+        <tr>
+          <td>E-mail:</td>
+          <td><input type="text" th:field="*{email}" /></td>
+		  <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
+        </tr>
+		<tr>
+		  <td><input type="submit" /></td>
+		</tr>
+      </table>
+    </form>
+  </body>
+</html>

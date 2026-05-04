@@ -75,3 +75,8 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 6. Iesākts CRUD kursiem
 7. Papildināts kursu CRUD
 8. Izveidoti papildus testa dati datubāzes pārbaudei
+
+## 4. maijs
+
+1. Pievienoti priekšaizstāvēšanas faili
+2. Papildināts studentu CRUD

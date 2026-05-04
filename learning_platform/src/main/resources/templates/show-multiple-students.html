@@ -10,6 +10,9 @@
 		<td>Student Surname</td>
 		<td>Student Email</td>
 		<td>Student Username</td>
+		<td>Courses</td>
+		<td>Delete</td>
+		<td>Update</td>
 	  </tr>
       <tr th:each="temp : ${student}">
         <td th:text="${temp.getPersonId()}"></td>
@@ -18,7 +21,13 @@
         <td th:text="${temp.getSurname()}"></td>
         <td th:text="${temp.getEmail()}"></td>
 		<td th:text="${temp.getUsername()}"></td>
+		<td><a th:href="@{/student/home/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Profile</button></a></td>
+		<td><a th:href="@{/student/crud/delete/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Delete</button></a></td>
+		<td><a th:href="@{/student/crud/update/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Update</button></a></td>
       </tr>
+	  <tr>
+		<td colspan="9"><button onclick="location.href='/student/crud/create'">Create New Student</button></td>
+	  </tr>
     </table>
   </body>
 </html>
