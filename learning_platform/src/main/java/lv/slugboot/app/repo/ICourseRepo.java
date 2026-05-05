@@ -11,5 +11,4 @@ public interface ICourseRepo extends JpaRepository<Course, UUID>{
 
 	ArrayList<Course> findByProfessorPersonId(UUID professorId);
 
-
 }

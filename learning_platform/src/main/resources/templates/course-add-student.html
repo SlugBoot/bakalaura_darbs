@@ -6,6 +6,7 @@
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
 		<table border = 1px>
+			<th colspan="7">Available Students</th>
 			<tr>
 				<td>Student ID</td>
 				<td>Student Name</td>
@@ -13,17 +14,16 @@
 				<td>Student Surname</td>
 				<td>Student Email</td>
 				<td>Student Username</td>
+				<td>Add Student</td>
 			</tr>
-			<tr th:each="student : ${course.getStudents()}">
-				<td th:text="${student.getPersonId()}"></td>
-				<td th:text="${student.getName()}"></td>
-				<td th:text="${student.getMiddleName()}"></td>
-				<td th:text="${student.getSurname()}"></td>
-				<td th:text="${student.getEmail()}"></td>
-				<td th:text="${student.getUsername()}"></td>
-			</tr>
-			<tr>
-				<td colspan="6"><a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()})}"><button type="button">Add student to Course</button></a></td>
+			<tr th:each="temp : ${student}">
+				<td th:text="${temp.getPersonId()}"></td>
+				<td th:text="${temp.getName()}"></td>
+				<td th:text="${temp.getMiddleName()}"></td>
+				<td th:text="${temp.getSurname()}"></td>
+				<td th:text="${temp.getEmail()}"></td>
+				<td th:text="${temp.getUsername()}"></td>
+				<td><a th:href="@{/course/crud/{uuid}/add/{studentId}(uuid=${course.getCId()},studentId=${temp.getPersonId()})}"><button type="button">Add to Course</button></a></td>
 			</tr>
 		</table>
 	</body>

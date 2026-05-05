@@ -82,3 +82,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 2. Papildināts studentu CRUD
 3. Papildināts profesoru CRUD
 4. Papildināts kursu CRUD
+
+## 5. maijs
+
+1. Papildināts kursu un studentu CRUD

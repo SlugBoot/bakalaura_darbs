@@ -6,11 +6,14 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Professor;
+import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.ICourseRepo;
 import lv.slugboot.app.repo.IProfessorRepo;
+import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.ICourseCRUDService;
 
 @Service
@@ -18,6 +21,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	
 	@Autowired private ICourseRepo courseRepo;
 	@Autowired private IProfessorRepo professorRepo;
+	@Autowired private IStudentRepo studentRepo;
 
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) throws Exception {
@@ -91,7 +95,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		}
 		
 		if(!courseToUpdate.getCourseDesc().equals(courseDesc)) {
-			courseToUpdate.setCourseName(courseDesc);
+			courseToUpdate.setCourseDesc(courseDesc);
 		}
 		
 		if(courseToUpdate.getProfessor() != professor) {
@@ -106,6 +110,18 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		Course courseToDelete = retrieveById(id);
 		
 		courseRepo.delete(courseToDelete);
+	}
+
+	@Override
+	@Transactional
+	public void addStudentToCourse(UUID courseId, UUID studentId) throws Exception {
+		Course course = retrieveById(courseId);
+		Student student = studentRepo.findById(studentId).get();
+		
+		student.getCourse().add(course);
+		course.getStudents().add(student);
+		
+		courseRepo.save(course);
 	}
 
 

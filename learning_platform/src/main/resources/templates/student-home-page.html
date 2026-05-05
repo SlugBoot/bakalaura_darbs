@@ -1,0 +1,21 @@
+<html xmlns:th="https://www.thymeleaf.org">
+	<head></head>
+	<body>
+		<button onclick="history.back()">Back</button>
+		<h1 th:text="${student.getName() + ' ' + student.getSurname()}"></h1>
+		<table border = 1px>
+			<tr>
+				<td>Course ID</td>
+				<td>Course Name</td>
+				<td>Course Description</td>
+				<td>Course Info</td>
+			</tr>
+			<tr th:each="course : ${filtered_courses}">
+				<td th:text="${course.getCId()}"></td>
+				<td th:text="${course.getCourseName()}"></td>
+				<td th:text="${course.getCourseDesc()}"></td>
+				<td><a th:href="@{/course/crud/{uuid}(uuid=${course.getCId()})}"><button type="button">Info</button></a></td>
+			</tr>
+		</table>
+	</body>
+</html>
