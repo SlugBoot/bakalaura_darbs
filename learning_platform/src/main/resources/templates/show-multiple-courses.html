@@ -20,8 +20,11 @@
 				<td th:text="${temp.getProfessor().getName()} + ' ' + ${temp.getProfessor().getSurname()}"></td>
 				<td><a th:href="@{/course/crud/{uuid}(uuid=${temp.getCId()})}"><button type="button">Student List</button></a></td>
 				<td><a th:href="@{/course/crud/delete/{uuid}(uuid=${temp.getCId()})}"><button type="button">Delete</button></a></td>
-				<td><a th:href="@{/course/crud/update/{uuid}(uuid=${temp.getCId()})}"><button type="button">Update</button></a></td>
+				<td><a th:href="@{/course/crud/{uuid}/update(uuid=${temp.getCId()})}"><button type="button">Update</button></a></td>
 			</tr>
+			<tr>
+				<td colspan="9"><button onclick="location.href='/course/crud/create'">Create New Course</button></td>
+		    </tr>	
 		</table>
 	</body>
 </html>

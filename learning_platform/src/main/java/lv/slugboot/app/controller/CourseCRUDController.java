@@ -6,15 +6,19 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.validation.Valid;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.ICourseRepo;
 import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
+import lv.slugboot.app.service.IProfessorCRUDService;
 import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
@@ -24,15 +28,19 @@ public class CourseCRUDController {
 	@Autowired ICourseCRUDService courseCRUDService;
 	@Autowired IFilterService filterService;
 	@Autowired IStudentCRUDService studentCRUDService;
+	@Autowired IProfessorCRUDService professorCRUDService;
 	
 	private String courseList = "show-multiple-courses";
 	private String courseInfoPage = "course-info";
 	private String errorPage = "show-error";
 	private String addStudentsPage = "course-add-student";
+	private String createCoursePage = "create-course";
+	private String updateCoursePage = "update-course";
 	
 	private String studentAttribute = "student";
 	private String courseAttribute = "course";
 	private String errorAttribute = "error";
+	private String professorAttribute = "professor";
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -63,6 +71,66 @@ public class CourseCRUDController {
 			courseCRUDService.deleteCourseById(courseId);
 			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
 			return courseList;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@GetMapping("/create")
+	public String getControllerCreateCourse(Model model) {
+		try {
+			model.addAttribute(courseAttribute, new Course());
+			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
+			return createCoursePage;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@PostMapping("/create")
+	public String postControllerCreateCourse(@Valid Course course, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			return createCoursePage;
+		}
+		
+		try {
+			courseCRUDService.createCourse(course.getCourseName(),
+					course.getCourseDesc(), 
+					course.getProfessor().getPersonId());
+			return "redirect:/course/crud/all";
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@GetMapping("/{uuid}/update")
+	public String getControllerUpdateCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
+		try {
+			Course course = courseCRUDService.retrieveById(courseId);
+			model.addAttribute(courseAttribute, course);
+			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
+			return updateCoursePage;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@PostMapping("/{uuid}/update")
+	public String postControllerUpdateCourse(@PathVariable(name="uuid") UUID courseId,
+			@Valid Course course, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			return updateCoursePage;
+		}
+		
+		try {
+			courseCRUDService.updateCourseById(courseId, course.getCourseName(),
+					course.getCourseDesc(), 
+					course.getProfessor().getPersonId());
+			return "redirect:/course/crud/all";
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
 			return errorPage;
