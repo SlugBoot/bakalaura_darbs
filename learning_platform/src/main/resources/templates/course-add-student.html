@@ -23,7 +23,11 @@
 				<td th:text="${temp.getSurname()}"></td>
 				<td th:text="${temp.getEmail()}"></td>
 				<td th:text="${temp.getUsername()}"></td>
-				<td><a th:href="@{/course/crud/{uuid}/add/{studentId}(uuid=${course.getCId()},studentId=${temp.getPersonId()})}"><button type="button">Add to Course</button></a></td>
+				<td>
+					<a th:href="@{/course/crud/{uuid}/add/{studentId}(uuid=${course.getCId()},studentId=${temp.getPersonId()}, referer=${previousUrl})}">
+					<button type="button">Add to Course</button>
+					</a>
+				</td>
 			</tr>
 		</table>
 	</body>

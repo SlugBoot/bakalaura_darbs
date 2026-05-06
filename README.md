@@ -91,3 +91,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 
 1. Papildināts Kursu un Studentu CRUD operācijas
 2. Implementēta primitīva Spring Security konfigurācija
+3. Portālu izveides sākumi

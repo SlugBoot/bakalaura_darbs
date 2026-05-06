@@ -57,8 +57,14 @@ public class CourseCRUDController {
 	}
 	
 	@GetMapping("/{uuid}")
-	public String getControllerCourseInfo(@PathVariable(name="uuid") UUID courseId, Model model) {
+	public String getControllerCourseInfo(@PathVariable(name="uuid") UUID courseId,
+			@RequestParam(value="referer", required=false) String manualReferer,
+			HttpServletRequest request,
+			Model model) {
 		try {
+			String referer = (manualReferer != null) ? manualReferer : request.getHeader("Referer");
+			model.addAttribute(previousURLAttribute, referer);
+			
 			Course course = courseCRUDService.retrieveById(courseId);
 			model.addAttribute(courseAttribute, course);
 			return courseInfoPage;
@@ -146,8 +152,12 @@ public class CourseCRUDController {
 	}
 	
 	@GetMapping("/{uuid}/add")
-	public String getControllerStudentsNotInCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
+	public String getControllerStudentsNotInCourse(@PathVariable(name="uuid") UUID courseId,
+			HttpServletRequest request,Model model) {
 		try {
+			String referer = request.getHeader("Referer");
+			model.addAttribute(previousURLAttribute, referer);
+			
 			Course course = courseCRUDService.retrieveById(courseId);
 			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(courseId);
 			model.addAttribute(studentAttribute, studentsNotInCourse);
@@ -161,14 +171,16 @@ public class CourseCRUDController {
 	
 	@GetMapping("/{uuid}/add/{studentId}")
 	public String getControllerAddStudentToCourse(@PathVariable(name="uuid") UUID courseId, 
-			@PathVariable(name="studentId") UUID studentId, Model model) {
+			@PathVariable(name="studentId") UUID studentId,
+			@RequestParam(value="referer", required=false) String referer, Model model) {
 		try {
 			courseCRUDService.addStudentToCourse(courseId, studentId);
-			Course course = courseCRUDService.retrieveById(courseId);
-			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(courseId);
-			model.addAttribute(studentAttribute, studentsNotInCourse);
-			model.addAttribute(courseAttribute, course);
-			return courseInfoPage;
+			
+			if (referer != null && !referer.isEmpty()) {
+				return "redirect:" + referer;
+			}
+			
+			return "redirect:/course/crud/" + courseId;
 			
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
@@ -178,12 +190,17 @@ public class CourseCRUDController {
 	
 	@GetMapping("/{uuid}/remove/{studentId}")
 	public String getControllerRemoveStudentFromCourse(@PathVariable(name="uuid") UUID courseId,
-			@PathVariable(name="studentId") UUID studentId, Model model) {
+			@PathVariable(name="studentId") UUID studentId,
+			@RequestParam(name="referer", required=false) String referer,
+			Model model) {
 		try {
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
-			Course course = courseCRUDService.retrieveById(courseId);
-			model.addAttribute(courseAttribute, course);
-			return courseInfoPage;
+			String redirectUrl = "/course/crud/" + courseId;
+			if (referer != null && !referer.isEmpty()) {
+				redirectUrl += "?referer=" + referer;
+			}
+			
+			return "redirect:" + redirectUrl;
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
 			return errorPage;

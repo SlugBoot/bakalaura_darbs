@@ -2,6 +2,7 @@
 	<head></head>
 	<body>
 		<button onclick="history.back()">Back</button>
+		<button onclick="location.href='/logout'">Logout</button>
 		<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
 		<table border = 1px>
 			<tr>
@@ -14,7 +15,11 @@
 				<td th:text="${course.getCId()}"></td>
 				<td th:text="${course.getCourseName()}"></td>
 				<td th:text="${course.getCourseDesc()}"></td>
-				<td><a th:href="@{/course/crud/{uuid}(uuid=${course.getCId()})}"><button type="button">Info</button></a></td>
+				<td>
+					<a th:href="@{/course/crud/{uuid}(uuid=${course.getCId()}, referer='/professor/home/' + ${professor.getPersonId()})}">
+						<button type="button">Info</button>
+					</a>
+				</td>
 			</tr>
 			<tr>
 				<td colspan="4">

@@ -1,7 +1,7 @@
 <html xmlns:th="https://www.thymeleaf.org">
 	<head></head>
 	<body>
-		<button onclick="history.back()">Back</button>
+		<a th:href="${previousUrl}"><button type="button">Back</button></a>
 		<h1 th:text="${course.getCourseName()}"></h1>
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
@@ -22,10 +22,14 @@
 				<td th:text="${student.getSurname()}"></td>
 				<td th:text="${student.getEmail()}"></td>
 				<td th:text="${student.getUsername()}"></td>
-				<td><a th:href="@{/course/crud/{uuid}/remove/{studentId}(uuid=${course.getCId()},studentId=${student.getPersonId()})}"><button type="button">Remove from course</button></a></td>
+				<td>
+					<a th:href="@{/course/crud/{uuid}/remove/{studentId}(uuid=${course.getCId()},studentId=${student.getPersonId()}, referer=${previousUrl})}">
+						<button type="button">Remove from course</button>
+					</a>
+				</td>
 			</tr>
 			<tr>
-				<td colspan="7"><a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()})}"><button type="button">Add student to Course</button></a></td>
+				<td colspan="7"><a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a></td>
 			</tr>
 		</table>
 	</body>

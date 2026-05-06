@@ -26,7 +26,6 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "PersonTable")
 public class Person {
-  // TODO: Pārbaudīt RegEx darbību, kad izveidots repo
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   @Setter(value = AccessLevel.NONE)
@@ -47,13 +46,11 @@ public class Person {
   private String surname;
 
   @Column(name = "username", unique=true, nullable=false)
-  // @Pattern(regexp="")
   private String username;
   
   @Column(name="password", nullable=false)
   private String password;
 
-  // NOTE: Iespējams var uzlabot ar vienu "kontaktinformācijas" klasi
   @Column(name = "email")
   @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
   // avots RegEx: https://colinhacks.com/essays/reasonable-email-regex
