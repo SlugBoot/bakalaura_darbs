@@ -86,3 +86,8 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 ## 5. maijs
 
 1. Papildināts kursu un studentu CRUD
+
+## 6. maijs
+
+1. Papildināts Kursu un Studentu CRUD operācijas
+2. Implementēta primitīva Spring Security konfigurācija

@@ -46,9 +46,12 @@ public class Person {
   @NotNull
   private String surname;
 
-  @Column(name = "username")
+  @Column(name = "username", unique=true, nullable=false)
   // @Pattern(regexp="")
   private String username;
+  
+  @Column(name="password", nullable=false)
+  private String password;
 
   // NOTE: Iespējams var uzlabot ar vienu "kontaktinformācijas" klasi
   @Column(name = "email")

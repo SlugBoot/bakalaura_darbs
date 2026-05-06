@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
@@ -41,6 +43,7 @@ public class CourseCRUDController {
 	private String courseAttribute = "course";
 	private String errorAttribute = "error";
 	private String professorAttribute = "professor";
+	private String previousURLAttribute = "previousUrl";
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -78,8 +81,10 @@ public class CourseCRUDController {
 	}
 	
 	@GetMapping("/create")
-	public String getControllerCreateCourse(Model model) {
+	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
+			String referer = request.getHeader("Referer");
+			model.addAttribute(previousURLAttribute, referer);
 			model.addAttribute(courseAttribute, new Course());
 			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
 			return createCoursePage;
@@ -90,7 +95,7 @@ public class CourseCRUDController {
 	}
 	
 	@PostMapping("/create")
-	public String postControllerCreateCourse(@Valid Course course, BindingResult result, Model model) {
+	public String postControllerCreateCourse(@Valid Course course,@RequestParam(value="referer", required=false)String referer, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return createCoursePage;
 		}
@@ -99,6 +104,9 @@ public class CourseCRUDController {
 			courseCRUDService.createCourse(course.getCourseName(),
 					course.getCourseDesc(), 
 					course.getProfessor().getPersonId());
+			if (referer != null && !referer.isEmpty()) {
+				return "redirect:" + referer;
+			}
 			return "redirect:/course/crud/all";
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
@@ -162,6 +170,20 @@ public class CourseCRUDController {
 			model.addAttribute(courseAttribute, course);
 			return courseInfoPage;
 			
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@GetMapping("/{uuid}/remove/{studentId}")
+	public String getControllerRemoveStudentFromCourse(@PathVariable(name="uuid") UUID courseId,
+			@PathVariable(name="studentId") UUID studentId, Model model) {
+		try {
+			courseCRUDService.removeStudentFromCourse(courseId, studentId);
+			Course course = courseCRUDService.retrieveById(courseId);
+			model.addAttribute(courseAttribute, course);
+			return courseInfoPage;
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
 			return errorPage;

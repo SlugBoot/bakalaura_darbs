@@ -13,6 +13,7 @@
 				<td>Student Surname</td>
 				<td>Student Email</td>
 				<td>Student Username</td>
+				<td>Remove</td>
 			</tr>
 			<tr th:each="student : ${course.getStudents()}">
 				<td th:text="${student.getPersonId()}"></td>
@@ -21,9 +22,10 @@
 				<td th:text="${student.getSurname()}"></td>
 				<td th:text="${student.getEmail()}"></td>
 				<td th:text="${student.getUsername()}"></td>
+				<td><a th:href="@{/course/crud/{uuid}/remove/{studentId}(uuid=${course.getCId()},studentId=${student.getPersonId()})}"><button type="button">Remove from course</button></a></td>
 			</tr>
 			<tr>
-				<td colspan="6"><a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()})}"><button type="button">Add student to Course</button></a></td>
+				<td colspan="7"><a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()})}"><button type="button">Add student to Course</button></a></td>
 			</tr>
 		</table>
 	</body>

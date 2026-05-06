@@ -26,7 +26,7 @@ public class Grade {
 
 	@Id
 	@Setter(value=AccessLevel.NONE)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.UUID)
 	private UUID gradeId;
 	
 	@Column(name="GradeValue")

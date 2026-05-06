@@ -27,7 +27,6 @@ import lombok.ToString;
 @Table(name="CourseTable")
 public class Course {
 	
-	// TODO: Papildināt kursa klasi
 	@Id
 	@Setter(value=AccessLevel.NONE)
 	@GeneratedValue(strategy=GenerationType.UUID)

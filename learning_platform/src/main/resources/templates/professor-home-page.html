@@ -16,6 +16,11 @@
 				<td th:text="${course.getCourseDesc()}"></td>
 				<td><a th:href="@{/course/crud/{uuid}(uuid=${course.getCId()})}"><button type="button">Info</button></a></td>
 			</tr>
+			<tr>
+				<td colspan="4">
+					<button onclick="location.href='/course/crud/create'">Create New Course</button>
+				</td>
+		    </tr>	
 		</table>
 	</body>
 </html>

@@ -44,4 +44,23 @@ public class StudentHomeController {
 			return errorPage;
 		}
 	}
+	
+	@GetMapping("/{uuid}/remove/{courseId}")
+	public String getControllerRemoveCourseFromStudent(@PathVariable(name="uuid") UUID studentId, 
+			@PathVariable(name="courseId") UUID courseId, Model model) {
+		try {
+			Student student = studentCRUDService.retrieveById(studentId);
+			model.addAttribute(studentAttribute, student);
+			
+			studentHomeService.removeCourseFromStudent(studentId, courseId);
+			
+			Collection<Course> filteredCourses = studentHomeService.getAllCourses(studentId);
+			model.addAttribute(filteredCourseAttribute, filteredCourses);
+			
+			return studentHomePage;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
 }

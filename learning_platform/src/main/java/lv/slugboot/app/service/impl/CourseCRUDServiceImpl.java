@@ -118,9 +118,25 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
 		
-		student.getCourse().add(course);
-		course.getStudents().add(student);
+		if (!student.getCourse().contains(course)) {
+			student.getCourse().add(course);
+			course.getStudents().add(student);
+		}
 		
+		courseRepo.save(course);
+	}
+
+	@Override
+	@Transactional
+	public void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception {
+		Course course = retrieveById(courseId);
+		Student student = studentRepo.findById(studentId).get();
+		
+		if (student.getCourse().contains(course)) {
+			student.getCourse().remove(course);
+			course.getStudents().remove(student);
+		}
+
 		courseRepo.save(course);
 	}
 

@@ -17,4 +17,6 @@ public interface ICourseCRUDService {
 	public abstract void deleteCourseById(UUID id) throws Exception;
 	
 	public abstract void addStudentToCourse(UUID courseId, UUID studentId) throws Exception;
+	
+	public abstract void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception;
 }
