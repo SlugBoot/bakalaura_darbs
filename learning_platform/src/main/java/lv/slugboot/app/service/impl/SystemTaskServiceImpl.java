@@ -5,25 +5,33 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
+@Slf4j
 public class SystemTaskServiceImpl implements ISystemTaskService{
 
 	@Override
 	public void createFile(String filePath, String content) throws Exception {
 		Path path = Paths.get(filePath);
-		Files.write(path, content.getBytes());
+		if (path.getParent() != null) {
+			Files.createDirectories(path.getParent());
+		}
+		Files.writeString(path, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		log.info("File created at: {}", filePath);
 	}
 
 	@Override
-	public boolean deleteFile(String filePath) throws Exception {
+	public void deleteFile(String filePath) throws Exception {
 		Path path = Paths.get(filePath);
-		return Files.deleteIfExists(path);
+		Files.deleteIfExists(path);
+		log.info("File deleted at: {}", filePath);
 	}
 
 	@Override

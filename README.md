@@ -99,3 +99,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 2. Izveidots primitīvs sistēmas serviss ar nolūku, ka tas:
     - Pārvaldīs automātiski ģenerētus Ansible failus (t.i., playbook un inventory faili)
     - Izpildīs sistēmas komandas
+3. Papildināti Ansible un Sistēmas izpildes servisi

@@ -5,6 +5,9 @@
 		<h1 th:text="${course.getCourseName()}"></h1>
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
+		
+		<a th:href="@{/lab/{uuid}/create(uuid=${course.getCId()})}"><button type="button">Create VMs</button></a>
+		<a th:href="@{/lab/{uuid}/create(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
 		<table border = 1px>
 			<tr>
 				<td>Student ID</td>

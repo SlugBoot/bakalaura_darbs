@@ -1,5 +1,8 @@
 package lv.slugboot.app;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +78,20 @@ public class LearningPlatformApplication {
 				professorRepo.saveAll(Arrays.asList(testProf1, testProf2, testProf3, testProf4));
 				courseRepo.saveAll(Arrays.asList(testCourse1, testCourse2, testCourse3, testCourse4));
 
-				System.out.println("Command Line check");
+				System.out.println("Init file check");
+				
+				Path path = Paths.get("init_log.txt");
+				String summary = "Database initialized with " + studentRepo.count() + " students. \n";
+				summary += "Database initialized with " + professorRepo.count() + " professors. \n";
+				summary += "Database initialized with " + courseRepo.count() + " courses. \n";
+				
+				ProcessBuilder pb = new ProcessBuilder("ls", "-l", "init_log.txt");
+				pb.inheritIO().start().waitFor();
+				
+				pb = new ProcessBuilder("cat", "init_log.txt");
+				pb.inheritIO().start().waitFor();
+				
+				Files.write(path, summary.getBytes());
 			}
 		};
 	}
