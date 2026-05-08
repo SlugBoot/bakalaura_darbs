@@ -70,7 +70,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
     - Izveidots kontrolieris un serviss
 2. Izmaiņas modeļu klasēs, lai labāk sakristu ar vajadzībām
 3. Izmaiņas aplikācijas testēšanas datu izveidē
-4. Papildināts Professoru CRUD
+4. Papildināts Profesoru CRUD
 5. Minimālas izmaiņas modeļu klasēs
 6. Iesākts CRUD kursiem
 7. Papildināts kursu CRUD
@@ -92,3 +92,10 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Papildināts Kursu un Studentu CRUD operācijas
 2. Implementēta primitīva Spring Security konfigurācija
 3. Portālu izveides sākumi
+
+## 8. maijs
+
+1. Kļūdas labojums profesoru CRUD kontrolierī
+2. Izveidots primitīvs sistēmas serviss ar nolūku, ka tas:
+    - Pārvaldīs automātiski ģenerētus Ansible failus (t.i., playbook un inventory faili)
+    - Izpildīs sistēmas komandas

@@ -32,7 +32,7 @@ public class ProfessorCRUDController {
   private String errorAttribute = "error";
 
   @GetMapping("/all")
-  public String getControllerGetAllprofessors(Model model) {
+  public String getControllerGetAllProfessors(Model model) {
     try {
       model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
       return multipleProfessorsPage;
