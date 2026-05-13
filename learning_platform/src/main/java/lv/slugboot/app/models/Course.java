@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -47,6 +48,9 @@ public class Course {
 	@ManyToMany(mappedBy = "course")
 	@ToString.Exclude
 	private Collection<Student> students;
+	
+	@OneToMany(mappedBy = "course")
+	private Collection<LabInstance> labs;
 	
 	public Course(String courseName, Professor professor) {
 		setCourseName(courseName);

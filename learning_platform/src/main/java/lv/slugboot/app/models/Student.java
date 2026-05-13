@@ -26,6 +26,9 @@ public class Student extends Person {
 
   @OneToMany(mappedBy = "student")
   private Collection<Grade> grades;
+  
+  @OneToMany(mappedBy = "student")
+  private Collection<LabInstance> labs;
 
   private String createUsername() {
     String year = Integer.toString(LocalDate.now().getYear());

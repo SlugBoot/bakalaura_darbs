@@ -100,3 +100,9 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
     - Pārvaldīs automātiski ģenerētus Ansible failus (t.i., playbook un inventory faili)
     - Izpildīs sistēmas komandas
 3. Papildināti Ansible un Sistēmas izpildes servisi
+
+## 13. maijs
+
+1. Izveidots Laboratoriju instances modeļa klases, repozitorijs un serviss
+
+- Piezīme: Jāpārveido Ansible un Sistēmas servisi
