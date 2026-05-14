@@ -220,7 +220,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "        vmid: \"{{ item.vmid }}\"\n" +
 	            "        netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
 	            "        password: \"securepassword\"\n" +
-	            "        ostemplate: 'local:vztmpl/debian-12.tar.zst'\n" +
+	            "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
 	            "      loop: \"{{ containers }}\"";
 	            
 	        ansibleService.createPlaybook(courseId, proxmoxPlaybook);
