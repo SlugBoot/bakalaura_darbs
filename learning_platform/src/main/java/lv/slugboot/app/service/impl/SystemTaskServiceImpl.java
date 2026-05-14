@@ -43,17 +43,19 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 		processBuilder.command("sh", "-c", command);
 		
 		Process process = processBuilder.start();
+		StringBuilder fullOutput = new StringBuilder();
 		
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				System.out.println("[LIVE LOG]:" + line);
+				fullOutput.append(line).append("\n");
 			}
 			String output = reader.lines().collect(Collectors.joining("\n"));
 			int exitCode = process.waitFor();
 			
 			if (exitCode != 0) {
-				return "Error: Command failed with exit code " + exitCode;
+				throw new Exception(fullOutput.toString());
 			}
 			
 			return output;
