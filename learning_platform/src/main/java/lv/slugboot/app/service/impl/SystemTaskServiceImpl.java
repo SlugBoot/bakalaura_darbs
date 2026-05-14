@@ -53,14 +53,13 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 				System.out.println("[LIVE LOG]:" + line);
 				fullOutput.append(line).append("\n");
 			}
-			String output = reader.lines().collect(Collectors.joining("\n"));
 			int exitCode = process.waitFor();
 			
 			if (exitCode != 0) {
 				throw new Exception("Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
 			}
 			
-			return output;
+			return fullOutput.toString();
 		}
 	}
 

@@ -74,7 +74,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		StringBuilder sb = new StringBuilder("---\n"
 				+ "containers:\n");
 		
-		int vmidCounter = 100;
+		int vmidCounter = 1000;
 		int IPCounter = 10;
 		
 		for (LabInstance inst : instances) {
