@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IAnsibleService;
@@ -23,9 +24,11 @@ import lv.slugboot.app.service.IFilterService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import lv.slugboot.app.service.IStudentCRUDService;
+import lv.slugboot.app.service.impl.SystemTaskServiceImpl;
 
 @Controller
 @RequestMapping("/course/crud")
+@Slf4j
 public class CourseCRUDController {
 
 	@Autowired ICourseCRUDService courseCRUDService;
@@ -251,6 +254,8 @@ public class CourseCRUDController {
 	public String getControllerProvisionCourseInfrastructure(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.prepareProxmoxProvisioning(courseId);
+			
+			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
 			
 			ansibleService.runPlaybook(courseId);
 			

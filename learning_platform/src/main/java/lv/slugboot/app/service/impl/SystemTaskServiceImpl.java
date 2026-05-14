@@ -42,6 +42,8 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 		
 		processBuilder.command("sh", "-c", command);
 		
+		processBuilder.redirectErrorStream(true);
+		
 		Process process = processBuilder.start();
 		StringBuilder fullOutput = new StringBuilder();
 		
@@ -55,7 +57,7 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 			int exitCode = process.waitFor();
 			
 			if (exitCode != 0) {
-				throw new Exception(fullOutput.toString());
+				throw new Exception("Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
 			}
 			
 			return output;
