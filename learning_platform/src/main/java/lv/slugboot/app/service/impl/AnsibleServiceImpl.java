@@ -56,11 +56,12 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
 		String playbookPath = Paths.get(baseDir, "playbook.yml").toString();
 		String inventoryPath = Paths.get(baseDir, "hosts").toString();
-		Student student = studentRepo.findById(studentId).get();
+
 		
 		String command = String.format("ansible-playbook -i %s %s", inventoryPath, playbookPath);
 		
 		if (studentId != null) {
+			Student student = studentRepo.findById(studentId).get();
 			command += " --limit " + student.getUsername()+"-vm";
 		}
 		return systemTaskService.executeCommand(command);
