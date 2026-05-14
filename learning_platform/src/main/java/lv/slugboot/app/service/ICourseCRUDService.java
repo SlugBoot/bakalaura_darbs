@@ -19,4 +19,10 @@ public interface ICourseCRUDService {
 	public abstract void addStudentToCourse(UUID courseId, UUID studentId) throws Exception;
 	
 	public abstract void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception;
+	
+	public abstract void deployLab(UUID courseId) throws Exception;
+	
+	public abstract void cleanupLab(UUID courseId) throws Exception;
+	
+	public abstract void prepareProxmoxProvisioning(UUID courseId) throws Exception;
 }

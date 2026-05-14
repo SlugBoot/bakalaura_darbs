@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class LabInstance {
 	@JoinColumn(name="CourseId")
 	private Course course;
 	
+	@Column(unique=true, nullable=true)
 	private String ipAddress;
 	
 	private LabInstanceStatus status;

@@ -1,9 +1,11 @@
 package lv.slugboot.app.service.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lv.slugboot.app.models.Course;
@@ -16,6 +18,7 @@ import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 
+@Service
 public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	
 	@Autowired private ILabInstanceRepo labInstanceRepo;
@@ -88,6 +91,7 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 		LabInstance labInstance = retrieveById(instanceId);
 		
 		labInstance.setStatus(labInstanceStatus);
+		labInstanceRepo.save(labInstance);
 	}
 
 	@Override
@@ -117,6 +121,23 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 		} finally {
 			labInstanceRepo.save(instance);
 		}
+	}
+
+	@Override
+	public List<LabInstance> retrieveByCourseId(UUID courseId) throws Exception {
+		Course course = courseRepo.findById(courseId).get();
+		
+		List<LabInstance> instances = labInstanceRepo.findByCourse(course);
+				
+		return instances;
+	}
+
+	@Override
+	public void updateIPAddressById(UUID instanceId, String ipAddress) throws Exception{
+		LabInstance labInstance = retrieveById(instanceId);
+		
+		labInstance.setIpAddress(ipAddress);
+		labInstanceRepo.save(labInstance);
 	}
 	
 	

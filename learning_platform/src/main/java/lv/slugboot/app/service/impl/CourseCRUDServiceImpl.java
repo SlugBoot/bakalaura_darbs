@@ -1,7 +1,8 @@
 package lv.slugboot.app.service.impl;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lv.slugboot.app.models.Course;
+import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.ICourseRepo;
+import lv.slugboot.app.repo.ILabInstanceRepo;
 import lv.slugboot.app.repo.IProfessorRepo;
 import lv.slugboot.app.repo.IStudentRepo;
+import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ICourseCRUDService;
+import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
 public class CourseCRUDServiceImpl implements ICourseCRUDService{
@@ -22,7 +27,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Autowired private ICourseRepo courseRepo;
 	@Autowired private IProfessorRepo professorRepo;
 	@Autowired private IStudentRepo studentRepo;
+	@Autowired private ILabInstanceRepo instanceRepo;
 
+	@Autowired private IAnsibleService ansibleService;
+	@Autowired private ISystemTaskService systemTaskService;
+	
+	private final String ANSIBLE_BASE_PATH = "ansible_workspace";
+	
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) throws Exception {
 		if (courseName == null) {
@@ -37,7 +48,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    	courseDesc = null;
 	    }
 	    
-	    Professor professor = professorRepo.getReferenceById(professorId);
+	    Professor professor = professorRepo.findById(professorId).get();
 	    
 	    Course newCourse;
 	    
@@ -109,6 +120,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	public void deleteCourseById(UUID id) throws Exception {
 		Course courseToDelete = retrieveById(id);
 		
+		cleanupLab(id);
+		
 		courseRepo.delete(courseToDelete);
 	}
 
@@ -117,13 +130,17 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	public void addStudentToCourse(UUID courseId, UUID studentId) throws Exception {
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
+		LabInstance instance;
 		
 		if (!student.getCourse().contains(course)) {
 			student.getCourse().add(course);
 			course.getStudents().add(student);
+			instance = new LabInstance(student, course, null);
+			instanceRepo.save(instance);
 		}
 		
 		courseRepo.save(course);
+
 	}
 
 	@Override
@@ -131,13 +148,79 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	public void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception {
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
+		LabInstance instance = instanceRepo.findByStudentPersonIdAndCourseCId(studentId, courseId);
 		
 		if (student.getCourse().contains(course)) {
 			student.getCourse().remove(course);
 			course.getStudents().remove(student);
+			instanceRepo.delete(instance);
 		}
 
 		courseRepo.save(course);
+	}
+
+	@Override
+	@Transactional
+	public void deployLab(UUID courseId) throws Exception {
+		Course course = retrieveById(courseId);
+		List<LabInstance> instances = instanceRepo.findByCourse(course);
+		
+		if (instances.isEmpty()) {
+			throw new Exception("No Students enrolled. Nothing to deploy");
+		}
+		
+		StringBuilder inventory = new StringBuilder("[target_vms]\n");
+		for (LabInstance inst : instances) {
+			if (inst.getIpAddress() != null) {
+				inventory.append(inst.getIpAddress()).append(" ansible_ssh_user=root\n");
+			}
+			
+			String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "hosts").toString();
+			systemTaskService.createFile(path, inventory.toString());
+		}
+		
+		String defaultPlaybook = "---\n"
+				+ "  tasks:\n"
+				+ "    - name: Ensure lab tools\n"
+				+ "      package: name=git state=present";
+		ansibleService.createPlaybook(courseId, defaultPlaybook);
+		
+	}
+
+	@Override
+	public void cleanupLab(UUID courseId) throws Exception {
+		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/hosts");
+		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/vars.yml");
+		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/playbook.yml");
+		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
+	}
+
+	@Override
+	public void prepareProxmoxProvisioning(UUID courseId) throws Exception {
+		Course course = retrieveById(courseId);
+	    List<LabInstance> instances = instanceRepo.findByCourse(course);
+	    
+	    ansibleService.createProxmoxVarsFile(courseId, instances);
+	    ansibleService.createInventoryFile(courseId, "proxmox", "192.168.0.112");
+	    
+	    String proxmoxPlaybook = "---\n" +
+	            "- name: Create Course Containers\n" +
+	            "  hosts: proxmox\n" +
+	            "  vars_files:\n" +
+	            "    - multi-container.yml\n" + // Points to the file we just created
+	            "  tasks:\n" +
+	            "    - name: Create multiple containers\n" +
+	            "      community.proxmox.proxmox:\n" +
+	            "        node: \"pve-node-01\"\n" +
+	            "        api_user: \"root@pam\"\n" +
+	            "        hostname: \"{{ item.hostname }}\"\n" +
+	            "        vmid: \"{{ item.vmid }}\"\n" +
+	            "        netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
+	            "        password: \"securepassword\"\n" +
+	            "        ostemplate: 'local:vztmpl/debian-12.tar.zst'\n" +
+	            "      loop: \"{{ containers }}\"";
+	            
+	        ansibleService.createPlaybook(courseId, proxmoxPlaybook);
 	}
 
 

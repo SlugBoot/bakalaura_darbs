@@ -17,9 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
-import lv.slugboot.app.repo.ICourseRepo;
+import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
+import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import lv.slugboot.app.service.IStudentCRUDService;
 
@@ -31,6 +32,8 @@ public class CourseCRUDController {
 	@Autowired IFilterService filterService;
 	@Autowired IStudentCRUDService studentCRUDService;
 	@Autowired IProfessorCRUDService professorCRUDService;
+	@Autowired ILabInstanceCRUDService instanceCRUDService;
+	@Autowired IAnsibleService ansibleService;
 	
 	private String courseList = "show-multiple-courses";
 	private String courseInfoPage = "course-info";
@@ -41,9 +44,11 @@ public class CourseCRUDController {
 	
 	private String studentAttribute = "student";
 	private String courseAttribute = "course";
+	private String instanceAttribute = "instance";
 	private String errorAttribute = "error";
 	private String professorAttribute = "professor";
 	private String previousURLAttribute = "previousUrl";
+
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -67,6 +72,7 @@ public class CourseCRUDController {
 			
 			Course course = courseCRUDService.retrieveById(courseId);
 			model.addAttribute(courseAttribute, course);
+			model.addAttribute(instanceAttribute, instanceCRUDService.retrieveByCourseId(courseId));
 			return courseInfoPage;
 		} catch (Exception e) {
 			model.addAttribute(errorAttribute, e.getMessage());
@@ -206,4 +212,53 @@ public class CourseCRUDController {
 			return errorPage;
 		}
 	}
+	
+	@GetMapping("/{uuid}/deploy")
+	public String getControllerDeployLab(@PathVariable(name="uuid") UUID courseId, 
+			@RequestParam(value="referer", required=false) String referer, Model model) {
+		try {
+			courseCRUDService.deployLab(courseId);
+			if (referer != null && !referer.isEmpty()) {
+				return "redirect:" + referer;
+			}
+			else {
+				return "redirect:/course/crud/" + courseId; 
+			}
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
+	@GetMapping("/{uuid}/cleanup")
+    public String getControllerCleanupLab(@PathVariable(name="uuid") UUID courseId, 
+            @RequestParam(value="referer", required=false) String referer, Model model) {
+        try {
+            courseCRUDService.cleanupLab(courseId);
+            if (referer != null && !referer.isEmpty()) {
+				return "redirect:" + referer;
+			}
+			else {
+				return "redirect:/course/crud/" + courseId; 
+			}
+        } catch (Exception e) {
+            model.addAttribute(errorAttribute, e.getMessage());
+            return errorPage;
+        }
+    }
+	
+	@GetMapping("/{uuid}/provision")
+	public String getControllerProvisionCourseInfrastructure(@PathVariable(name="uuid") UUID courseId, Model model) {
+		try {
+			courseCRUDService.prepareProxmoxProvisioning(courseId);
+			
+			ansibleService.runPlaybook(courseId);
+			
+			return "redirect:/course/crud/" + courseId;
+		} catch (Exception e) {
+			model.addAttribute(errorAttribute, e.getMessage());
+			return errorPage;
+		}
+	}
+	
 }

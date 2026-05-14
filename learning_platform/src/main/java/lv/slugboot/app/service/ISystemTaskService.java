@@ -5,6 +5,8 @@ public interface ISystemTaskService {
 	
 	public abstract void deleteFile(String filePath) throws Exception;
 	
+	public abstract void deleteDirectory(String directoryPath) throws Exception;
+	
 	public abstract String executeCommand(String command) throws Exception;
 	
 }

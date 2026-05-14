@@ -106,3 +106,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Izveidots Laboratoriju instances modeļa klases, repozitorijs un serviss
 
 - Piezīme: Jāpārveido Ansible un Sistēmas servisi
+
+## 14. maijs
+
+1. Pārveidota lietotnes struktūra, lai varētu izveidot nepieciešamos Ansible failus

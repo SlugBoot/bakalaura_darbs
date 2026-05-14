@@ -1,6 +1,7 @@
 package lv.slugboot.app.service.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,6 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.service.ISystemTaskService;
@@ -52,6 +54,12 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 			
 			return output;
 		}
+	}
+
+	@Override
+	public void deleteDirectory(String directoryPath) throws Exception {
+		File directory = new File(directoryPath);
+		FileSystemUtils.deleteRecursively(directory);
 	}
 
 }
