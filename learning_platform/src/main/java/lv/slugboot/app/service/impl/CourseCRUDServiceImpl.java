@@ -212,8 +212,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "    - name: Create multiple containers\n" +
 	            "      community.proxmox.proxmox:\n" +
 	            "        node: \"prox-bak\"\n" +
-	            "		 api_host: \"192.168.0.112\"\n" + 
-	            "		 api_token_id: \"ansible-token\"\n" +
+	            "        api_host: \"192.168.0.112\"\n" + 
+	            "        api_token_id: \"ansible-token\"\n" +
 	            "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
 	            "        api_user: \"root@pam\"\n" +
 	            "        hostname: \"{{ item.hostname }}\"\n" +
