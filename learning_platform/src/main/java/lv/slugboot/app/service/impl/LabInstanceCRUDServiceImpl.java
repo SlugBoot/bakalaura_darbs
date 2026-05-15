@@ -94,34 +94,6 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 		labInstanceRepo.save(labInstance);
 	}
 
-	@Override
-	@Transactional
-	public void deployLabInstance(UUID instanceId) throws Exception {
-		LabInstance instance = retrieveById(instanceId);
-		UUID courseId = instance.getCourse().getCId();
-		UUID studentId = instance.getStudent().getPersonId();
-		
-		instance.setStatus(LabInstanceStatus.Provisioning);
-		labInstanceRepo.save(instance);
-		
-		try {
-			String hostGroupName = "course_" + courseId.toString().substring(0, 8);
-			ansibleService.createInventoryFile(courseId, hostGroupName, instance.getIpAddress());
-			
-			String playbookYaml = "---\n"
-					+ "- hosts: all\n"
-					+ "  tasks:\n"
-					+ "    - name: Setup Student Environment\n"
-					+ "      package: name=httpd state=present";
-			
-			String result = ansibleService.runPlaybook(courseId, studentId);
-		} catch (Exception e) {
-			instance.setStatus(LabInstanceStatus.Stopped);
-			throw new Exception("Deployment failed: " + e.getMessage());
-		} finally {
-			labInstanceRepo.save(instance);
-		}
-	}
 
 	@Override
 	public List<LabInstance> retrieveByCourseId(UUID courseId) throws Exception {

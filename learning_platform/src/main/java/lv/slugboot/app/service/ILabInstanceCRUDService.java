@@ -23,5 +23,4 @@ public interface ILabInstanceCRUDService {
 	
 	public abstract void updateIPAddressById(UUID instanceId, String ipAddress) throws Exception;
 	
-	public abstract void deployLabInstance(UUID instanceId) throws Exception;
 }

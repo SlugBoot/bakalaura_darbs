@@ -13,6 +13,7 @@ import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.models.Student;
+import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.repo.ICourseRepo;
 import lv.slugboot.app.repo.ILabInstanceRepo;
 import lv.slugboot.app.repo.IProfessorRepo;
@@ -33,6 +34,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Autowired private ISystemTaskService systemTaskService;
 	
 	private final String ANSIBLE_BASE_PATH = "ansible_workspace";
+	
+	private final String removeVMsFile = "remove_vms";
+	private final String playbookFile = "playbook";
+	private final String proxmoxFile = "provisioning";
+	private final String hostsFile = "hosts";
+	private final String studentHostsFile = "student_hosts";
+	private final String defaultPlaybookFile = "default_playbook";
 	
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) throws Exception {
@@ -162,36 +170,70 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Override
 	@Transactional
 	public void deployLab(UUID courseId) throws Exception {
+		
+		prepareProxmoxProvisioning(courseId);
+		ansibleService.runPlaybook(courseId, proxmoxFile);
+		
+		String startPlaybook = "---\n" +
+	            "- name: Power On Course Containers\n" +
+	            "  hosts: proxmox\n" +
+	            "  vars_files:\n" +
+	            "    - multi-container.yml\n" +
+	            "  tasks:\n" +
+	            "    - name: Ensure containers are started\n" +
+	            "      community.proxmox.proxmox:\n" +
+	            "        node: \"prox-bak\"\n" +
+	            "        api_host: \"192.168.0.112\"\n" + 
+	            "        api_token_id: \"ansible-token\"\n" +
+	            "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
+	            "        api_user: \"root@pam\"\n" +
+	            "        vmid: \"{{ item.vmid }}\"\n" +
+	            "        status: started\n" + 
+	            "      loop: \"{{ containers }}\"";
+		
+		ansibleService.createPlaybook(courseId, startPlaybook, "start_vms");
+	    ansibleService.runPlaybook(courseId, null, "start_vms");
+		
+		
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
 		
 		if (instances.isEmpty()) {
-			throw new Exception("No Students enrolled. Nothing to deploy");
+			throw new Exception("No students enrolled. Nothing to deploy");
 		}
 		
-		StringBuilder inventory = new StringBuilder("[target_vms]\n");
+		String hostGroup = "target_vms";
+		List<String> ips = new ArrayList<>();
 		for (LabInstance inst : instances) {
+			inst.setStatus(LabInstanceStatus.Running);
+			instanceRepo.save(inst);
 			if (inst.getIpAddress() != null) {
-				inventory.append(inst.getIpAddress()).append(" ansible_ssh_user=root\n");
+				ips.add(inst.getIpAddress());
 			}
-			
-			String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "hosts").toString();
-			systemTaskService.createFile(path, inventory.toString());
 		}
+		ansibleService.createInventoryFile(courseId, hostGroup, ips, studentHostsFile);
 		
-		String defaultPlaybook = "---\n"
+		String installPlaybook = "---\n"
+				+ "- name: Install Necessary Packages\n"
+				+ "  hosts: "+hostGroup+"\n"
 				+ "  tasks:\n"
-				+ "    - name: Ensure lab tools\n"
-				+ "      package: name=git state=present";
-		ansibleService.createPlaybook(courseId, defaultPlaybook);
+				+ "    - name: Wait for SSH\n"
+				+ "      wait_for_connection:\n"
+				+ "        timeout: 60\n"
+				+ "    - name: Update apt cache\n"
+				+ "      apt: update_cache=yes\n"
+				+ "    - name: Install packages\n"
+				+ "      package:\n"
+				+ "        name: [git, curl, vim, build-essential]\n"
+				+ "        state:present";
 		
+		ansibleService.createPlaybook(courseId, installPlaybook, playbookFile);
 	}
 
 	@Override
 	public void cleanupLab(UUID courseId) throws Exception {
-		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/hosts");
-		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/vars.yml");
-		systemTaskService.deleteFile(ANSIBLE_BASE_PATH + "/" + courseId + "/playbook.yml");
+		ansibleService.runPlaybook(courseId, null, removeVMsFile);
+
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
 
@@ -201,7 +243,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    List<LabInstance> instances = instanceRepo.findByCourse(course);
 	    
 	    ansibleService.createProxmoxVarsFile(courseId, instances);
-	    ansibleService.createInventoryFile(courseId, "proxmox", "192.168.0.112");
+	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.1"), hostsFile);
 	    
 	    String proxmoxPlaybook = "---\n" +
 	    	    "- name: Create Course Containers\n" +
@@ -238,9 +280,30 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "xI6osMys4Xw3U03bR8pQ== root@test-cont\"\n" +
 	    	    "      loop: \"{{ containers }}\"";
 	            
-	        ansibleService.createPlaybook(courseId, proxmoxPlaybook);
+	        ansibleService.createPlaybook(courseId, proxmoxPlaybook, proxmoxFile);
+	        
+	        String removePlaybook = "---\n" +
+	                "- name: Remove Course Containers\n" +
+	                "  hosts: proxmox\n" +
+	                "  vars_files:\n" +
+	                "    - multi-container.yml\n" +
+	                "  tasks:\n" +
+	                "    - name: Delete containers by VMID\n" +
+	                "      community.proxmox.proxmox:\n" +
+	                "        node: \"prox-bak\"\n" +
+	                "        api_host: \"192.168.0.112\"\n" + 
+	                "        api_token_id: \"ansible-token\"\n" +
+	                "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
+	                "        api_user: \"root@pam\"\n" +
+	                "        vmid: \"{{ item.vmid }}\"\n" +
+	                "        state: absent\n" +  // Removes the container
+	                "        force: yes\n" +     // Required if containers are running
+	                "      loop: \"{{ containers }}\"";
+	                
+	        ansibleService.createPlaybook(courseId, removePlaybook, removeVMsFile);
 	}
 
+	
 
 
 }

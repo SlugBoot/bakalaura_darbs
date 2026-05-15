@@ -49,6 +49,6 @@ public class LabInstance {
 		setStudent(student);
 		setCourse(course);
 		setIpAddress(ipAddress);
-		setStatus(LabInstanceStatus.Unprovisioned);
+		setStatus(LabInstanceStatus.Uninitialized);
 	}
 }

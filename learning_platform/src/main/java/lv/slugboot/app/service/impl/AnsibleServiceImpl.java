@@ -34,27 +34,30 @@ public class AnsibleServiceImpl implements IAnsibleService{
 	}
 
 	@Override
-	public void createInventoryFile(UUID courseId, String hostGroup, String ipAddress) throws Exception {
+	public void createInventoryFile(UUID courseId, String hostGroup, List<String> ipAddresses, String inventoryName) throws Exception {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "hosts").toString();
-		String content = String.format("[%s]\n%s ansible_ssh_user=root", hostGroup, ipAddress);
-		systemTaskService.createFile(path, content);
+		StringBuilder sb = new StringBuilder("["+hostGroup+"]");
+		for (String ip : ipAddresses) {
+			sb.append(ip).append(" ansible_ssh_user=root\n");
+		}
+		systemTaskService.createFile(path, sb.toString());
 	}
 
 	@Override
-	public void createPlaybook(UUID courseId, String playbookYaml) throws Exception {
-		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "playbook.yml").toString();
+	public void createPlaybook(UUID courseId, String playbookYaml, String playbookName) throws Exception {
+		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), playbookName+".yml").toString();
 		systemTaskService.createFile(path, playbookYaml);
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId) throws Exception {
-		return runPlaybook(courseId, null);
+	public String runPlaybook(UUID courseId, String playbookName) throws Exception {
+		return runPlaybook(courseId, null, playbookName);
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId, UUID studentId) throws Exception {
+	public String runPlaybook(UUID courseId, UUID studentId, String playbookName) throws Exception {
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
-		String playbookPath = Paths.get(baseDir, "playbook.yml").toString();
+		String playbookPath = Paths.get(baseDir, playbookName+".yml").toString();
 		String inventoryPath = Paths.get(baseDir, "hosts").toString();
 
 		
@@ -79,7 +82,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		
 		for (LabInstance inst : instances) {
 			inst.setIpAddress("192.168.0."+IPCounter++);
-			inst.setStatus(LabInstanceStatus.Provisioning);
+			inst.setStatus(LabInstanceStatus.Initialized);
 			labInstanceRepo.save(inst);
 			sb.append("  - vmid: ").append(vmidCounter++).append("\n");
 	        sb.append("    hostname: ").append(inst.getStudent().getUsername()).append("-vm\n");

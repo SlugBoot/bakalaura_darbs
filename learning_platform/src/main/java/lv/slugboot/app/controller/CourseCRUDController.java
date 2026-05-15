@@ -24,7 +24,6 @@ import lv.slugboot.app.service.IFilterService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import lv.slugboot.app.service.IStudentCRUDService;
-import lv.slugboot.app.service.impl.SystemTaskServiceImpl;
 
 @Controller
 @RequestMapping("/course/crud")
@@ -51,6 +50,9 @@ public class CourseCRUDController {
 	private String errorAttribute = "error";
 	private String professorAttribute = "professor";
 	private String previousURLAttribute = "previousUrl";
+	
+	private String removeVMsFile = "remove_vms";
+	private String proxmoxFile = "provisioning";
 
 	
 	@GetMapping("/all")
@@ -87,6 +89,7 @@ public class CourseCRUDController {
 	public String getControllerDeleteCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.deleteCourseById(courseId);
+			ansibleService.runPlaybook(courseId, "remove_vms");
 			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
 			return courseList;
 		} catch (Exception e) {
@@ -119,7 +122,7 @@ public class CourseCRUDController {
 			courseCRUDService.createCourse(course.getCourseName(),
 					course.getCourseDesc(), 
 					course.getProfessor().getPersonId());
-			if (referer != null && !referer.isEmpty()) {
+			if (referer != null && referer.startsWith("/")) {
 				return "redirect:" + referer;
 			}
 			return "redirect:/course/crud/all";
@@ -185,7 +188,7 @@ public class CourseCRUDController {
 		try {
 			courseCRUDService.addStudentToCourse(courseId, studentId);
 			
-			if (referer != null && !referer.isEmpty()) {
+			if (referer != null && referer.startsWith("/")) {
 				return "redirect:" + referer;
 			}
 			
@@ -205,7 +208,7 @@ public class CourseCRUDController {
 		try {
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 			String redirectUrl = "/course/crud/" + courseId;
-			if (referer != null && !referer.isEmpty()) {
+			if (referer != null && referer.startsWith("/")) {
 				redirectUrl += "?referer=" + referer;
 			}
 			
@@ -221,7 +224,8 @@ public class CourseCRUDController {
 			@RequestParam(value="referer", required=false) String referer, Model model) {
 		try {
 			courseCRUDService.deployLab(courseId);
-			if (referer != null && !referer.isEmpty()) {
+			
+            if (referer != null && referer.startsWith("/")) {
 				return "redirect:" + referer;
 			}
 			else {
@@ -238,7 +242,7 @@ public class CourseCRUDController {
             @RequestParam(value="referer", required=false) String referer, Model model) {
         try {
             courseCRUDService.cleanupLab(courseId);
-            if (referer != null && !referer.isEmpty()) {
+            if (referer != null && referer.startsWith("/")) {
 				return "redirect:" + referer;
 			}
 			else {
@@ -257,7 +261,7 @@ public class CourseCRUDController {
 			
 			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
 			
-			ansibleService.runPlaybook(courseId);
+			ansibleService.runPlaybook(courseId, null, proxmoxFile);
 			
 			return "redirect:/course/crud/" + courseId;
 		} catch (Exception e) {
@@ -265,5 +269,5 @@ public class CourseCRUDController {
 			return errorPage;
 		}
 	}
-	
+
 }
