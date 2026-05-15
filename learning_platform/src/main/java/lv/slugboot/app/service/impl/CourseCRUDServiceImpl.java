@@ -226,7 +226,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "        size: 30\n" +
 	            "      cores: 1\n" +
 	            "      memory: 512\n" +
-	            "	   features: \"nesting=1\"\n" +
+	            "      features: \"nesting=1\"\n" +
 	            "      pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUv" +
 	            "NQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFC" +
 	            "yTyVrNerKt/J3OGqJgsfU/JVQE152WGLUtmeEDwvnZ5qvXQ7Cm06vsAFSj3j/O5pMRugcBxACI+b8op3HsD3wqvQkzH" +
