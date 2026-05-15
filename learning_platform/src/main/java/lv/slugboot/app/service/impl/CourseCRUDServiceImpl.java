@@ -232,7 +232,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 
 	@Override
 	public void cleanupLab(UUID courseId) throws Exception {
-		ansibleService.runPlaybook(courseId, null, removeVMsFile);
+		ansibleService.runPlaybook(courseId, removeVMsFile, hostsFile);
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
 		
