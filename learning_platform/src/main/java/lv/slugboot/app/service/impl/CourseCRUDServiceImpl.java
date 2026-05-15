@@ -221,6 +221,21 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "      netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
 	            "      password: \"securepassword\"\n" +
 	            "      ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
+	            "      disk_volume:\n"+ 
+	            "        storage: local-lvm\n" +
+	            "        size: 30\n" +
+	            "      cores: 1\n" +
+	            "      memory: 512\n" +
+	            "	   features: \"nesting=1\"\n" +
+	            "      pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUv" +
+	            "NQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFC" +
+	            "yTyVrNerKt/J3OGqJgsfU/JVQE152WGLUtmeEDwvnZ5qvXQ7Cm06vsAFSj3j/O5pMRugcBxACI+b8op3HsD3wqvQkzH" +
+	            "DvXKSMr9IeJNbIeI3DgpjASKSUs5eSiu+TRIh36WypbI+Q/h+x3HX8bkZe7q0dSTjEExAwS+ZP5Y1MVnKSyF+J9UB1A+" +
+	            "ZuppeAkoQrUV4yH9UuxC9wEaNteNghCFTssZV0CHG0o9GE3st/VrhlqctPzKdKQGg27cGzmWmRVyGscobbg1r0UnguRFw" +
+	            "2EbAY5+F9eJFbdZ3oYHC/9GOuuVnpQCGAx3+uiYZ7U/4AtebaAg7d7cL4lOeb+rleqmNMTn6NgR/qR3lhLh51n3mtA8MtP" +
+	            "EVhrcFavgpgt2MrIW6cKpiOIlNkyaqQAdbcEi/ygyDZ4aNuOJAOuL+2HMtUMbI8GUZEfTOOufZ/3zfrrOezkr9FCeXpTVQ" +
+	            "pkgiZd1qNYc7BzAS01a7DlD1nuC9oX1+rgloKdg1/R2tyeyCWLgwp3m6giCpXRvClHBctFLEoeKi/81Ceh49veHwdvtVmk" +
+	            "xI6osMys4Xw3U03bR8pQ== root@test-cont\n" +
 	            "    loop: \"{{ containers }}\"";
 	            
 	        ansibleService.createPlaybook(courseId, proxmoxPlaybook);
