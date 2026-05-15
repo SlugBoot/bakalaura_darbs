@@ -189,8 +189,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
 	            "        api_user: \"root@pam\"\n" +
 	            "        vmid: \"{{ item.vmid }}\"\n" +
-	            "        hostname: \"{{ item.hostname }}\"\n" +
-	            "        status: started\n" + 
+	            "        state: started\n" + 
 	            "      loop: \"{{ containers }}\"";
 		
 		ansibleService.createPlaybook(courseId, startPlaybook, startVMFile);
