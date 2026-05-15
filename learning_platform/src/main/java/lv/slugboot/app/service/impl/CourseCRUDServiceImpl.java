@@ -178,7 +178,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		String startPlaybook = "---\n" +
 	            "- name: Power On Course Containers\n" +
 	            "  hosts: proxmox\n" +
-	            "  gather_facts: no\n" +
 	            "  vars_files:\n" +
 	            "    - multi-container.yml\n" +
 	            "  tasks:\n" +
@@ -247,7 +246,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    List<LabInstance> instances = instanceRepo.findByCourse(course);
 	    
 	    ansibleService.createProxmoxVarsFile(courseId, instances);
-	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.1"), hostsFile);
+	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), hostsFile);
 	    
 	    String proxmoxPlaybook = "---\n" +
 	    	    "- name: Create Course Containers\n" +
