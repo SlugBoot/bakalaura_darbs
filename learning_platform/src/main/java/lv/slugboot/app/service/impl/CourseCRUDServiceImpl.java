@@ -218,7 +218,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    	    "        api_user: \"root@pam\"\n" +
 	    	    "        hostname: \"{{ item.hostname }}\"\n" +
 	    	    "        vmid: \"{{ item.vmid }}\"\n" +
-	    	    "        netif: \"name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
+	    	    "        netif:\n" +
+	    	    "          net0: \"name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
 	    	    "        password: \"securepassword\"\n" +
 	    	    "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
 	    	    "        disk: \"local-lvm:30\"\n" + 
