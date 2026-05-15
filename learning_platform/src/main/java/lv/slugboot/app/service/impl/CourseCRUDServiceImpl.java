@@ -233,6 +233,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Override
 	public void cleanupLab(UUID courseId) throws Exception {
 		ansibleService.runPlaybook(courseId, null, removeVMsFile);
+		Course course = retrieveById(courseId);
+		List<LabInstance> instances = instanceRepo.findByCourse(course);
+		
+		for (LabInstance inst : instances) {
+			inst.setStatus(LabInstanceStatus.Uninitialized);
+			instanceRepo.save(inst);
+		}
 
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
@@ -269,15 +276,16 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    	    "        memory: 512\n" +
 	    	    "        features: \"nesting=1\"\n" +
 	    	    "        unprivileged: yes\n"+
-	            "        pubkey: \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUv" +
-	            "NQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFC" +
-	            "yTyVrNerKt/J3OGqJgsfU/JVQE152WGLUtmeEDwvnZ5qvXQ7Cm06vsAFSj3j/O5pMRugcBxACI+b8op3HsD3wqvQkzH" +
-	            "DvXKSMr9IeJNbIeI3DgpjASKSUs5eSiu+TRIh36WypbI+Q/h+x3HX8bkZe7q0dSTjEExAwS+ZP5Y1MVnKSyF+J9UB1A+" +
-	            "ZuppeAkoQrUV4yH9UuxC9wEaNteNghCFTssZV0CHG0o9GE3st/VrhlqctPzKdKQGg27cGzmWmRVyGscobbg1r0UnguRFw" +
-	            "2EbAY5+F9eJFbdZ3oYHC/9GOuuVnpQCGAx3+uiYZ7U/4AtebaAg7d7cL4lOeb+rleqmNMTn6NgR/qR3lhLh51n3mtA8MtP" +
-	            "EVhrcFavgpgt2MrIW6cKpiOIlNkyaqQAdbcEi/ygyDZ4aNuOJAOuL+2HMtUMbI8GUZEfTOOufZ/3zfrrOezkr9FCeXpTVQ" +
-	            "pkgiZd1qNYc7BzAS01a7DlD1nuC9oX1+rgloKdg1/R2tyeyCWLgwp3m6giCpXRvClHBctFLEoeKi/81Ceh49veHwdvtVmk" +
-	            "xI6osMys4Xw3U03bR8pQ== root@test-cont\"\n" +
+	            "        pubkey: \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAwqEBLSv83qVT6NFlKfR"
+	            + "2JxjaaYgMVS5NdCFS5T1cUNXxtcTebfJg9Fn2cFuPF8VW2NUSdQMsprH4YLDPN8bAp+DF2SdC7w"
+	            + "ahrnPlP0MM/g+4ztmyC4s+4VwN6qh2JMs9OX9mGXlzq+PTrm2KwwtlEUdxl5YqmzVBjjz9au7Lj"
+	            + "qbTuyFqEuxuVyRvqw2V7KLkp/NM1GhvU+Rj8HUaTVY1zIB/twZAJ1UJ7JYAfsl4x/Q/Pn9WrGWYT"
+	            + "C5L1HiLfKWxHFGBg5krK2beIT4ShhYhu0w+Tcj7ITMTvMoudNm15ROEJ4zno7XM4+SbJCwJYMkJM"
+	            + "2zed5QO+zgdZPHt4yyCmQffyKBC5zTX+Zsp0M7FmsKH8D+AYFA4ZSobxHDMSN5pLZzResmtssJDl"
+	            + "NVoqI/3NlSZ3rYE0NS948d1KPc+PzxjuiOVpYQJj1wGGDB0TL4OfkUy966NjoGyhI1R+UypJ7bwh1"
+	            + "sLKZv78pmVi/NI3tb0DL8D5FfgxwBl9zDn69Ar2RwUHYiBl+y4sbXVMhEdFMPB3vaXxRoQ93AcZ3"
+	            + "++xc4Aj8u55aaXn0nAd90Q2wV6DxPze/6hhR9IbpXM12KJvJV2ZoVYk7nLc0gRkW5Ywocw4w0legw"
+	            + "sIa7bbK1Zb/FP7yIOdUyYMgEvleCUsj1pawD6sucb0GqL81NumDP72Q== root@test-cont\"\n" +
 	    	    "      loop: \"{{ containers }}\"";
 	            
 	        ansibleService.createPlaybook(courseId, proxmoxPlaybook, proxmoxFile);
