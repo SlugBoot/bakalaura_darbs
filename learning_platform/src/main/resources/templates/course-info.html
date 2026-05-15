@@ -8,7 +8,7 @@
 		
 		<a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
 		<a th:href="@{/course/crud/{uuid}/provision(uuid=${course.getCId()})}"><button type="button">Create Instances</button></a>
-		<a th:href="@{/course/crud/{uuid}/provision(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
+		<a th:href="@{/course/crud/{uuid}/deploy(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
 		<a th:href="@{/course/crud/{uuid}/cleanup(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
 		<table border = 1px>
 			<th colspan="7">Student List</th>
