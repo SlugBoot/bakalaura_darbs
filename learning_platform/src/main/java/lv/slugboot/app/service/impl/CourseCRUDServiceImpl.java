@@ -171,10 +171,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Override
 	@Transactional
 	public void deployLab(UUID courseId) throws Exception {
-		
-		prepareProxmoxProvisioning(courseId);
-		ansibleService.runPlaybook(courseId, proxmoxFile, hostsFile);
-		
+			
 		String startPlaybook = "---\n" +
 	            "- name: Power On Course Containers\n" +
 	            "  hosts: proxmox\n" +
