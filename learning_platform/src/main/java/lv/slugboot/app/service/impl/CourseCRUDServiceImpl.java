@@ -40,6 +40,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	private final String proxmoxFile = "provisioning";
 	private final String hostsFile = "hosts";
 	private final String studentHostsFile = "student_hosts";
+	private final String startVMFile = "start_vms";
 	private final String defaultPlaybookFile = "default_playbook";
 	
 	@Override
@@ -191,8 +192,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "        status: started\n" + 
 	            "      loop: \"{{ containers }}\"";
 		
-		ansibleService.createPlaybook(courseId, startPlaybook, "start_vms");
-	    ansibleService.runPlaybook(courseId, null, "start_vms");
+		ansibleService.createPlaybook(courseId, startPlaybook, startVMFile);
+	    ansibleService.runPlaybook(courseId, startVMFile, hostsFile);
 		
 		
 		Course course = retrieveById(courseId);
@@ -298,8 +299,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	                "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
 	                "        api_user: \"root@pam\"\n" +
 	                "        vmid: \"{{ item.vmid }}\"\n" +
-	                "        state: absent\n" +  // Removes the container
-	                "        force: yes\n" +     // Required if containers are running
+	                "        state: absent\n" +
+	                "        force: yes\n" +
 	                "      loop: \"{{ containers }}\"";
 	                
 	        ansibleService.createPlaybook(courseId, removePlaybook, removeVMsFile);
