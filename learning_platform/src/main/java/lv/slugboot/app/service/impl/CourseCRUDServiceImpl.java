@@ -204,27 +204,27 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    ansibleService.createInventoryFile(courseId, "proxmox", "192.168.0.112");
 	    
 	    String proxmoxPlaybook = "---\n" +
-	            "- name: Create Course Containers\n" +
-	            "  hosts: proxmox\n" +
-	            "  vars_files:\n" +
-	            "    - multi-container.yml\n" +
-	            "  tasks:\n" +
-	            "  - name: Create multiple containers\n" +
-	            "    community.proxmox.proxmox:\n" +
-	            "      node: \"prox-bak\"\n" +
-	            "      api_host: \"192.168.0.112\"\n" + 
-	            "      api_token_id: \"ansible-token\"\n" +
-	            "      api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
-	            "      api_user: \"root@pam\"\n" +
-	            "      hostname: \"{{ item.hostname }}\"\n" +
-	            "      vmid: \"{{ item.vmid }}\"\n" +
-	            "      netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
-	            "      password: \"securepassword\"\n" +
-	            "      ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
-	            "      disk: \"local-lvm:30\"\n"+ 
-	            "      cores: 1\n" +
-	            "      memory: 512\n" +
-	            "      features: \"nesting=1\"\n" +
+	    	    "- name: Create Course Containers\n" +
+	    	    "  hosts: proxmox\n" +
+	    	    "  vars_files:\n" +
+	    	    "    - multi-container.yml\n" +
+	    	    "  tasks:\n" +
+	    	    "    - name: Create multiple containers\n" +
+	    	    "      community.proxmox.proxmox:\n" +
+	    	    "        node: \"prox-bak\"\n" +
+	    	    "        api_host: \"192.168.0.112\"\n" + 
+	    	    "        api_token_id: \"ansible-token\"\n" +
+	    	    "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
+	    	    "        api_user: \"root@pam\"\n" +
+	    	    "        hostname: \"{{ item.hostname }}\"\n" +
+	    	    "        vmid: \"{{ item.vmid }}\"\n" +
+	    	    "        netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
+	    	    "        password: \"securepassword\"\n" +
+	    	    "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
+	    	    "        disk: \"local-lvm:30\"\n" + 
+	    	    "        cores: 1\n" +
+	    	    "        memory: 512\n" +
+	    	    "        features: \"nesting=1\"\n" +
 	            "      pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUv" +
 	            "NQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFC" +
 	            "yTyVrNerKt/J3OGqJgsfU/JVQE152WGLUtmeEDwvnZ5qvXQ7Cm06vsAFSj3j/O5pMRugcBxACI+b8op3HsD3wqvQkzH" +
@@ -234,7 +234,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "EVhrcFavgpgt2MrIW6cKpiOIlNkyaqQAdbcEi/ygyDZ4aNuOJAOuL+2HMtUMbI8GUZEfTOOufZ/3zfrrOezkr9FCeXpTVQ" +
 	            "pkgiZd1qNYc7BzAS01a7DlD1nuC9oX1+rgloKdg1/R2tyeyCWLgwp3m6giCpXRvClHBctFLEoeKi/81Ceh49veHwdvtVmk" +
 	            "xI6osMys4Xw3U03bR8pQ== root@test-cont\n" +
-	            "    loop: \"{{ containers }}\"";
+	    	    "      loop: \"{{ containers }}\"";
 	            
 	        ansibleService.createPlaybook(courseId, proxmoxPlaybook);
 	}
