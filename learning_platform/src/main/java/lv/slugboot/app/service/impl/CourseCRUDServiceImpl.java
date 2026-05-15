@@ -218,13 +218,14 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    	    "        api_user: \"root@pam\"\n" +
 	    	    "        hostname: \"{{ item.hostname }}\"\n" +
 	    	    "        vmid: \"{{ item.vmid }}\"\n" +
-	    	    "        netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
+	    	    "        netif: \"name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
 	    	    "        password: \"securepassword\"\n" +
 	    	    "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
 	    	    "        disk: \"local-lvm:30\"\n" + 
 	    	    "        cores: 1\n" +
 	    	    "        memory: 512\n" +
 	    	    "        features: \"nesting=1\"\n" +
+	    	    "        unprivileged: yes"+
 	            "        pubkey: \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/19QR+VepNQs1GLsuxyAW9jUv" +
 	            "NQjfKIrL1kPIuVd7HBaDXZF7jvkNp46SMZ2lvWxDlA/W2F0QNj+U99ASCIUCicyw1exGbV0PtEVIdOFC" +
 	            "yTyVrNerKt/J3OGqJgsfU/JVQE152WGLUtmeEDwvnZ5qvXQ7Cm06vsAFSj3j/O5pMRugcBxACI+b8op3HsD3wqvQkzH" +
