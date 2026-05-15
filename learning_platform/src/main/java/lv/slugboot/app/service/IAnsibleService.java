@@ -11,9 +11,9 @@ public interface IAnsibleService {
 	
 	public abstract void createPlaybook(UUID courseId, String playbookYaml, String playbookName) throws Exception;
 	
-	public abstract String runPlaybook(UUID courseId, UUID studentId, String playbookName) throws Exception;
+	public abstract String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName) throws Exception;
 	
-	public abstract String runPlaybook(UUID courseId, String playbookName) throws Exception;
+	public abstract String runPlaybook(UUID courseId, String playbookName, String inventoryName) throws Exception;
 	
 	public abstract void createProxmoxVarsFile(UUID courseId, List<LabInstance> instances) throws Exception;
 

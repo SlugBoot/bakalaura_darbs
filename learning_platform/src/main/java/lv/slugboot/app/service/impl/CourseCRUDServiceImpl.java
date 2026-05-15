@@ -172,7 +172,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	public void deployLab(UUID courseId) throws Exception {
 		
 		prepareProxmoxProvisioning(courseId);
-		ansibleService.runPlaybook(courseId, proxmoxFile);
+		ansibleService.runPlaybook(courseId, proxmoxFile, hostsFile);
 		
 		String startPlaybook = "---\n" +
 	            "- name: Power On Course Containers\n" +
@@ -225,9 +225,11 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 				+ "    - name: Install packages\n"
 				+ "      package:\n"
 				+ "        name: [git, curl, vim, build-essential]\n"
-				+ "        state:present";
+				+ "        state: present";
 		
 		ansibleService.createPlaybook(courseId, installPlaybook, playbookFile);
+		
+		ansibleService.runPlaybook(courseId, installPlaybook, studentHostsFile);
 	}
 
 	@Override

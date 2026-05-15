@@ -35,8 +35,8 @@ public class AnsibleServiceImpl implements IAnsibleService{
 
 	@Override
 	public void createInventoryFile(UUID courseId, String hostGroup, List<String> ipAddresses, String inventoryName) throws Exception {
-		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "hosts").toString();
-		StringBuilder sb = new StringBuilder("["+hostGroup+"]");
+		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), inventoryName).toString();
+		StringBuilder sb = new StringBuilder("["+hostGroup+"]\n");
 		for (String ip : ipAddresses) {
 			sb.append(ip).append(" ansible_ssh_user=root\n");
 		}
@@ -50,15 +50,15 @@ public class AnsibleServiceImpl implements IAnsibleService{
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId, String playbookName) throws Exception {
-		return runPlaybook(courseId, null, playbookName);
+	public String runPlaybook(UUID courseId, String playbookName, String inventoryName) throws Exception {
+		return runPlaybook(courseId, null, playbookName, inventoryName);
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId, UUID studentId, String playbookName) throws Exception {
+	public String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName) throws Exception {
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
 		String playbookPath = Paths.get(baseDir, playbookName+".yml").toString();
-		String inventoryPath = Paths.get(baseDir, "hosts").toString();
+		String inventoryPath = Paths.get(baseDir, inventoryName).toString();
 
 		
 		String command = String.format("ansible-playbook -i %s %s", inventoryPath, playbookPath);

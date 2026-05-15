@@ -51,9 +51,12 @@ public class CourseCRUDController {
 	private String professorAttribute = "professor";
 	private String previousURLAttribute = "previousUrl";
 	
-	private String removeVMsFile = "remove_vms";
-	private String proxmoxFile = "provisioning";
-
+	private final String removeVMsFile = "remove_vms";
+	private final String playbookFile = "playbook";
+	private final String proxmoxFile = "provisioning";
+	private final String hostsFile = "hosts";
+	private final String studentHostsFile = "student_hosts";
+	private final String defaultPlaybookFile = "default_playbook";
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -89,7 +92,7 @@ public class CourseCRUDController {
 	public String getControllerDeleteCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.deleteCourseById(courseId);
-			ansibleService.runPlaybook(courseId, "remove_vms");
+			ansibleService.runPlaybook(courseId, "remove_vms", hostsFile);
 			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
 			return courseList;
 		} catch (Exception e) {
@@ -261,7 +264,7 @@ public class CourseCRUDController {
 			
 			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
 			
-			ansibleService.runPlaybook(courseId, null, proxmoxFile);
+			ansibleService.runPlaybook(courseId, proxmoxFile, hostsFile);
 			
 			return "redirect:/course/crud/" + courseId;
 		} catch (Exception e) {
