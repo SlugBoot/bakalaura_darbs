@@ -207,7 +207,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "- name: Create Course Containers\n" +
 	            "  hosts: proxmox\n" +
 	            "  vars_files:\n" +
-	            "    - multi-container.yml\n" + // Points to the file we just created
+	            "    - multi-container.yml\n" +
 	            "  tasks:\n" +
 	            "  - name: Create multiple containers\n" +
 	            "    community.proxmox.proxmox:\n" +
@@ -221,9 +221,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            "      netif: \"name=eth0,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
 	            "      password: \"securepassword\"\n" +
 	            "      ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
-	            "      disk_volume:\n"+ 
-	            "        storage: local-lvm\n" +
-	            "        size: 30\n" +
+	            "      disk: \"local-lvm:30\"\n"+ 
 	            "      cores: 1\n" +
 	            "      memory: 512\n" +
 	            "      features: \"nesting=1\"\n" +
