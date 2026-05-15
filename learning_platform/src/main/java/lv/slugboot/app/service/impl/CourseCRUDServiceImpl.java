@@ -178,6 +178,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		String startPlaybook = "---\n" +
 	            "- name: Power On Course Containers\n" +
 	            "  hosts: proxmox\n" +
+	            "  gather_facts: no\n" +
 	            "  vars_files:\n" +
 	            "    - multi-container.yml\n" +
 	            "  tasks:\n" +
