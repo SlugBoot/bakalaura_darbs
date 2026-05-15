@@ -112,3 +112,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Pārveidota lietotnes struktūra, lai varētu izveidot nepieciešamos Ansible failus
 
 - Piezīme: Jāpielabo ģenerētie Ansible faili
+
+## 15. maijs
+
+1. Pielaboti ģenerētie Ansible faili
