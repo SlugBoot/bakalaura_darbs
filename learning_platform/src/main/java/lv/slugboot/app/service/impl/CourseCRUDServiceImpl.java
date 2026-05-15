@@ -230,7 +230,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		
 		ansibleService.createPlaybook(courseId, installPlaybook, playbookFile);
 		
-		ansibleService.runPlaybook(courseId, installPlaybook, studentHostsFile);
+		ansibleService.runPlaybook(courseId, playbookFile, studentHostsFile);
 	}
 
 	@Override
