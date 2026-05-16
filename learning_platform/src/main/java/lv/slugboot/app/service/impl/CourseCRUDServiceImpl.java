@@ -195,7 +195,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            + "\n"
 	            + "    - name: Force PermitRootLogin via pct exec\n"
 	            + "      shell: \"pct exec {{ item.vmid }} --"
-	            + " sed -i 's/^#?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config\"\n"
+	            + " sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config\"\n"
 	            + "      loop: \"{{ containers }}\"\n"
 	            + "\n"
 	            + "    - name: Restart SSH service inside container\n"
