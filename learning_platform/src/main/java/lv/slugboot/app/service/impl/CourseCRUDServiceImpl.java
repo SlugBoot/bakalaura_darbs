@@ -157,7 +157,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	public void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception {
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
-		LabInstance instance = instanceRepo.findByStudentPersonIdAndCourseCId(studentId, courseId);
+		LabInstance instance = instanceRepo.findByCourseAndStudent(course,student);
 		
 		if (student.getCourse().contains(course)) {
 			student.getCourse().remove(course);
@@ -250,6 +250,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
 		
 		for (LabInstance inst : instances) {
+			inst.setIpAddress(null);
 			inst.setStatus(LabInstanceStatus.Uninitialized);
 			instanceRepo.save(inst);
 		}
