@@ -171,6 +171,20 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Override
 	@Transactional
 	public void deployLab(UUID courseId) throws Exception {
+		Course course = retrieveById(courseId);
+		List<LabInstance> instances = instanceRepo.findByCourse(course);
+		
+		if (instances.isEmpty()) {
+			throw new Exception("No students enrolled. Nothing to deploy");
+		}
+		
+		for (LabInstance inst : instances) {
+		    if (inst.getStatus() == null || inst.getStatus() != LabInstanceStatus.Initialized) {
+		        throw new Exception("Cannot deploy lab: Student '" 
+		            + inst.getStudent().getUsername() 
+		            + "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
+		    }
+		}
 			
 		String startPlaybook = "---\n"
 	            + "- name: Power On Course Containers\n"
@@ -205,10 +219,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		ansibleService.createPlaybook(courseId, startPlaybook, startVMFile);
 	    ansibleService.runPlaybook(courseId, startVMFile, hostsFile);
 		
-		
-		Course course = retrieveById(courseId);
-		List<LabInstance> instances = instanceRepo.findByCourse(course);
-		
 		if (instances.isEmpty()) {
 			throw new Exception("No students enrolled. Nothing to deploy");
 		}
@@ -227,6 +237,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		String installPlaybook = "---\n"
 				+ "- name: Install Necessary Packages\n"
 				+ "  hosts: "+hostGroup+"\n"
+				+ "  gather_facts: no"
 				+ "  tasks:\n"
 				+ "    - name: Wait for SSH\n"
 				+ "      wait_for_connection:\n"
@@ -235,7 +246,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 				+ "      apt: update_cache=yes\n"
 				+ "    - name: Install packages\n"
 				+ "      package:\n"
-				+ "        name: [git, curl, vim, build-essential]\n"
+				+ "        name: [git, curl, vim, build-essential, fastfetch]\n"
 				+ "        state: present";
 		
 		ansibleService.createPlaybook(courseId, installPlaybook, playbookFile);

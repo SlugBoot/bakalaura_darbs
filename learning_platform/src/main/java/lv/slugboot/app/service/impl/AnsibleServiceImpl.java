@@ -60,12 +60,13 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		String playbookPath = Paths.get(baseDir, playbookName+".yml").toString();
 		String inventoryPath = Paths.get(baseDir, inventoryName).toString();
 
+		String courseShortId = courseId.toString().substring(0, 8);
 		
-		String command = String.format("ansible-playbook -i %s %s", inventoryPath, playbookPath);
+		String command = String.format("export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -i %s %s", inventoryPath, playbookPath);
 		
 		if (studentId != null) {
 			Student student = studentRepo.findById(studentId).get();
-			command += " --limit " + student.getUsername()+"-vm";
+			command += " --limit " + student.getUsername() + "-" + courseShortId + "-vm";
 		}
 		return systemTaskService.executeCommand(command);
 	}
@@ -93,7 +94,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 			}
 			
 			String allocatedIp = inst.getIpAddress();
-			if (allocatedIp == null || allocatedIp.isEmpty()) {
+			if (allocatedIp == null || allocatedIp.isEmpty() || allocatedIp.equalsIgnoreCase("null")) {
 				allocatedIp = "192.168.0." + currentOctet;
 				inst.setIpAddress(allocatedIp);
 				inst.setStatus(LabInstanceStatus.Initialized);
