@@ -123,3 +123,5 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 # 16. maijs
 
 1. Pielaboti ģenerētie Ansible faili
+- Izpildītās ansible komandas pilnībā sagatavo laboratorijas vides katram studentam
+2. Pēc SonarQube ieteikumiem izlabotas pagaidām esošās drošības problēmas

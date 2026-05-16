@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 	@Override
 	public String executeCommand(String command) throws Exception {
 		ProcessBuilder processBuilder = new ProcessBuilder();
+		
+		Map<String, String> env = processBuilder.environment();
+		env.put("PATH",	"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin");
 		
 		processBuilder.command("sh", "-c", command);
 		

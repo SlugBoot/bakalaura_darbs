@@ -81,8 +81,8 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		String courseShortId = courseId.toString().substring(0, 8);
 		
 		
-		// Max 80 kursi ar 20 konteineriem katrā
-		int courseBlock = Math.abs(courseId.hashCode()) % 9;
+		// Max 9 kursi ar 10 konteineriem katrā
+		int courseBlock = Math.floorMod(courseId.hashCode(), 9);
 		int vmidCounter = 1000 + (courseBlock * 50);
 		
 		int startOctet = 160 + (courseBlock * 10);
