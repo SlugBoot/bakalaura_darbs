@@ -308,22 +308,22 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 		String removePlaybook = """
 				---
-				      - name: Remove Course Containers
-				        hosts: proxmox
-				        vars_files:
-				          - multi-container.yml
-				        tasks:
-				          - name: Delete containers by VMID
-				            community.proxmox.proxmox:
-				              node: "prox-bak"
-				              api_host: "192.168.0.112"
-				              api_token_id: "ansible-token"
-				              api_token_secret: "e7c7ea4a-8e10-4547-acd6-c145da35e1d3"
-				              api_user: "root@pam"
-				              vmid: "{{ item.vmid }}"
-				              state: absent
-				              force: yes
-				            loop: "{{ containers }}"
+				- name: Remove Course Containers
+				  hosts: proxmox
+				  vars_files:
+				    - multi-container.yml
+				  tasks:
+				    - name: Delete containers by VMID
+				      community.proxmox.proxmox:
+				        node: "prox-bak"
+				        api_host: "192.168.0.112"
+				        api_token_id: "ansible-token"
+				        api_token_secret: "e7c7ea4a-8e10-4547-acd6-c145da35e1d3"
+				        api_user: "root@pam"
+				        vmid: "{{ item.vmid }}"
+				        state: absent
+				        force: yes
+				      loop: "{{ containers }}"
 				""";
 
 		ansibleService.createPlaybook(courseId, removePlaybook, REMOVE_VMS_FILE);

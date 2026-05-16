@@ -64,6 +64,8 @@ public class CourseCRUDController {
 			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
 			return COURSE_LIST;
 		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -82,6 +84,8 @@ public class CourseCRUDController {
 			model.addAttribute(INSTANCE_ATTRIBUTE, instanceCRUDService.retrieveByCourseId(courseId));
 			return COURSE_INFO_PAGE;
 		} catch (NullPointerException | NoSuchFieldException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -95,6 +99,8 @@ public class CourseCRUDController {
 			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
 			return COURSE_LIST;
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -109,6 +115,8 @@ public class CourseCRUDController {
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return CREATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -129,6 +137,8 @@ public class CourseCRUDController {
 			}
 			return REDIRECT_COURSE_CRUD + "all";
 		} catch (NullPointerException | IllegalArgumentException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -142,6 +152,8 @@ public class CourseCRUDController {
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return UPDATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -159,6 +171,8 @@ public class CourseCRUDController {
 					course.getProfessor().getPersonId());
 			return REDIRECT_COURSE_CRUD + "all";
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -177,6 +191,8 @@ public class CourseCRUDController {
 			model.addAttribute(COURSE_ATTRIBUTE, course);
 			return ADD_STUDENTS_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -196,6 +212,8 @@ public class CourseCRUDController {
 			return REDIRECT_COURSE_CRUD + courseId;
 
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -214,6 +232,8 @@ public class CourseCRUDController {
 
 			return REDIRECT_STRING + redirectUrl;
 		} catch (NoSuchFieldException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -231,6 +251,8 @@ public class CourseCRUDController {
 				return REDIRECT_COURSE_CRUD + courseId;
 			}
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -247,6 +269,8 @@ public class CourseCRUDController {
 				return REDIRECT_COURSE_CRUD + courseId;
 			}
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
@@ -263,6 +287,8 @@ public class CourseCRUDController {
 
 			return REDIRECT_COURSE_CRUD + courseId;
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+			Thread.currentThread().interrupt();
+
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}

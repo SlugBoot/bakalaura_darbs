@@ -1,6 +1,6 @@
 package lv.slugboot.app.controller;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ public class ProfessorHomeController {
 			Professor professor = professorCRUDService.retrieveById(professorId);
 			model.addAttribute("professor", professor);
 
-			ArrayList<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professorId);
+			List<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professorId);
 			model.addAttribute("filtered_courses", filteredCourses);
 
 			return "professor-home-page";
