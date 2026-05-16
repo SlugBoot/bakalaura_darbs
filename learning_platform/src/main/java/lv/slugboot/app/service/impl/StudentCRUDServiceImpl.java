@@ -20,7 +20,7 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 	private final IPersonRepo personRepo;
 
 	@Override
-	public void createStudent(String name, String middleName, String surname, String email) throws Exception {
+	public void createStudent(String name, String middleName, String surname, String email) {
 		if (name == null || surname == null || email == null) {
 			throw new NullPointerException("Student must have a name, surname and email");
 		}

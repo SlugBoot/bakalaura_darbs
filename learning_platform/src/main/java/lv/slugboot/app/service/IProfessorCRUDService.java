@@ -1,6 +1,6 @@
 package lv.slugboot.app.service;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import lv.slugboot.app.models.Professor;
@@ -9,7 +9,7 @@ public interface IProfessorCRUDService {
 
 	public abstract void createProfessor(String name, String middleName, String surname, String email);
 
-	public abstract ArrayList<Professor> retrieveAll() throws NoSuchFieldException;
+	public abstract List<Professor> retrieveAll() throws NoSuchFieldException;
 
 	public abstract Professor retrieveById(UUID id) throws NoSuchFieldException;
 

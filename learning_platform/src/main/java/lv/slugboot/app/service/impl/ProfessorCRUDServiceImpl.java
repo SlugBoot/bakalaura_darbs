@@ -1,6 +1,6 @@
 package lv.slugboot.app.service.impl;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -41,12 +41,12 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 	}
 
 	@Override
-	public ArrayList<Professor> retrieveAll() throws NoSuchFieldException {
+	public List<Professor> retrieveAll() throws NoSuchFieldException {
 		if (professorRepo.count() == 0) {
 			throw new NoSuchFieldException("Professor list is empty");
 		}
-		ArrayList<Professor> result = (ArrayList<Professor>) professorRepo.findAll();
-		return result;
+
+		return professorRepo.findAll();
 	}
 
 	@Override

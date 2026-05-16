@@ -1,6 +1,6 @@
 package lv.slugboot.app.service.impl;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class ProfessorHomeServiceImpl implements IProfessorHomeService {
 	private final ICourseRepo courseRepo;
 
 	@Override
-	public ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) {
+	public List<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) {
 
 		if (professorId == null) {
 			throw new NullPointerException("UUID is null");
