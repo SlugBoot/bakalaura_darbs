@@ -119,3 +119,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 - Tiek izveidots attiecīgais skaits LXC konteineru priekš katra studenta
 - Tiek izveidots fails, kas var izdzēst izveidotās instances
 - Izveidotos failus var izpildīt ar pogas spiedienu
+
+# 16. maijs
+
+1. Pielaboti ģenerētie Ansible faili

@@ -77,16 +77,29 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		StringBuilder sb = new StringBuilder("---\n"
 				+ "containers:\n");
 		
-		int vmidCounter = 1000;
-		int IPCounter = 10;
+		String courseShortId = courseId.toString().substring(0, 8);
+		
+		
+		// Max 80 kursi ar 20 konteineriem katrā
+		int courseOffset = Math.abs(courseId.hashCode()) % 80;
+		int vmidCounter = 1000 + (courseOffset * 20);
+		int IPCounter = 10 + (courseOffset * 20);
 		
 		for (LabInstance inst : instances) {
-			inst.setIpAddress("192.168.0."+IPCounter++);
+			if (IPCounter > 254) {
+				throw new Exception("Dynamic network allocation exceeded single subnet bounds (.254).");
+			}
+			
+			String allocatedIp = "192.168.0."+IPCounter++;
+			inst.setIpAddress(allocatedIp);
 			inst.setStatus(LabInstanceStatus.Initialized);
 			labInstanceRepo.save(inst);
+			
+			String uniqueHostname = inst.getStudent().getUsername() + "-" + courseShortId + "-vm";
+			
 			sb.append("  - vmid: ").append(vmidCounter++).append("\n");
-	        sb.append("    hostname: ").append(inst.getStudent().getUsername()).append("-vm\n");
-	        sb.append("    ip: ").append(inst.getIpAddress()).append("\n");
+	        sb.append("    hostname: ").append(uniqueHostname).append("\n");
+	        sb.append("    ip: ").append(allocatedIp).append("\n");
 		}
 		
 		systemTaskService.createFile(path, sb.toString());

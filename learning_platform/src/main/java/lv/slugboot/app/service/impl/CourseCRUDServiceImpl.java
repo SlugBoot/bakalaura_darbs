@@ -172,22 +172,35 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	@Transactional
 	public void deployLab(UUID courseId) throws Exception {
 			
-		String startPlaybook = "---\n" +
-	            "- name: Power On Course Containers\n" +
-	            "  hosts: proxmox\n" +
-	            "  vars_files:\n" +
-	            "    - multi-container.yml\n" +
-	            "  tasks:\n" +
-	            "    - name: Ensure containers are started\n" +
-	            "      community.proxmox.proxmox:\n" +
-	            "        node: \"prox-bak\"\n" +
-	            "        api_host: \"192.168.0.112\"\n" + 
-	            "        api_token_id: \"ansible-token\"\n" +
-	            "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
-	            "        api_user: \"root@pam\"\n" +
-	            "        vmid: \"{{ item.vmid }}\"\n" +
-	            "        state: started\n" + 
-	            "      loop: \"{{ containers }}\"";
+		String startPlaybook = "---\n"
+	            + "- name: Power On Course Containers\n"
+	            + "  hosts: proxmox\n"
+	            + "  vars_files:\n"
+	            + "    - multi-container.yml\n"
+	            + "  tasks:\n"
+	            + "    - name: Ensure containers are started\n"
+	            + "      community.proxmox.proxmox:\n"
+	            + "        node: \"prox-bak\"\n"
+	            + "        api_host: \"192.168.0.112\"\n"
+	            + "        api_token_id: \"ansible-token\"\n"
+	            + "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n"
+	            + "        api_user: \"root@pam\"\n"
+	            + "        vmid: \"{{ item.vmid }}\"\n"
+	            + "        state: started\n" 
+	            + "      loop: \"{{ containers }}\"\n"
+	            + "\n" 
+	            + "    - name: Wait for container OS to initialize\n"
+	            + "      pause:\n"
+	            + "        seconds: 5\n"
+	            + "\n"
+	            + "    - name: Force PermitRootLogin via pct exec\n"
+	            + "      shell: \"pct exec {{ item.vmid }} --"
+	            + " sed -i 's/^#?PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config\"\n"
+	            + "      loop: \"{{ containers }}\"\n"
+	            + "\n"
+	            + "    - name: Restart SSH service inside container\n"
+	            + "      shell: \"pct exec {{ item.vmid }} -- systemctl restart ssh\"\n"
+	            + "      loop: \"{{ containers }}\"";
 		
 		ansibleService.createPlaybook(courseId, startPlaybook, startVMFile);
 	    ansibleService.runPlaybook(courseId, startVMFile, hostsFile);
@@ -252,31 +265,31 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    ansibleService.createProxmoxVarsFile(courseId, instances);
 	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), hostsFile);
 	    
-	    String proxmoxPlaybook = "---\n" +
-	    	    "- name: Create Course Containers\n" +
-	    	    "  hosts: proxmox\n" +
-	    	    "  vars_files:\n" +
-	    	    "    - multi-container.yml\n" +
-	    	    "  tasks:\n" +
-	    	    "    - name: Create multiple containers\n" +
-	    	    "      community.proxmox.proxmox:\n" +
-	    	    "        node: \"prox-bak\"\n" +
-	    	    "        api_host: \"192.168.0.112\"\n" + 
-	    	    "        api_token_id: \"ansible-token\"\n" +
-	    	    "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
-	    	    "        api_user: \"root@pam\"\n" +
-	    	    "        hostname: \"{{ item.hostname }}\"\n" +
-	    	    "        vmid: \"{{ item.vmid }}\"\n" +
-	    	    "        netif:\n" +
-	    	    "          net0: \"name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0\"\n" +
-	    	    "        password: \"securepassword\"\n" +
-	    	    "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n" +
-	    	    "        disk: \"local-lvm:30\"\n" + 
-	    	    "        cores: 1\n" +
-	    	    "        memory: 512\n" +
-	    	    "        features: \"nesting=1\"\n" +
-	    	    "        unprivileged: yes\n"+
-	            "        pubkey: \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAwqEBLSv83qVT6NFlKfR"
+	    String proxmoxPlaybook = "---\n"
+	    	    + "- name: Create Course Containers\n"
+	    	    + "  hosts: proxmox\n"
+	    	    + "  vars_files:\n"
+	    	    + "    - multi-container.yml\n"
+	    	    + "  tasks:\n"
+	    	    + "    - name: Create multiple containers\n"
+	    	    + "      community.proxmox.proxmox:\n"
+	    	    + "        node: \"prox-bak\"\n"
+	    	    + "        api_host: \"192.168.0.112\"\n" 
+	    	    + "        api_token_id: \"ansible-token\"\n"
+	    	    + "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n"
+	    	    + "        api_user: \"root@pam\"\n"
+	    	    + "        hostname: \"{{ item.hostname }}\"\n"
+	    	    + "        vmid: \"{{ item.vmid }}\"\n"
+	    	    + "        netif:\n"
+	    	    + "          net0: \"name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0\"\n"
+	    	    + "        password: \"securepassword\"\n"
+	    	    + "        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'\n"
+	    	    + "        disk: \"local-lvm:30\"\n" 
+	    	    + "        cores: 1\n"
+	    	    + "        memory: 512\n"
+	    	    + "        features: \"nesting=1\"\n"
+	    	    + "        unprivileged: yes\n"
+	            + "        pubkey: \"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAwqEBLSv83qVT6NFlKfR"
 	            + "2JxjaaYgMVS5NdCFS5T1cUNXxtcTebfJg9Fn2cFuPF8VW2NUSdQMsprH4YLDPN8bAp+DF2SdC7w"
 	            + "ahrnPlP0MM/g+4ztmyC4s+4VwN6qh2JMs9OX9mGXlzq+PTrm2KwwtlEUdxl5YqmzVBjjz9au7Lj"
 	            + "qbTuyFqEuxuVyRvqw2V7KLkp/NM1GhvU+Rj8HUaTVY1zIB/twZAJ1UJ7JYAfsl4x/Q/Pn9WrGWYT"
@@ -285,28 +298,28 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            + "NVoqI/3NlSZ3rYE0NS948d1KPc+PzxjuiOVpYQJj1wGGDB0TL4OfkUy966NjoGyhI1R+UypJ7bwh1"
 	            + "sLKZv78pmVi/NI3tb0DL8D5FfgxwBl9zDn69Ar2RwUHYiBl+y4sbXVMhEdFMPB3vaXxRoQ93AcZ3"
 	            + "++xc4Aj8u55aaXn0nAd90Q2wV6DxPze/6hhR9IbpXM12KJvJV2ZoVYk7nLc0gRkW5Ywocw4w0legw"
-	            + "sIa7bbK1Zb/FP7yIOdUyYMgEvleCUsj1pawD6sucb0GqL81NumDP72Q== root@test-cont\"\n" +
-	    	    "      loop: \"{{ containers }}\"";
+	            + "sIa7bbK1Zb/FP7yIOdUyYMgEvleCUsj1pawD6sucb0GqL81NumDP72Q== root@test-cont\"\n" 
+	    	    + "      loop: \"{{ containers }}\"";
 	            
 	        ansibleService.createPlaybook(courseId, proxmoxPlaybook, proxmoxFile);
 	        
-	        String removePlaybook = "---\n" +
-	                "- name: Remove Course Containers\n" +
-	                "  hosts: proxmox\n" +
-	                "  vars_files:\n" +
-	                "    - multi-container.yml\n" +
-	                "  tasks:\n" +
-	                "    - name: Delete containers by VMID\n" +
-	                "      community.proxmox.proxmox:\n" +
-	                "        node: \"prox-bak\"\n" +
-	                "        api_host: \"192.168.0.112\"\n" + 
-	                "        api_token_id: \"ansible-token\"\n" +
-	                "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n" +
-	                "        api_user: \"root@pam\"\n" +
-	                "        vmid: \"{{ item.vmid }}\"\n" +
-	                "        state: absent\n" +
-	                "        force: yes\n" +
-	                "      loop: \"{{ containers }}\"";
+	        String removePlaybook = "---\n"
+	                + "- name: Remove Course Containers\n"
+	                + "  hosts: proxmox\n"
+	                + "  vars_files:\n"
+	                + "    - multi-container.yml\n"
+	                + "  tasks:\n"
+	                + "    - name: Delete containers by VMID\n"
+	                + "      community.proxmox.proxmox:\n"
+	                + "        node: \"prox-bak\"\n"
+	                + "        api_host: \"192.168.0.112\"\n" 
+	                + "        api_token_id: \"ansible-token\"\n"
+	                + "        api_token_secret: \"e7c7ea4a-8e10-4547-acd6-c145da35e1d3\"\n"
+	                + "        api_user: \"root@pam\"\n"
+	                + "        vmid: \"{{ item.vmid }}\"\n"
+	                + "        state: absent\n"
+	                + "        force: yes\n"
+	                + "      loop: \"{{ containers }}\"";
 	                
 	        ansibleService.createPlaybook(courseId, removePlaybook, removeVMsFile);
 	}
