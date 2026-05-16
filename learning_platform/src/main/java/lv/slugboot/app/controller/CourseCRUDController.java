@@ -3,7 +3,6 @@ package lv.slugboot.app.controller;
 import java.util.Collection;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
@@ -23,19 +23,19 @@ import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
-import lv.slugboot.app.service.IStudentCRUDService;
+
 
 @Controller
 @RequestMapping("/course/crud")
 @Slf4j
+@RequiredArgsConstructor
 public class CourseCRUDController {
 
-	@Autowired ICourseCRUDService courseCRUDService;
-	@Autowired IFilterService filterService;
-	@Autowired IStudentCRUDService studentCRUDService;
-	@Autowired IProfessorCRUDService professorCRUDService;
-	@Autowired ILabInstanceCRUDService instanceCRUDService;
-	@Autowired IAnsibleService ansibleService;
+	private final ICourseCRUDService courseCRUDService;
+	private final IFilterService filterService;
+	private final IProfessorCRUDService professorCRUDService;
+	private final ILabInstanceCRUDService instanceCRUDService;
+	private final IAnsibleService ansibleService;
 	
 	private String courseList = "show-multiple-courses";
 	private String courseInfoPage = "course-info";
@@ -51,12 +51,9 @@ public class CourseCRUDController {
 	private String professorAttribute = "professor";
 	private String previousURLAttribute = "previousUrl";
 	
-	private final String removeVMsFile = "remove_vms";
-	private final String playbookFile = "playbook";
-	private final String proxmoxFile = "provisioning";
-	private final String hostsFile = "hosts";
-	private final String studentHostsFile = "student_hosts";
-	private final String defaultPlaybookFile = "default_playbook";
+	private static final String proxmoxFile = "provisioning";
+	private static final String hostsFile = "hosts";
+	private static final String refererHeader = "Referer";
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -75,7 +72,7 @@ public class CourseCRUDController {
 			HttpServletRequest request,
 			Model model) {
 		try {
-			String referer = (manualReferer != null) ? manualReferer : request.getHeader("Referer");
+			String referer = (manualReferer != null) ? manualReferer : request.getHeader(refererHeader);
 			model.addAttribute(previousURLAttribute, referer);
 			
 			Course course = courseCRUDService.retrieveById(courseId);
@@ -99,12 +96,12 @@ public class CourseCRUDController {
 			model.addAttribute(errorAttribute, e.getMessage());
 			return errorPage;
 		}
-	}
+	}	
 	
 	@GetMapping("/create")
 	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
-			String referer = request.getHeader("Referer");
+			String referer = request.getHeader(refererHeader);
 			model.addAttribute(previousURLAttribute, referer);
 			model.addAttribute(courseAttribute, new Course());
 			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
@@ -170,7 +167,7 @@ public class CourseCRUDController {
 	public String getControllerStudentsNotInCourse(@PathVariable(name="uuid") UUID courseId,
 			HttpServletRequest request,Model model) {
 		try {
-			String referer = request.getHeader("Referer");
+			String referer = request.getHeader(refererHeader);
 			model.addAttribute(previousURLAttribute, referer);
 			
 			Course course = courseCRUDService.retrieveById(courseId);
