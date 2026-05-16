@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.service.IProfessorCRUDService;
@@ -17,10 +18,11 @@ import lv.slugboot.app.service.IProfessorHomeService;
 
 @Controller
 @RequestMapping("/professor/home")
+@RequiredArgsConstructor
 public class ProfessorHomeController {
 	
-	@Autowired private IProfessorHomeService professorHomeService;
-	@Autowired private IProfessorCRUDService professorCRUDService;
+	private final IProfessorHomeService professorHomeService;
+	private final IProfessorCRUDService professorCRUDService;
 
 	@GetMapping("/{uuid}")
 	public String getControllerProfessorHomePage(@PathVariable(name="uuid") UUID professorId,Model model) {

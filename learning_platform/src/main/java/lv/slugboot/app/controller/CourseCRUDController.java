@@ -37,32 +37,32 @@ public class CourseCRUDController {
 	private final ILabInstanceCRUDService instanceCRUDService;
 	private final IAnsibleService ansibleService;
 	
-	private String courseList = "show-multiple-courses";
-	private String courseInfoPage = "course-info";
-	private String errorPage = "show-error";
-	private String addStudentsPage = "course-add-student";
-	private String createCoursePage = "create-course";
-	private String updateCoursePage = "update-course";
+	private static final String COURSE_LIST = "show-multiple-courses";
+	private static final String COURSE_INFO_PAGE = "course-info";
+	private static final String ERROR_PAGE = "show-error";
+	private static final String ADD_STUDENTS_PAGE = "course-add-student";
+	private static final String CREATE_COURSE_PAGE = "create-course";
+	private static final String UPDATE_COURSE_PAGE = "update-course";
 	
-	private String studentAttribute = "student";
-	private String courseAttribute = "course";
-	private String instanceAttribute = "instance";
-	private String errorAttribute = "error";
-	private String professorAttribute = "professor";
-	private String previousURLAttribute = "previousUrl";
+	private static final String STUDENT_ATTRIBUTE = "student";
+	private static final String COURSE_ATTRIBUTE = "course";
+	private static final String INSTANCE_ATTRIBUTE = "instance";
+	private static final String ERROR_ATTRIBUTE = "error";
+	private static final String PROFESSOR_ATTRIBUTE = "professor";
+	private static final String PREVIOUS_URL_ATTRIBUTE = "previousUrl";
 	
-	private static final String proxmoxFile = "provisioning";
-	private static final String hostsFile = "hosts";
-	private static final String refererHeader = "Referer";
+	private static final String PROXMOX_FILE = "provisioning";
+	private static final String HOSTS_FILE = "hosts";
+	private static final String REFERRER_HEADER = "Referer";
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
 		try {
-			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
-			return courseList;
+			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
+			return COURSE_LIST;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -72,16 +72,16 @@ public class CourseCRUDController {
 			HttpServletRequest request,
 			Model model) {
 		try {
-			String referer = (manualReferer != null) ? manualReferer : request.getHeader(refererHeader);
-			model.addAttribute(previousURLAttribute, referer);
+			String referer = (manualReferer != null) ? manualReferer : request.getHeader(REFERRER_HEADER);
+			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 			
 			Course course = courseCRUDService.retrieveById(courseId);
-			model.addAttribute(courseAttribute, course);
-			model.addAttribute(instanceAttribute, instanceCRUDService.retrieveByCourseId(courseId));
-			return courseInfoPage;
+			model.addAttribute(COURSE_ATTRIBUTE, course);
+			model.addAttribute(INSTANCE_ATTRIBUTE, instanceCRUDService.retrieveByCourseId(courseId));
+			return COURSE_INFO_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -89,33 +89,33 @@ public class CourseCRUDController {
 	public String getControllerDeleteCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.deleteCourseById(courseId);
-			ansibleService.runPlaybook(courseId, "remove_vms", hostsFile);
-			model.addAttribute(courseAttribute, courseCRUDService.retrieveAll());
-			return courseList;
+			ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
+			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
+			return COURSE_LIST;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}	
 	
 	@GetMapping("/create")
 	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
-			String referer = request.getHeader(refererHeader);
-			model.addAttribute(previousURLAttribute, referer);
-			model.addAttribute(courseAttribute, new Course());
-			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
-			return createCoursePage;
+			String referer = request.getHeader(REFERRER_HEADER);
+			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			model.addAttribute(COURSE_ATTRIBUTE, new Course());
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+			return CREATE_COURSE_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
 	@PostMapping("/create")
 	public String postControllerCreateCourse(@Valid Course course,@RequestParam(value="referer", required=false)String referer, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return createCoursePage;
+			return CREATE_COURSE_PAGE;
 		}
 		
 		try {
@@ -127,8 +127,8 @@ public class CourseCRUDController {
 			}
 			return "redirect:/course/crud/all";
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -136,12 +136,12 @@ public class CourseCRUDController {
 	public String getControllerUpdateCourse(@PathVariable(name="uuid") UUID courseId, Model model) {
 		try {
 			Course course = courseCRUDService.retrieveById(courseId);
-			model.addAttribute(courseAttribute, course);
-			model.addAttribute(professorAttribute, professorCRUDService.retrieveAll());
-			return updateCoursePage;
+			model.addAttribute(COURSE_ATTRIBUTE, course);
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+			return UPDATE_COURSE_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -149,7 +149,7 @@ public class CourseCRUDController {
 	public String postControllerUpdateCourse(@PathVariable(name="uuid") UUID courseId,
 			@Valid Course course, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return updateCoursePage;
+			return UPDATE_COURSE_PAGE;
 		}
 		
 		try {
@@ -158,8 +158,8 @@ public class CourseCRUDController {
 					course.getProfessor().getPersonId());
 			return "redirect:/course/crud/all";
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -167,17 +167,17 @@ public class CourseCRUDController {
 	public String getControllerStudentsNotInCourse(@PathVariable(name="uuid") UUID courseId,
 			HttpServletRequest request,Model model) {
 		try {
-			String referer = request.getHeader(refererHeader);
-			model.addAttribute(previousURLAttribute, referer);
+			String referer = request.getHeader(REFERRER_HEADER);
+			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 			
 			Course course = courseCRUDService.retrieveById(courseId);
 			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(courseId);
-			model.addAttribute(studentAttribute, studentsNotInCourse);
-			model.addAttribute(courseAttribute, course);
-			return addStudentsPage;
+			model.addAttribute(STUDENT_ATTRIBUTE, studentsNotInCourse);
+			model.addAttribute(COURSE_ATTRIBUTE, course);
+			return ADD_STUDENTS_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -195,8 +195,8 @@ public class CourseCRUDController {
 			return "redirect:/course/crud/" + courseId;
 			
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -214,8 +214,8 @@ public class CourseCRUDController {
 			
 			return "redirect:" + redirectUrl;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -232,8 +232,8 @@ public class CourseCRUDController {
 				return "redirect:/course/crud/" + courseId; 
 			}
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -249,8 +249,8 @@ public class CourseCRUDController {
 				return "redirect:/course/crud/" + courseId; 
 			}
         } catch (Exception e) {
-            model.addAttribute(errorAttribute, e.getMessage());
-            return errorPage;
+            model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+            return ERROR_PAGE;
         }
     }
 	
@@ -261,12 +261,12 @@ public class CourseCRUDController {
 			
 			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
 			
-			ansibleService.runPlaybook(courseId, proxmoxFile, hostsFile);
+			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 			
 			return "redirect:/course/crud/" + courseId;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 

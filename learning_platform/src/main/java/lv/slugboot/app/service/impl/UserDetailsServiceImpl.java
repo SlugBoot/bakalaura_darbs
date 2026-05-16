@@ -1,20 +1,21 @@
 package lv.slugboot.app.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Person;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.repo.IPersonRepo;
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService{
 
-	@Autowired private IPersonRepo personRepo;
+	private final IPersonRepo personRepo;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

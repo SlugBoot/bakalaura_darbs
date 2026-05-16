@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.models.enums.LabInstanceStatus;
@@ -17,13 +17,14 @@ import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
+@RequiredArgsConstructor
 public class AnsibleServiceImpl implements IAnsibleService{
 
-	@Autowired private ISystemTaskService systemTaskService;
-	@Autowired private ILabInstanceRepo labInstanceRepo;
-	@Autowired private IStudentRepo studentRepo;
+	private final ISystemTaskService systemTaskService;
+	private final ILabInstanceRepo labInstanceRepo;
+	private final IStudentRepo studentRepo;
 	
-	private final String ANSIBLE_BASE_PATH = "ansible_workspace";
+	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
 	@Override
 	public void createVarsFile(UUID courseId, Map<String, Object> variables) throws Exception {
@@ -97,7 +98,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 			if (allocatedIp == null || allocatedIp.isEmpty() || allocatedIp.equalsIgnoreCase("null")) {
 				allocatedIp = "192.168.0." + currentOctet;
 				inst.setIpAddress(allocatedIp);
-				inst.setStatus(LabInstanceStatus.Initialized);
+				inst.setStatus(LabInstanceStatus.INITIALIZED);
 				labInstanceRepo.save(inst);
 			}
 			

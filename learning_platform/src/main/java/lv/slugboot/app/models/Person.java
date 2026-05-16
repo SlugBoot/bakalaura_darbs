@@ -32,16 +32,16 @@ public class Person {
   private UUID personId;
 
   @Column(name = "FirstName")
-  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
+  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid name")
   @NotNull
   private String name;
 
   @Column(name = "MiddleName")
-  @Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?")
+  @Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?", message = "Invalid middle name")
   private String middleName;
 
   @Column(name = "LastName")
-  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")
+  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid surname")
   @NotNull
   private String surname;
 

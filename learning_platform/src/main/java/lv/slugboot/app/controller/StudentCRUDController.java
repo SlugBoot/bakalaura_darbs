@@ -2,7 +2,6 @@ package lv.slugboot.app.controller;
 
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,65 +11,67 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
 @RequestMapping("/student/crud")
+@RequiredArgsConstructor
 public class StudentCRUDController {
 	
-	@Autowired private IStudentCRUDService studentCRUDService;
+	private final IStudentCRUDService studentCRUDService;
 	
-	private String multipleStudentsPage = "show-multiple-students";
-	private String errorPage = "show-error";
-	private String createStudentPage = "create-student";
-	private String updateStudentPage = "update-student";
+	private static final String MULTIPLE_STUDENTS_PAGE = "show-multiple-students";
+	private static final String ERROR_PAGE = "show-error";
+	private static final String CREATE_STUDENT_PAGE = "create-student";
+	private static final String UPDATE_STUDENT_PAGE = "update-student";
 	
-	private String studentAttribute = "student";
-	private String errorAttribute = "error";
+	private static final String STUDENT_ATTRIBUTE = "student";
+	private static final String ERROR_ATTRIBUTE = "error";
 	
 
 	@GetMapping("/all")
 	public String getControllerGetAllStudents(Model model) {
 		try {
-			model.addAttribute(studentAttribute, studentCRUDService.retrieveAll());
-			return multipleStudentsPage;
+			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
+			return MULTIPLE_STUDENTS_PAGE;
 		}
 		catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
 	@GetMapping("/create")
 	public String getControllerCreateStudent(Model model) {
-		model.addAttribute(studentAttribute, new Student());
-		return createStudentPage;
+		model.addAttribute(STUDENT_ATTRIBUTE, new Student());
+		return CREATE_STUDENT_PAGE;
 	}
 	
 	@PostMapping("/create")
 	public String postControllerCreateStudent(@Valid Student student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return createStudentPage;
+			return CREATE_STUDENT_PAGE;
 		}
 		
 		try {
 			studentCRUDService.createStudent(student.getName(), student.getMiddleName(), student.getSurname(), student.getEmail());
 			return "redirect:/student/crud/all";
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
 	@GetMapping("/update/{uuid}")
 	public String getControllerUpdateStudentById(@PathVariable(name="uuid") UUID studentId, Model model) {
 		try {
-			model.addAttribute(studentAttribute, studentCRUDService.retrieveById(studentId));
-			return updateStudentPage;
+			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(studentId));
+			return UPDATE_STUDENT_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -78,10 +79,10 @@ public class StudentCRUDController {
 	public String postControllerUpdateStudentById(@PathVariable(name="uuid") UUID studentId, @Valid Student student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
-				return updateStudentPage;
+				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
-				model.addAttribute(errorAttribute, e.getMessage());
-				return errorPage;
+				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+				return ERROR_PAGE;
 			}
 		}
 		
@@ -89,8 +90,8 @@ public class StudentCRUDController {
 			studentCRUDService.updateStudentById(studentId, student.getName(), student.getMiddleName(), student.getSurname(), student.getEmail());
 			return "redirect:/student/crud/all";
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 	
@@ -98,11 +99,11 @@ public class StudentCRUDController {
 	public String getControllerDeleteStudent(@PathVariable(name="uuid") UUID studentId, Model model) {
 		try {
 			studentCRUDService.deleteById(studentId);
-			model.addAttribute(studentAttribute, studentCRUDService.retrieveAll());
-			return multipleStudentsPage;
+			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
+			return MULTIPLE_STUDENTS_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(errorAttribute, e.getMessage());
-			return errorPage;
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 }

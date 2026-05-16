@@ -3,21 +3,21 @@ package lv.slugboot.app.service.impl;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentCRUDService;
 
 @Service
+@RequiredArgsConstructor
 public class StudentCRUDServiceImpl implements IStudentCRUDService {
 
-  @Autowired
-  private IStudentRepo studentRepo;
-  @Autowired
-  private IPersonRepo personRepo;
+  private final IStudentRepo studentRepo;
+
+  private final IPersonRepo personRepo;
 
   @Override
   public void createStudent(String name, String middleName, String surname, String email) throws Exception {

@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping("/professor/crud")
+@RequiredArgsConstructor
 public class ProfessorCRUDController {
 
-  @Autowired
-  private IProfessorCRUDService professorCRUDService;
+  private final IProfessorCRUDService professorCRUDService;
   
   private String multipleProfessorsPage = "show-multiple-professors";
   private String errorPage = "show-error";

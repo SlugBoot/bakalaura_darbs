@@ -1,14 +1,13 @@
 package lv.slugboot.app;
 
 import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Professor;
@@ -20,9 +19,10 @@ import lv.slugboot.app.repo.IStudentRepo;
 
 @SpringBootApplication
 @Slf4j
+@RequiredArgsConstructor
 public class LearningPlatformApplication {
 	
-	@Autowired private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LearningPlatformApplication.class, args);

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
@@ -19,13 +20,12 @@ import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 
 @Service
+@RequiredArgsConstructor
 public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	
-	@Autowired private ILabInstanceRepo labInstanceRepo;
-	@Autowired private IStudentRepo studentRepo;
-	@Autowired private ICourseRepo courseRepo;
-	
-	@Autowired private IAnsibleService ansibleService;
+	private final ILabInstanceRepo labInstanceRepo;
+	private final IStudentRepo studentRepo;
+	private final ICourseRepo courseRepo;
 
 	@Override
 	public void createLabInstance(UUID studentId, UUID courseId,

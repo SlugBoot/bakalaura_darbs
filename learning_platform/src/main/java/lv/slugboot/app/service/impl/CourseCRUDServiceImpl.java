@@ -1,14 +1,13 @@
 package lv.slugboot.app.service.impl;
 
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Professor;
@@ -23,25 +22,25 @@ import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
+@RequiredArgsConstructor
 public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	
-	@Autowired private ICourseRepo courseRepo;
-	@Autowired private IProfessorRepo professorRepo;
-	@Autowired private IStudentRepo studentRepo;
-	@Autowired private ILabInstanceRepo instanceRepo;
+	private final ICourseRepo courseRepo;
+	private final IProfessorRepo professorRepo;
+	private final IStudentRepo studentRepo;
+	private final ILabInstanceRepo instanceRepo;
 
-	@Autowired private IAnsibleService ansibleService;
-	@Autowired private ISystemTaskService systemTaskService;
+	private final IAnsibleService ansibleService;
+	private final ISystemTaskService systemTaskService;
 	
-	private final String ANSIBLE_BASE_PATH = "ansible_workspace";
+	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 	
-	private final String removeVMsFile = "remove_vms";
-	private final String playbookFile = "playbook";
-	private final String proxmoxFile = "provisioning";
-	private final String hostsFile = "hosts";
-	private final String studentHostsFile = "student_hosts";
-	private final String startVMFile = "start_vms";
-	private final String defaultPlaybookFile = "default_playbook";
+	private static final String REMOVE_VMS_FILE = "remove_vms";
+	private static final String PLAYBOOK_FILE = "playbook";
+	private static final String PROXMOX_FILE = "provisioning";
+	private static final String HOSTS_FILE = "hosts";
+	private static final String STUDENT_HOSTS_FILE = "student_hosts";
+	private static final String START_VMS_FILE = "start_vms";
 	
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) throws Exception {
@@ -179,7 +178,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		}
 		
 		for (LabInstance inst : instances) {
-		    if (inst.getStatus() == null || inst.getStatus() != LabInstanceStatus.Initialized) {
+		    if (inst.getStatus() == null || inst.getStatus() != LabInstanceStatus.INITIALIZED) {
 		        throw new Exception("Cannot deploy lab: Student '" 
 		            + inst.getStudent().getUsername() 
 		            + "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
@@ -216,8 +215,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            + "      shell: \"pct exec {{ item.vmid }} -- systemctl restart ssh\"\n"
 	            + "      loop: \"{{ containers }}\"";
 		
-		ansibleService.createPlaybook(courseId, startPlaybook, startVMFile);
-	    ansibleService.runPlaybook(courseId, startVMFile, hostsFile);
+		ansibleService.createPlaybook(courseId, startPlaybook, START_VMS_FILE);
+	    ansibleService.runPlaybook(courseId, START_VMS_FILE, HOSTS_FILE);
 		
 		if (instances.isEmpty()) {
 			throw new Exception("No students enrolled. Nothing to deploy");
@@ -226,13 +225,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
 		for (LabInstance inst : instances) {
-			inst.setStatus(LabInstanceStatus.Running);
+			inst.setStatus(LabInstanceStatus.RUNNIING);
 			instanceRepo.save(inst);
 			if (inst.getIpAddress() != null) {
 				ips.add(inst.getIpAddress());
 			}
 		}
-		ansibleService.createInventoryFile(courseId, hostGroup, ips, studentHostsFile);
+		ansibleService.createInventoryFile(courseId, hostGroup, ips, STUDENT_HOSTS_FILE);
 		
 		String installPlaybook = "---\n"
 				+ "- name: Install Necessary Packages\n"
@@ -249,20 +248,20 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 				+ "        name: [git, curl, vim, build-essential, fastfetch]\n"
 				+ "        state: present";
 		
-		ansibleService.createPlaybook(courseId, installPlaybook, playbookFile);
+		ansibleService.createPlaybook(courseId, installPlaybook, PLAYBOOK_FILE);
 		
-		ansibleService.runPlaybook(courseId, playbookFile, studentHostsFile);
+		ansibleService.runPlaybook(courseId, PLAYBOOK_FILE, STUDENT_HOSTS_FILE);
 	}
 
 	@Override
 	public void cleanupLab(UUID courseId) throws Exception {
-		ansibleService.runPlaybook(courseId, removeVMsFile, hostsFile);
+		ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
 		
 		for (LabInstance inst : instances) {
 			inst.setIpAddress(null);
-			inst.setStatus(LabInstanceStatus.Uninitialized);
+			inst.setStatus(LabInstanceStatus.UNINITIALIZED);
 			instanceRepo.save(inst);
 		}
 
@@ -275,7 +274,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	    List<LabInstance> instances = instanceRepo.findByCourse(course);
 	    
 	    ansibleService.createProxmoxVarsFile(courseId, instances);
-	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), hostsFile);
+	    ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), HOSTS_FILE);
 	    
 	    String proxmoxPlaybook = "---\n"
 	    	    + "- name: Create Course Containers\n"
@@ -313,7 +312,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            + "sIa7bbK1Zb/FP7yIOdUyYMgEvleCUsj1pawD6sucb0GqL81NumDP72Q== root@test-cont\"\n" 
 	    	    + "      loop: \"{{ containers }}\"";
 	            
-	        ansibleService.createPlaybook(courseId, proxmoxPlaybook, proxmoxFile);
+	        ansibleService.createPlaybook(courseId, proxmoxPlaybook, PROXMOX_FILE);
 	        
 	        String removePlaybook = "---\n"
 	                + "- name: Remove Course Containers\n"
@@ -333,7 +332,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	                + "        force: yes\n"
 	                + "      loop: \"{{ containers }}\"";
 	                
-	        ansibleService.createPlaybook(courseId, removePlaybook, removeVMsFile);
+	        ansibleService.createPlaybook(courseId, removePlaybook, REMOVE_VMS_FILE);
 	}
 
 	
