@@ -237,7 +237,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		String installPlaybook = "---\n"
 				+ "- name: Install Necessary Packages\n"
 				+ "  hosts: "+hostGroup+"\n"
-				+ "  gather_facts: no"
+				+ "  gather_facts: no\n"
 				+ "  tasks:\n"
 				+ "    - name: Wait for SSH\n"
 				+ "      wait_for_connection:\n"
