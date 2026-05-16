@@ -1,8 +1,5 @@
 package lv.slugboot.app;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.models.Student;
@@ -21,6 +19,7 @@ import lv.slugboot.app.repo.IProfessorRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 
 @SpringBootApplication
+@Slf4j
 public class LearningPlatformApplication {
 	
 	@Autowired private PasswordEncoder passwordEncoder;
@@ -45,7 +44,7 @@ public class LearningPlatformApplication {
 				password3 = passwordEncoder.encode(password3);
 				
 
-				System.out.println("Creating Professors");
+				log.info("Creating Professors");
 				Professor testProf1 = new Professor("Anna", "Felicita", "Fabriciusa", "words@emails.lv");
 				Professor testProf2 = new Professor("Andris", "Petrograds", "andris@emails.lv");
 				Professor testProf3 = new Professor("Jānis", "Cimze", "janis@emails.lv");
@@ -56,7 +55,7 @@ public class LearningPlatformApplication {
 				testProf3.setPassword(password2);
 				testProf4.setPassword(password2);
 
-				System.out.println("Creating Students");
+				log.info("Creating Students");
 				Student testStud1 = new Student("Jānis", "Pēteris", "Bērziņš", "janis_students@email.com");
 				Student testStud2 = new Student("Annija", "Birzniece", "annija_studente@email.com");
 				Student testStud3 = new Student("Kārlis", "Blaumanis", "karlis_students@email.com");
@@ -67,31 +66,17 @@ public class LearningPlatformApplication {
 				testStud3.setPassword(password3);
 				testStud4.setPassword(password3);
 
-				System.out.println("Creating Courses");
+				log.info("Creating Courses");
 				Course testCourse1 = new Course("1. uzdevums", "1. laboratorijas vide", testProf2);
 				Course testCourse2 = new Course("2. uzdevums", "2. laboratorijas vide", testProf2);
 				Course testCourse3 = new Course("3. uzdevums", testProf4);
 				Course testCourse4 = new Course("4. uzdevums", "Cita laboratorijas vide", testProf2);
 
-				System.out.println("Saving all objects to repo");
+				log.info("Saving all objects to repo");
 				studentRepo.saveAll(Arrays.asList(testStud1, testStud2, testStud3, testStud4));
 				professorRepo.saveAll(Arrays.asList(testProf1, testProf2, testProf3, testProf4));
 				courseRepo.saveAll(Arrays.asList(testCourse1, testCourse2, testCourse3, testCourse4));
 
-				System.out.println("Init file check");
-				
-				Path path = Paths.get("init_log.txt");
-				String summary = "Database initialized with " + studentRepo.count() + " students. \n";
-				summary += "Database initialized with " + professorRepo.count() + " professors. \n";
-				summary += "Database initialized with " + courseRepo.count() + " courses. \n";
-				
-				ProcessBuilder pb = new ProcessBuilder();
-				pb.inheritIO().start().waitFor();
-				
-				pb = new ProcessBuilder("cat", "init_log.txt");
-				pb.inheritIO().start().waitFor();
-				
-				Files.write(path, summary.getBytes());
 			}
 		};
 	}
