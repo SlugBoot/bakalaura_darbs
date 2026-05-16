@@ -81,19 +81,26 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		
 		
 		// Max 80 kursi ar 20 konteineriem katrā
-		int courseOffset = Math.abs(courseId.hashCode()) % 80;
-		int vmidCounter = 1000 + (courseOffset * 20);
-		int IPCounter = 10 + (courseOffset * 20);
+		int courseBlock = Math.abs(courseId.hashCode()) % 9;
+		int vmidCounter = 1000 + (courseBlock * 50);
+		
+		int startOctet = 160 + (courseBlock * 10);
+		int currentOctet = startOctet;
 		
 		for (LabInstance inst : instances) {
-			if (IPCounter > 254) {
-				throw new Exception("Dynamic network allocation exceeded single subnet bounds (.254).");
+			if (currentOctet >= (startOctet + 10) || currentOctet > 254) {
+				throw new Exception("This course has exceeded its maximum allowance of 10 static dynamic IP slots.");
 			}
 			
-			String allocatedIp = "192.168.0."+IPCounter++;
-			inst.setIpAddress(allocatedIp);
-			inst.setStatus(LabInstanceStatus.Initialized);
-			labInstanceRepo.save(inst);
+			String allocatedIp = inst.getIpAddress();
+			if (allocatedIp == null || allocatedIp.isEmpty()) {
+				allocatedIp = "192.168.0." + currentOctet;
+				inst.setIpAddress(allocatedIp);
+				inst.setStatus(LabInstanceStatus.Initialized);
+				labInstanceRepo.save(inst);
+			}
+			
+			currentOctet++;
 			
 			String uniqueHostname = inst.getStudent().getUsername() + "-" + courseShortId + "-vm";
 			
