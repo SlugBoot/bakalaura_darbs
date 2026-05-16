@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
@@ -16,7 +14,6 @@ import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.repo.ICourseRepo;
 import lv.slugboot.app.repo.ILabInstanceRepo;
 import lv.slugboot.app.repo.IStudentRepo;
-import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 
 @Service
@@ -56,12 +53,12 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	}
 
 	@Override
-	public ArrayList<LabInstance> retrieveAll() throws NoSuchFieldException {
+	public List<LabInstance> retrieveAll() throws NoSuchFieldException {
 		if (labInstanceRepo.count() == 0) {
 			throw new NoSuchFieldException("There are no lab instances made");
 		}
-		ArrayList<LabInstance> result = (ArrayList<LabInstance>) labInstanceRepo.findAll();
-		return result;
+		
+		return (ArrayList<LabInstance>) labInstanceRepo.findAll();
 	}
 
 	@Override
@@ -74,13 +71,11 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 			throw new NoSuchFieldException("Instance with this ID does not exist");
 		}
 		
-		LabInstance labInstance = labInstanceRepo.findById(instanceId).get();
-		
-		return labInstance;
+		return labInstanceRepo.findById(instanceId).get();
 	}
 
 	@Override
-	public void deleteLabInstanceById(UUID instanceId) throws Exception {
+	public void deleteLabInstanceById(UUID instanceId) throws NoSuchFieldException  {
 		LabInstance labInstance = retrieveById(instanceId);
 		
 		labInstanceRepo.delete(labInstance);
@@ -98,10 +93,8 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	@Override
 	public List<LabInstance> retrieveByCourseId(UUID courseId) {
 		Course course = courseRepo.findById(courseId).get();
-		
-		List<LabInstance> instances = labInstanceRepo.findByCourse(course);
 				
-		return instances;
+		return labInstanceRepo.findByCourse(course);
 	}
 
 	@Override

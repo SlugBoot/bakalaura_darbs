@@ -39,8 +39,8 @@ public class Student extends Person {
 
     String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
     java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-    String username = pattern.matcher(usernameDecomposed).replaceAll("");
-    return username;
+    
+    return pattern.matcher(usernameDecomposed).replaceAll("");
   }
 
   public Student(String name, String surname, String email) {

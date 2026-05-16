@@ -41,8 +41,8 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
     if (studentRepo.count() == 0) {
       throw new NoSuchFieldException("Student list is empty");
     }
-    ArrayList<Student> result = (ArrayList<Student>) studentRepo.findAll();
-    return result;
+
+    return (ArrayList<Student>) studentRepo.findAll();
   }
 
   @Override

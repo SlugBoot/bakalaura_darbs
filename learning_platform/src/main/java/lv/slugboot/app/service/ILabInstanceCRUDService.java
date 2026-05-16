@@ -1,6 +1,5 @@
 package lv.slugboot.app.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,13 +10,13 @@ public interface ILabInstanceCRUDService {
 
 	public abstract void createLabInstance(UUID studentId, UUID courseID, String ipAddress) throws NoSuchFieldException;
 	
-	public abstract ArrayList<LabInstance> retrieveAll() throws NoSuchFieldException;
+	public abstract List<LabInstance> retrieveAll() throws NoSuchFieldException;
 	
 	public abstract List<LabInstance> retrieveByCourseId(UUID courseId);
 	
-	public abstract LabInstance retrieveById(UUID id) throws Exception;
+	public abstract LabInstance retrieveById(UUID id) throws NoSuchFieldException;
 		
-	public abstract void deleteLabInstanceById(UUID id) throws Exception;
+	public abstract void deleteLabInstanceById(UUID id) throws NoSuchFieldException;
 	
 	public abstract void updateLabInstanceStatusById(UUID instanceId, LabInstanceStatus labInstanceStatus) throws NoSuchFieldException;
 	

@@ -65,16 +65,17 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
   public void updateProfessorById(UUID id, String name, String middleName, String surname, String email)
       throws NoSuchFieldException {
     Professor professorToUpdate = retrieveById(id);
-
-    if (name == null || !name.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    String regexPattern = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
+    
+    if (name == null || !name.matches(regexPattern)) {
       throw new IllegalArgumentException("First Name must be valid");
     }
 
-    if (middleName != null && !middleName.isEmpty() && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (middleName != null && !middleName.isEmpty() && !middleName.matches(regexPattern)) {
         throw new IllegalArgumentException("Middle name must be valid");
     }
 
-    if (surname == null || !surname.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (surname == null || !surname.matches(regexPattern)) {
       throw new IllegalArgumentException("Surname must be valid");
     }
 

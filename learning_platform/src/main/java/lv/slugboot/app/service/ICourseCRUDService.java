@@ -1,7 +1,7 @@
 package lv.slugboot.app.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import lv.slugboot.app.models.Course;
@@ -9,7 +9,7 @@ import lv.slugboot.app.models.Course;
 public interface ICourseCRUDService {
 	public abstract void createCourse(String courseName, String courseDesc, UUID professorId);
 	
-	public abstract ArrayList<Course> retrieveAll() throws NoSuchFieldException;
+	public abstract List<Course> retrieveAll() throws NoSuchFieldException;
 	
 	public abstract Course retrieveById(UUID id) throws NoSuchFieldException;
 	

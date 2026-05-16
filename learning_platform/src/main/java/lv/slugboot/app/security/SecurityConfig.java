@@ -18,7 +18,7 @@ public class SecurityConfig {
 	private final SuccessHandler successHandler;
 	
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http
 			.authorizeHttpRequests(auth -> auth
 					.requestMatchers("/professor/**").hasRole("PROFESSOR")

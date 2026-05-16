@@ -26,10 +26,8 @@ public class StudentHomeServiceImpl implements IStudentHomeService{
 		if (studentId == null) {
 			throw new NullPointerException("UUID is null");
 		}
-
-		Collection<Course> result = studentRepo.findById(studentId).get().getCourse();
 		
-		return result;
+		return studentRepo.findById(studentId).get().getCourse();
 	}
 
 	@Override

@@ -23,10 +23,8 @@ public class ProfessorHomeServiceImpl implements IProfessorHomeService {
 		if (professorId == null) {
 			throw new NullPointerException("UUID is null");
 		}
-		
-		ArrayList<Course> result = courseRepo.findByProfessorPersonId(professorId);
 				
-		return result;
+		return courseRepo.findByProfessorPersonId(professorId);
 	}
 	
 	
