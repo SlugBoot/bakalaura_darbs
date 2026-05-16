@@ -2,6 +2,7 @@ package lv.slugboot.app.service.impl;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ import lv.slugboot.app.service.ISystemTaskService;
 public class SystemTaskServiceImpl implements ISystemTaskService{
 
 	@Override
-	public void createFile(String filePath, String content) throws Exception {
+	public void createFile(String filePath, String content) throws IOException {
 		Path path = Paths.get(filePath);
 		if (path.getParent() != null) {
 			Files.createDirectories(path.getParent());
@@ -30,14 +31,14 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 	}
 
 	@Override
-	public void deleteFile(String filePath) throws Exception {
+	public void deleteFile(String filePath) throws IOException {
 		Path path = Paths.get(filePath);
 		Files.deleteIfExists(path);
 		log.info("File deleted at: {}", filePath);
 	}
 
 	@Override
-	public String executeCommand(String command) throws Exception {
+	public String executeCommand(String command) throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		
 		Map<String, String> env = processBuilder.environment();
@@ -59,7 +60,7 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 			int exitCode = process.waitFor();
 			
 			if (exitCode != 0) {
-				throw new Exception("Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
+				throw new InterruptedException("Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
 			}
 			
 			return fullOutput.toString();
@@ -67,7 +68,7 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 	}
 
 	@Override
-	public void deleteDirectory(String directoryPath) throws Exception {
+	public void deleteDirectory(String directoryPath) {
 		File directory = new File(directoryPath);
 		FileSystemUtils.deleteRecursively(directory);
 	}

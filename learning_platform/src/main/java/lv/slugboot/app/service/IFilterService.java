@@ -7,6 +7,6 @@ import lv.slugboot.app.models.Student;
 
 public interface IFilterService {
 	
-	public abstract Collection<Student> studentsNotInCourse(UUID courseId) throws Exception;
+	public abstract Collection<Student> studentsNotInCourse(UUID courseId);
 	
 }

@@ -1,5 +1,6 @@
 package lv.slugboot.app.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,13 +44,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	private static final String START_VMS_FILE = "start_vms";
 	
 	@Override
-	public void createCourse(String courseName, String courseDesc, UUID professorId) throws Exception {
+	public void createCourse(String courseName, String courseDesc, UUID professorId) {
 		if (courseName == null) {
-			throw new Exception("Course Name must not be null");
+			throw new NullPointerException("Course Name must not be null");
 		}
 		
 		if (professorId == null) {
-			throw new Exception("Professor must be set for course to exist");
+			throw new NullPointerException("Professor must be set for course to exist");
 		}
 		
 	    if (courseDesc != null && courseDesc.trim().isEmpty()) {
@@ -71,38 +72,38 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	}
 
 	@Override
-	public ArrayList<Course> retrieveAll() throws Exception {
+	public ArrayList<Course> retrieveAll() throws NoSuchFieldException {
 	    if (courseRepo.count() == 0) {
-	        throw new Exception("Course list is empty");
+	        throw new NoSuchFieldException("Course list is empty");
 	      }
 	      ArrayList<Course> result = (ArrayList<Course>) courseRepo.findAll();
 	      return result;
 	}
 
 	@Override
-	public Course retrieveById(UUID id) throws Exception {
+	public Course retrieveById(UUID id) throws NoSuchFieldException  {
 		if (id == null) {
-			throw new Exception("Course ID cannot be null");
+			throw new NullPointerException("Course ID cannot be null");
 		}
 		
 		
 		if (!courseRepo.existsById(id)) {
-			throw new Exception("Course with id " + id + "does not exist");
+			throw new NoSuchFieldException("Course with id " + id + "does not exist");
 		}
 		
 		return courseRepo.findById(id).get();
 	}
 
 	@Override
-	public void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId) throws Exception {		
+	public void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId) throws NoSuchFieldException{		
 		if (courseName == null) {
-			throw new Exception("Course name cannot be empty");
+			throw new NullPointerException("Course name cannot be empty");
 		}
 		
 		Professor professor;
 		
 		if (!professorRepo.existsById(professorId)) {
-			throw new Exception("This professor does not exist");
+			throw new NoSuchFieldException("This professor does not exist");
 		}
 		
 		professor = professorRepo.findById(professorId).get();
@@ -125,7 +126,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	}
 
 	@Override
-	public void deleteCourseById(UUID id) throws Exception {
+	public void deleteCourseById(UUID id) throws NoSuchFieldException, IOException, InterruptedException  {
 		Course courseToDelete = retrieveById(id);
 		
 		cleanupLab(id);
@@ -135,7 +136,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 
 	@Override
 	@Transactional
-	public void addStudentToCourse(UUID courseId, UUID studentId) throws Exception {
+	public void addStudentToCourse(UUID courseId, UUID studentId) throws NoSuchFieldException  {
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
 		LabInstance instance;
@@ -153,7 +154,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 
 	@Override
 	@Transactional
-	public void removeStudentFromCourse(UUID courseId, UUID studentId) throws Exception {
+	public void removeStudentFromCourse(UUID courseId, UUID studentId) throws NoSuchFieldException {
 		Course course = retrieveById(courseId);
 		Student student = studentRepo.findById(studentId).get();
 		LabInstance instance = instanceRepo.findByCourseAndStudent(course,student);
@@ -169,17 +170,17 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 
 	@Override
 	@Transactional
-	public void deployLab(UUID courseId) throws Exception {
+	public void deployLab(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException {
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
 		
 		if (instances.isEmpty()) {
-			throw new Exception("No students enrolled. Nothing to deploy");
+			throw new NoSuchFieldException("No students enrolled. Nothing to deploy");
 		}
 		
 		for (LabInstance inst : instances) {
 		    if (inst.getStatus() == null || inst.getStatus() != LabInstanceStatus.INITIALIZED) {
-		        throw new Exception("Cannot deploy lab: Student '" 
+		        throw new IllegalArgumentException("Cannot deploy lab: Student '" 
 		            + inst.getStudent().getUsername() 
 		            + "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
 		    }
@@ -218,10 +219,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 		ansibleService.createPlaybook(courseId, startPlaybook, START_VMS_FILE);
 	    ansibleService.runPlaybook(courseId, START_VMS_FILE, HOSTS_FILE);
 		
-		if (instances.isEmpty()) {
-			throw new Exception("No students enrolled. Nothing to deploy");
-		}
-		
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
 		for (LabInstance inst : instances) {
@@ -254,7 +251,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	}
 
 	@Override
-	public void cleanupLab(UUID courseId) throws Exception {
+	public void cleanupLab(UUID courseId) throws IOException, InterruptedException, NoSuchFieldException  {
 		ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
@@ -269,7 +266,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	}
 
 	@Override
-	public void prepareProxmoxProvisioning(UUID courseId) throws Exception {
+	public void prepareProxmoxProvisioning(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException  {
 		Course course = retrieveById(courseId);
 	    List<LabInstance> instances = instanceRepo.findByCourse(course);
 	    

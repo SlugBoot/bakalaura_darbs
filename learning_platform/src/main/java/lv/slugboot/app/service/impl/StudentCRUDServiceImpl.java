@@ -22,14 +22,14 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
   @Override
   public void createStudent(String name, String middleName, String surname, String email) throws Exception {
     if (name == null || surname == null || email == null) {
-      throw new Exception("Student must have a name, surname and email");
+      throw new NullPointerException("Student must have a name, surname and email");
     }
 
     if (studentRepo.existsByNameAndMiddleNameAndSurnameAndEmail(name, middleName, surname, email)) {
-      throw new Exception("A student with that info already exists");
+      throw new IllegalArgumentException("A student with that info already exists");
     }
     if (personRepo.existsByEmail(email)) {
-      throw new Exception("The email has already been used for a different account");
+      throw new IllegalArgumentException("The email has already been used for a different account");
     } else {
       Student newStudent = new Student(name, middleName, surname, email);
       studentRepo.save(newStudent);
@@ -37,47 +37,47 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
   }
 
   @Override
-  public ArrayList<Student> retrieveAll() throws Exception {
+  public ArrayList<Student> retrieveAll() throws NoSuchFieldException {
     if (studentRepo.count() == 0) {
-      throw new Exception("Student list is empty");
+      throw new NoSuchFieldException("Student list is empty");
     }
     ArrayList<Student> result = (ArrayList<Student>) studentRepo.findAll();
     return result;
   }
 
   @Override
-  public Student retrieveById(UUID id) throws Exception {
+  public Student retrieveById(UUID id) throws NoSuchFieldException {
     if (id == null) {
-      throw new Exception("Student ID cannot be null");
+      throw new NullPointerException("Student ID cannot be null");
     }
     if (!studentRepo.existsById(id)) {
-      throw new Exception("Student with this ID does not exist");
+      throw new NoSuchFieldException("Student with this ID does not exist");
     }
 
     return studentRepo.findById(id).get();
   }
 
   @Override
-  public void updateStudentById(UUID id, String name, String middleName, String surname, String email)
-      throws Exception {
+  public void updateStudentById(UUID id, String name, String middleName, String surname, String email) throws NoSuchFieldException
+       {
     Student studentToUpdate = retrieveById(id);
 
     String regexPattern = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
     
     if (name == null || !name.matches(regexPattern)) {
-      throw new Exception("First Name must be valid");
+      throw new IllegalArgumentException("First Name must be valid");
     }
 
     if (middleName != null && !middleName.isEmpty() && !middleName.matches(regexPattern)) {
-      throw new Exception("Middle name must be valid");
+      throw new IllegalArgumentException("Middle name must be valid");
     }
 
     if (surname == null || !surname.matches(regexPattern)) {
-      throw new Exception("Surname must be valid");
+      throw new IllegalArgumentException("Surname must be valid");
     }
 
     if (email == null || !email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-      throw new Exception("Email must be valid");
+      throw new IllegalArgumentException("Email must be valid");
     }
 
     if (!studentToUpdate.getName().equals(name)) {
@@ -99,7 +99,7 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
   }
 
   @Override
-  public void deleteById(UUID id) throws Exception {
+  public void deleteById(UUID id) throws NoSuchFieldException  {
     Student studentToDelete = retrieveById(id);
 
     studentRepo.delete(studentToDelete);

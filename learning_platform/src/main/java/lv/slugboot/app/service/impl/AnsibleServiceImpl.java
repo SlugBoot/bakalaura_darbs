@@ -1,5 +1,6 @@
 package lv.slugboot.app.service.impl;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
 	@Override
-	public void createVarsFile(UUID courseId, Map<String, Object> variables) throws Exception {
+	public void createVarsFile(UUID courseId, Map<String, Object> variables) throws IOException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "vars.yml").toString();
 		StringBuilder sb = new StringBuilder("---\n");
 		variables.forEach((key, value) -> sb.append(key).append(": ").append(value).append("\n"));
@@ -35,7 +36,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 	}
 
 	@Override
-	public void createInventoryFile(UUID courseId, String hostGroup, List<String> ipAddresses, String inventoryName) throws Exception {
+	public void createInventoryFile(UUID courseId, String hostGroup, List<String> ipAddresses, String inventoryName) throws IOException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), inventoryName).toString();
 		StringBuilder sb = new StringBuilder("["+hostGroup+"]\n");
 		for (String ip : ipAddresses) {
@@ -45,18 +46,13 @@ public class AnsibleServiceImpl implements IAnsibleService{
 	}
 
 	@Override
-	public void createPlaybook(UUID courseId, String playbookYaml, String playbookName) throws Exception {
+	public void createPlaybook(UUID courseId, String playbookYaml, String playbookName) throws IOException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), playbookName+".yml").toString();
 		systemTaskService.createFile(path, playbookYaml);
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId, String playbookName, String inventoryName) throws Exception {
-		return runPlaybook(courseId, null, playbookName, inventoryName);
-	}
-
-	@Override
-	public String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName) throws Exception {
+	public String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName) throws IOException, InterruptedException {
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
 		String playbookPath = Paths.get(baseDir, playbookName+".yml").toString();
 		String inventoryPath = Paths.get(baseDir, inventoryName).toString();
@@ -71,9 +67,14 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		}
 		return systemTaskService.executeCommand(command);
 	}
+	
+	@Override
+	public String runPlaybook(UUID courseId, String playbookName, String inventoryName) throws IOException, InterruptedException {
+		return runPlaybook(courseId, null, playbookName, inventoryName);
+	}
 
 	@Override
-	public void createProxmoxVarsFile(UUID courseId, List<LabInstance> instances) throws Exception {
+	public void createProxmoxVarsFile(UUID courseId, List<LabInstance> instances) throws IOException, InterruptedException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(),"multi-container.yml").toString();
 		
 		StringBuilder sb = new StringBuilder("---\n"
@@ -91,7 +92,7 @@ public class AnsibleServiceImpl implements IAnsibleService{
 		
 		for (LabInstance inst : instances) {
 			if (currentOctet >= (startOctet + 10) || currentOctet > 254) {
-				throw new Exception("This course has exceeded its maximum allowance of 10 static dynamic IP slots.");
+				throw new InterruptedException("This course has exceeded its maximum allowance of 10 static dynamic IP slots.");
 			}
 			
 			String allocatedIp = inst.getIpAddress();

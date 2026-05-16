@@ -29,17 +29,17 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 
 	@Override
 	public void createLabInstance(UUID studentId, UUID courseId,
-			String ipAddress) throws Exception {
+			String ipAddress) throws NoSuchFieldException {
 		if (studentId == null) {
-			throw new Exception("Student Id cannot be null");
+			throw new NullPointerException("Student Id cannot be null");
 		}
 		
 		if (courseId == null) {
-			throw new Exception("Course ID cannot be null");
+			throw new NullPointerException("Course ID cannot be null");
 		}
 		
 		if (ipAddress == null) {
-			throw new Exception("IP Address cannot be null");
+			throw new NullPointerException("IP Address cannot be null");
 		}
 		
 				
@@ -47,7 +47,7 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 		Course course = courseRepo.findById(courseId).get();
 		
 		if (!student.getCourse().contains(course)) {
-			throw new Exception("Student is not enrolled in course");
+			throw new NoSuchFieldException("Student is not enrolled in course");
 		}
 		
 		LabInstance labInstance = new LabInstance(student, course, ipAddress);
@@ -56,22 +56,22 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	}
 
 	@Override
-	public ArrayList<LabInstance> retrieveAll() throws Exception {
+	public ArrayList<LabInstance> retrieveAll() throws NoSuchFieldException {
 		if (labInstanceRepo.count() == 0) {
-			throw new Exception("There are no lab instances made");
+			throw new NoSuchFieldException("There are no lab instances made");
 		}
 		ArrayList<LabInstance> result = (ArrayList<LabInstance>) labInstanceRepo.findAll();
 		return result;
 	}
 
 	@Override
-	public LabInstance retrieveById(UUID instanceId) throws Exception {
+	public LabInstance retrieveById(UUID instanceId) throws NoSuchFieldException {
 		if (instanceId == null) {
-			throw new Exception("Instance ID cannot be null");
+			throw new NullPointerException("Instance ID cannot be null");
 		}
 		
 		if (!labInstanceRepo.existsById(instanceId)) {
-			throw new Exception("Instance with this ID does not exist");
+			throw new NoSuchFieldException("Instance with this ID does not exist");
 		}
 		
 		LabInstance labInstance = labInstanceRepo.findById(instanceId).get();
@@ -87,7 +87,7 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	}
 
 	@Override
-	public void updateLabInstanceStatusById(UUID instanceId, LabInstanceStatus labInstanceStatus) throws Exception {
+	public void updateLabInstanceStatusById(UUID instanceId, LabInstanceStatus labInstanceStatus) throws NoSuchFieldException {
 		LabInstance labInstance = retrieveById(instanceId);
 		
 		labInstance.setStatus(labInstanceStatus);
@@ -96,7 +96,7 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 
 
 	@Override
-	public List<LabInstance> retrieveByCourseId(UUID courseId) throws Exception {
+	public List<LabInstance> retrieveByCourseId(UUID courseId) {
 		Course course = courseRepo.findById(courseId).get();
 		
 		List<LabInstance> instances = labInstanceRepo.findByCourse(course);
@@ -105,7 +105,7 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService{
 	}
 
 	@Override
-	public void updateIPAddressById(UUID instanceId, String ipAddress) throws Exception{
+	public void updateIPAddressById(UUID instanceId, String ipAddress) throws NoSuchFieldException{
 		LabInstance labInstance = retrieveById(instanceId);
 		
 		labInstance.setIpAddress(ipAddress);

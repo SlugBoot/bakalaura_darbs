@@ -21,10 +21,10 @@ public class StudentHomeServiceImpl implements IStudentHomeService{
 	private final ICourseRepo courseRepo;
 
 	@Override
-	public Collection<Course> getAllCourses(UUID studentId) throws Exception {
+	public Collection<Course> getAllCourses(UUID studentId) {
 		
 		if (studentId == null) {
-			throw new Exception("UUID is null");
+			throw new NullPointerException("UUID is null");
 		}
 
 		Collection<Course> result = studentRepo.findById(studentId).get().getCourse();
@@ -34,7 +34,7 @@ public class StudentHomeServiceImpl implements IStudentHomeService{
 
 	@Override
 	@Transactional
-	public void removeCourseFromStudent(UUID studentId, UUID courseId) throws Exception {
+	public void removeCourseFromStudent(UUID studentId, UUID courseId) {
 		Student student = studentRepo.findById(studentId).get();
 		Course course = courseRepo.findById(courseId).get();
 		

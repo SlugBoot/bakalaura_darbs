@@ -19,7 +19,7 @@ public class FilterServiceImpl implements IFilterService{
 	private final IStudentRepo studentRepo;
 	
 	@Override
-	public Collection<Student> studentsNotInCourse(UUID courseId) throws Exception {
+	public Collection<Student> studentsNotInCourse(UUID courseId) {
 		Collection<Student> studentsInCourse = courseRepo.findById(courseId).get().getStudents();
 		Collection<Student> students = studentRepo.findAll();
 		

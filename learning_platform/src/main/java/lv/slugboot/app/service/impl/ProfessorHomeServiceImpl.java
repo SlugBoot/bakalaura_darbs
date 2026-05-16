@@ -18,10 +18,10 @@ public class ProfessorHomeServiceImpl implements IProfessorHomeService {
 	
 	
 	@Override
-	public ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) throws Exception {
+	public ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) {
 				
 		if (professorId == null) {
-			throw new Exception("UUID is null");
+			throw new NullPointerException("UUID is null");
 		}
 		
 		ArrayList<Course> result = courseRepo.findByProfessorPersonId(professorId);

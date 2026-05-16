@@ -7,5 +7,5 @@ import lv.slugboot.app.models.Course;
 
 public interface IProfessorHomeService {
 	
-	public abstract ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) throws Exception;
+	public abstract ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId);
 }
