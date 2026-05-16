@@ -205,7 +205,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService{
 	            + "\n" 
 	            + "    - name: Wait for container OS to initialize\n"
 	            + "      pause:\n"
-	            + "        seconds: 30\n"
+	            + "        seconds: 10\n"
 	            + "\n"
 	            + "    - name: Force PermitRootLogin via pct exec\n"
 	            + "      shell: \"pct exec {{ item.vmid }} --"
