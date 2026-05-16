@@ -23,33 +23,32 @@ import lombok.ToString;
 @Table(name = "ProfessorTable")
 public class Professor extends Person {
 
-  @ToString.Exclude
-  @OneToMany(mappedBy = "professor")
-  @OnDelete(action = OnDeleteAction.CASCADE)
-  private Collection<Course> course;
+	@ToString.Exclude
+	@OneToMany(mappedBy = "professor")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Collection<Course> course;
 
-  private String createUsername() {
-    // Lietotāja vards.uzvards
-    String usernameBase = this.getSurname().toLowerCase().concat(".").concat(
-        this.getName().toLowerCase());
-    
-    if (this.getMiddleName() != null) {
-      usernameBase = usernameBase.concat(".").concat(this.getMiddleName().toLowerCase());
-    }
+	private String createUsername() {
+		// Lietotāja vards.uzvards
+		String usernameBase = this.getSurname().toLowerCase().concat(".").concat(this.getName().toLowerCase());
 
-    String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
-    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-    String username = pattern.matcher(usernameDecomposed).replaceAll("");
-    return username;
-  }
+		if (this.getMiddleName() != null) {
+			usernameBase = usernameBase.concat(".").concat(this.getMiddleName().toLowerCase());
+		}
 
-  public Professor(String name, String surname, String email) {
-    super(name, surname, email);
-    this.setUsername(createUsername());
-  }
+		String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
+		java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+		String username = pattern.matcher(usernameDecomposed).replaceAll("");
+		return username;
+	}
 
-  public Professor(String name, String middleName, String surname, String email) {
-    super(name, middleName, surname, email);
-    this.setUsername(createUsername());
-  }
+	public Professor(String name, String surname, String email) {
+		super(name, surname, email);
+		this.setUsername(createUsername());
+	}
+
+	public Professor(String name, String middleName, String surname, String email) {
+		super(name, middleName, surname, email);
+		this.setUsername(createUsername());
+	}
 }

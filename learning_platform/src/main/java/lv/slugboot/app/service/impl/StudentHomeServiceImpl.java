@@ -15,18 +15,18 @@ import lv.slugboot.app.service.IStudentHomeService;
 
 @Service
 @RequiredArgsConstructor
-public class StudentHomeServiceImpl implements IStudentHomeService{
-	
+public class StudentHomeServiceImpl implements IStudentHomeService {
+
 	private final IStudentRepo studentRepo;
 	private final ICourseRepo courseRepo;
 
 	@Override
 	public Collection<Course> getAllCourses(UUID studentId) {
-		
+
 		if (studentId == null) {
 			throw new NullPointerException("UUID is null");
 		}
-		
+
 		return studentRepo.findById(studentId).get().getCourse();
 	}
 
@@ -35,12 +35,12 @@ public class StudentHomeServiceImpl implements IStudentHomeService{
 	public void removeCourseFromStudent(UUID studentId, UUID courseId) {
 		Student student = studentRepo.findById(studentId).get();
 		Course course = courseRepo.findById(courseId).get();
-		
+
 		if (student.getCourse().contains(course)) {
 			student.getCourse().remove(course);
-			course.getStudents().remove(student);	
+			course.getStudents().remove(student);
 		}
-		
+
 		studentRepo.save(student);
 	}
 

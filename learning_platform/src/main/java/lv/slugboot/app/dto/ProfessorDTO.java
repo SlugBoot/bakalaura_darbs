@@ -9,22 +9,22 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfessorDTO {
-	
+
 	private static final String NAME_REGEX_PATTERN = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 
 	@NotNull
-    @Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid first name")
-    private String name;
+	@Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid first name")
+	private String name;
 
-    @Pattern(regexp = "(" + NAME_REGEX_PATTERN + ")?", message = "Invalid middle name")
-    private String middleName;
+	@Pattern(regexp = "(" + NAME_REGEX_PATTERN + ")?", message = "Invalid middle name")
+	private String middleName;
 
-    @NotNull
-    @Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid surname")
-    private String surname;
+	@NotNull
+	@Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid surname")
+	private String surname;
 
-    @NotNull
-    @Email
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email")
-    private String email;
+	@NotNull
+	@Email
+	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email")
+	private String email;
 }

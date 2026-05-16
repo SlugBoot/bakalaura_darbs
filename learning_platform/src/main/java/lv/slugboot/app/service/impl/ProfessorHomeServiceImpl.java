@@ -13,20 +13,17 @@ import lv.slugboot.app.service.IProfessorHomeService;
 @Service
 @RequiredArgsConstructor
 public class ProfessorHomeServiceImpl implements IProfessorHomeService {
-	
+
 	private final ICourseRepo courseRepo;
-	
-	
+
 	@Override
 	public ArrayList<Course> getAllCoursesWhereProfessorIdEquals(UUID professorId) {
-				
+
 		if (professorId == null) {
 			throw new NullPointerException("UUID is null");
 		}
-				
+
 		return courseRepo.findByProfessorPersonId(professorId);
 	}
-	
-	
 
 }

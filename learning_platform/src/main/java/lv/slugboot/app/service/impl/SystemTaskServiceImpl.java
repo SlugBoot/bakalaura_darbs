@@ -18,7 +18,7 @@ import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
 @Slf4j
-public class SystemTaskServiceImpl implements ISystemTaskService{
+public class SystemTaskServiceImpl implements ISystemTaskService {
 
 	@Override
 	public void createFile(String filePath, String content) throws IOException {
@@ -40,17 +40,17 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 	@Override
 	public String executeCommand(String command) throws IOException, InterruptedException {
 		ProcessBuilder processBuilder = new ProcessBuilder();
-		
+
 		Map<String, String> env = processBuilder.environment();
-		env.put("PATH",	"/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin");
-		
+		env.put("PATH", "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin");
+
 		processBuilder.command("sh", "-c", command);
-		
+
 		processBuilder.redirectErrorStream(true);
-		
+
 		Process process = processBuilder.start();
 		StringBuilder fullOutput = new StringBuilder();
-		
+
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -58,11 +58,12 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 				fullOutput.append(line).append("\n");
 			}
 			int exitCode = process.waitFor();
-			
+
 			if (exitCode != 0) {
-				throw new InterruptedException("Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
+				throw new InterruptedException(
+						"Command failed with exit code " + exitCode + ". Output: " + fullOutput.toString());
 			}
-			
+
 			return fullOutput.toString();
 		}
 	}

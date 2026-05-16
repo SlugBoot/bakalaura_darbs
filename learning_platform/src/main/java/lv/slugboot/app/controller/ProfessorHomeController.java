@@ -19,25 +19,24 @@ import lv.slugboot.app.service.IProfessorHomeService;
 @RequestMapping("/professor/home")
 @RequiredArgsConstructor
 public class ProfessorHomeController {
-	
+
 	private final IProfessorHomeService professorHomeService;
 	private final IProfessorCRUDService professorCRUDService;
 
 	@GetMapping("/{uuid}")
-	public String getControllerProfessorHomePage(@PathVariable(name="uuid") UUID professorId,Model model) {
+	public String getControllerProfessorHomePage(@PathVariable(name = "uuid") UUID professorId, Model model) {
 		try {
 			Professor professor = professorCRUDService.retrieveById(professorId);
 			model.addAttribute("professor", professor);
-			
+
 			ArrayList<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professorId);
 			model.addAttribute("filtered_courses", filteredCourses);
-			
+
 			return "professor-home-page";
 		} catch (Exception e) {
-			model.addAttribute("package",e.getMessage());
+			model.addAttribute("package", e.getMessage());
 			return "show-error";
 		}
 	}
-	
-	
+
 }

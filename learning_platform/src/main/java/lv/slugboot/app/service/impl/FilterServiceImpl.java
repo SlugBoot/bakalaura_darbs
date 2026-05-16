@@ -13,18 +13,18 @@ import lv.slugboot.app.service.IFilterService;
 
 @Service
 @RequiredArgsConstructor
-public class FilterServiceImpl implements IFilterService{
+public class FilterServiceImpl implements IFilterService {
 
 	private final ICourseRepo courseRepo;
 	private final IStudentRepo studentRepo;
-	
+
 	@Override
 	public Collection<Student> studentsNotInCourse(UUID courseId) {
 		Collection<Student> studentsInCourse = courseRepo.findById(courseId).get().getStudents();
 		Collection<Student> students = studentRepo.findAll();
-		
+
 		students.removeAll(studentsInCourse);
-		
+
 		return students;
 	}
 

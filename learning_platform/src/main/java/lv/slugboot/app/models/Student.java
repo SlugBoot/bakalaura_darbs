@@ -20,36 +20,35 @@ import lombok.ToString;
 @Table(name = "StudentTable")
 public class Student extends Person {
 
-  @ManyToMany
-  @ToString.Exclude
-  private Collection<Course> course;
+	@ManyToMany
+	@ToString.Exclude
+	private Collection<Course> course;
 
-  @OneToMany(mappedBy = "student")
-  private Collection<Grade> grades;
-  
-  @OneToMany(mappedBy = "student")
-  private Collection<LabInstance> labs;
+	@OneToMany(mappedBy = "student")
+	private Collection<Grade> grades;
 
-  private String createUsername() {
-    String year = Integer.toString(LocalDate.now().getYear());
-    // Lietotāja 4 uzvārda burti, 4 vārda burti, lietotāja izveidošanas gads
-    String usernameBase = this.getSurname().toLowerCase().substring(0, 4).concat(
-        this.getName().toLowerCase().substring(0, 4)).concat(
-            year.substring(2, 4));
+	@OneToMany(mappedBy = "student")
+	private Collection<LabInstance> labs;
 
-    String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
-    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-    
-    return pattern.matcher(usernameDecomposed).replaceAll("");
-  }
+	private String createUsername() {
+		String year = Integer.toString(LocalDate.now().getYear());
+		// Lietotāja 4 uzvārda burti, 4 vārda burti, lietotāja izveidošanas gads
+		String usernameBase = this.getSurname().toLowerCase().substring(0, 4)
+				.concat(this.getName().toLowerCase().substring(0, 4)).concat(year.substring(2, 4));
 
-  public Student(String name, String surname, String email) {
-    super(name, surname, email);
-    this.setUsername(createUsername());
-  }
+		String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
+		java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
-  public Student(String name, String middleName, String surname, String email) {
-    super(name, middleName, surname, email);
-    this.setUsername(createUsername());
-  }
+		return pattern.matcher(usernameDecomposed).replaceAll("");
+	}
+
+	public Student(String name, String surname, String email) {
+		super(name, surname, email);
+		this.setUsername(createUsername());
+	}
+
+	public Student(String name, String middleName, String surname, String email) {
+		super(name, middleName, surname, email);
+		this.setUsername(createUsername());
+	}
 }

@@ -26,46 +26,46 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "PersonTable")
 public class Person {
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  @Setter(value = AccessLevel.NONE)
-  private UUID personId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Setter(value = AccessLevel.NONE)
+	private UUID personId;
 
-  @Column(name = "FirstName")
-  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid name")
-  @NotNull
-  private String name;
+	@Column(name = "FirstName")
+	@Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid name")
+	@NotNull
+	private String name;
 
-  @Column(name = "MiddleName")
-  @Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?", message = "Invalid middle name")
-  private String middleName;
+	@Column(name = "MiddleName")
+	@Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?", message = "Invalid middle name")
+	private String middleName;
 
-  @Column(name = "LastName")
-  @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid surname")
-  @NotNull
-  private String surname;
+	@Column(name = "LastName")
+	@Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid surname")
+	@NotNull
+	private String surname;
 
-  @Column(name = "username", unique=true, nullable=false)
-  private String username;
-  
-  @Column(name="password", nullable=false)
-  private String password;
+	@Column(name = "username", unique = true, nullable = false)
+	private String username;
 
-  @Column(name = "email")
-  @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-  // avots RegEx: https://colinhacks.com/essays/reasonable-email-regex
-  private String email;
+	@Column(name = "password", nullable = false)
+	private String password;
 
-  public Person(String name, String surname, String email) {
-    setName(name);
-    setSurname(surname);
-    setEmail(email);
-  }
+	@Column(name = "email")
+	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+	// avots RegEx: https://colinhacks.com/essays/reasonable-email-regex
+	private String email;
 
-  public Person(String name, String middleName, String surname, String email) {
-    setName(name);
-    setMiddleName(middleName);
-    setSurname(surname);
-    setEmail(email);
-  }
+	public Person(String name, String surname, String email) {
+		setName(name);
+		setSurname(surname);
+		setEmail(email);
+	}
+
+	public Person(String name, String middleName, String surname, String email) {
+		setName(name);
+		setMiddleName(middleName);
+		setSurname(surname);
+		setEmail(email);
+	}
 }

@@ -25,42 +25,42 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name="CourseTable")
+@Table(name = "CourseTable")
 public class Course {
-	
+
 	@Id
-	@Setter(value=AccessLevel.NONE)
-	@GeneratedValue(strategy=GenerationType.UUID)
-	@Column(name="CourseId")
+	@Setter(value = AccessLevel.NONE)
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "CourseId")
 	private UUID cId;
-	
+
 	@NotNull
-	@Column(name="CourseName")
+	@Column(name = "CourseName")
 	private String courseName;
-	
-	@Column(name="CourseDescription")
+
+	@Column(name = "CourseDescription")
 	private String courseDesc;
-	
+
 	@ManyToOne
-	@JoinColumn(name="ProfessorId")
+	@JoinColumn(name = "ProfessorId")
 	private Professor professor;
-	
+
 	@ManyToMany(mappedBy = "course")
 	@ToString.Exclude
 	private Collection<Student> students;
-	
+
 	@OneToMany(mappedBy = "course")
 	private Collection<LabInstance> labs;
-	
+
 	public Course(String courseName, Professor professor) {
 		setCourseName(courseName);
 		setProfessor(professor);
 	}
-	
-	public Course(String courseName,String courseDesc, Professor professor) {
+
+	public Course(String courseName, String courseDesc, Professor professor) {
 		setCourseName(courseName);
 		setCourseDesc(courseDesc);
 		setProfessor(professor);
 	}
-	
+
 }

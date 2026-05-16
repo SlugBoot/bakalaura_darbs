@@ -21,35 +21,34 @@ import lv.slugboot.app.repo.IStudentRepo;
 @Slf4j
 @RequiredArgsConstructor
 public class LearningPlatformApplication {
-	
+
 	private final PasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LearningPlatformApplication.class, args);
 	}
-	
+
 	@Bean
-	public CommandLineRunner testDB(IStudentRepo studentRepo, IProfessorRepo professorRepo, 
-			ICourseRepo courseRepo, IGradeRepo gradeRepo) {
+	public CommandLineRunner testDB(IStudentRepo studentRepo, IProfessorRepo professorRepo, ICourseRepo courseRepo,
+			IGradeRepo gradeRepo) {
 		return new CommandLineRunner() {
 			@Override
 			public void run(String... args) throws Exception {
-				
+
 				String password1 = "wordpass";
 				String password2 = "safeword";
 				String password3 = "extrasafe";
-				
+
 				password1 = passwordEncoder.encode(password1);
 				password2 = passwordEncoder.encode(password2);
 				password3 = passwordEncoder.encode(password3);
-				
 
 				log.info("Creating Professors");
 				Professor testProf1 = new Professor("Anna", "Felicita", "Fabriciusa", "words@emails.lv");
 				Professor testProf2 = new Professor("Andris", "Petrograds", "andris@emails.lv");
 				Professor testProf3 = new Professor("Jānis", "Cimze", "janis@emails.lv");
 				Professor testProf4 = new Professor("Pēteris", "Agro", "Sviestnieks", "peteris@emails.lv");
-				
+
 				testProf1.setPassword(password1);
 				testProf2.setPassword(password1);
 				testProf3.setPassword(password2);
@@ -60,7 +59,7 @@ public class LearningPlatformApplication {
 				Student testStud2 = new Student("Annija", "Birzniece", "annija_studente@email.com");
 				Student testStud3 = new Student("Kārlis", "Blaumanis", "karlis_students@email.com");
 				Student testStud4 = new Student("Jana", "Liepiņa", "jana_studente@email.com");
-				
+
 				testStud1.setPassword(password3);
 				testStud2.setPassword(password3);
 				testStud3.setPassword(password3);

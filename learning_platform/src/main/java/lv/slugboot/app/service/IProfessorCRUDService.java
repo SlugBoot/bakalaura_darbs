@@ -8,12 +8,13 @@ import lv.slugboot.app.models.Professor;
 public interface IProfessorCRUDService {
 
 	public abstract void createProfessor(String name, String middleName, String surname, String email);
-	
+
 	public abstract ArrayList<Professor> retrieveAll() throws NoSuchFieldException;
-	
+
 	public abstract Professor retrieveById(UUID id) throws NoSuchFieldException;
-	
-	public abstract void updateProfessorById(UUID id, String name, String middleName, String surname, String email) throws NoSuchFieldException;
+
+	public abstract void updateProfessorById(UUID id, String name, String middleName, String surname, String email)
+			throws NoSuchFieldException;
 
 	public abstract void deleteProfessorById(UUID id) throws NoSuchFieldException;
 }

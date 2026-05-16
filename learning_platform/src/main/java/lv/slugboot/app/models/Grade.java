@@ -21,29 +21,29 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name="GradeTable")
+@Table(name = "GradeTable")
 public class Grade {
 
 	@Id
-	@Setter(value=AccessLevel.NONE)
-	@GeneratedValue(strategy=GenerationType.UUID)
+	@Setter(value = AccessLevel.NONE)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID gradeId;
-	
-	@Column(name="GradeValue")
+
+	@Column(name = "GradeValue")
 	private int gradeValue;
-	
+
 	@ManyToOne
-	@JoinColumn(name="StudentPersonId")
+	@JoinColumn(name = "StudentPersonId")
 	private Student student;
-	
+
 	@ManyToOne
-	@JoinColumn(name="CourseId")
+	@JoinColumn(name = "CourseId")
 	private Course course;
-	
+
 	public Grade(int gradeValue, Student student, Course course) {
 		setGradeValue(gradeValue);
 		setStudent(student);
 		setCourse(course);
 	}
-	
+
 }

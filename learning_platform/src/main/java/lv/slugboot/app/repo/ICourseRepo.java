@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import lv.slugboot.app.models.Course;
 
-public interface ICourseRepo extends JpaRepository<Course, UUID>{
+public interface ICourseRepo extends JpaRepository<Course, UUID> {
 
 	ArrayList<Course> findByProfessorPersonId(UUID professorId);
 

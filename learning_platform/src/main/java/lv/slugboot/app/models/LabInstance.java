@@ -22,28 +22,28 @@ import lv.slugboot.app.models.enums.LabInstanceStatus;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name="LabInstanceTable")
+@Table(name = "LabInstanceTable")
 public class LabInstance {
 
 	@Id
-	@Setter(value=AccessLevel.NONE)
+	@Setter(value = AccessLevel.NONE)
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "InstanceId")
 	private UUID instanceId;
-	
+
 	@ManyToOne
-	@JoinColumn(name="StudentId")
+	@JoinColumn(name = "StudentId")
 	private Student student;
-	
+
 	@ManyToOne
-	@JoinColumn(name="CourseId")
+	@JoinColumn(name = "CourseId")
 	private Course course;
-	
-	@Column(unique=true, nullable=true)
+
+	@Column(unique = true, nullable = true)
 	private String ipAddress;
-	
+
 	private LabInstanceStatus status;
-	
+
 	public LabInstance(Student student, Course course, String ipAddress) {
 		setStudent(student);
 		setCourse(course);
