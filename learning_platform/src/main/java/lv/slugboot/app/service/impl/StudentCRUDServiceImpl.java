@@ -62,15 +62,17 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
       throws Exception {
     Student studentToUpdate = retrieveById(id);
 
-    if (name == null || !name.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    String regexPattern = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
+    
+    if (name == null || !name.matches(regexPattern)) {
       throw new Exception("First Name must be valid");
     }
 
-    if (middleName != null && !middleName.isEmpty() && !middleName.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (middleName != null && !middleName.isEmpty() && !middleName.matches(regexPattern)) {
       throw new Exception("Middle name must be valid");
     }
 
-    if (surname == null || !surname.matches("([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}")) {
+    if (surname == null || !surname.matches(regexPattern)) {
       throw new Exception("Surname must be valid");
     }
 

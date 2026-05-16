@@ -53,7 +53,7 @@ public class SystemTaskServiceImpl implements ISystemTaskService{
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				System.out.println("[LIVE LOG]:" + line);
+				log.debug("[LIVE LOG]:" + line);
 				fullOutput.append(line).append("\n");
 			}
 			int exitCode = process.waitFor();

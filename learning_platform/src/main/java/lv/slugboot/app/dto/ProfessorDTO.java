@@ -9,16 +9,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ProfessorDTO {
+	
+	private static final String NAME_REGEX_PATTERN = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 
 	@NotNull
-    @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid first name")
+    @Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid first name")
     private String name;
 
-    @Pattern(regexp = "(([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44})?", message = "Invalid middle name")
+    @Pattern(regexp = "(" + NAME_REGEX_PATTERN + ")?", message = "Invalid middle name")
     private String middleName;
 
     @NotNull
-    @Pattern(regexp = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}", message = "Invalid surname")
+    @Pattern(regexp = NAME_REGEX_PATTERN, message = "Invalid surname")
     private String surname;
 
     @NotNull

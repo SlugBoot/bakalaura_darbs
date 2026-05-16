@@ -53,7 +53,11 @@ public class CourseCRUDController {
 	
 	private static final String PROXMOX_FILE = "provisioning";
 	private static final String HOSTS_FILE = "hosts";
+	
 	private static final String REFERRER_HEADER = "Referer";
+	private static final String REDIRECT_STRING = "redirect:";
+	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
+	
 	
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -123,9 +127,9 @@ public class CourseCRUDController {
 					course.getCourseDesc(), 
 					course.getProfessor().getPersonId());
 			if (referer != null && referer.startsWith("/")) {
-				return "redirect:" + referer;
+				return REDIRECT_STRING + referer;
 			}
-			return "redirect:/course/crud/all";
+			return REDIRECT_COURSE_CRUD + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -156,7 +160,7 @@ public class CourseCRUDController {
 			courseCRUDService.updateCourseById(courseId, course.getCourseName(),
 					course.getCourseDesc(), 
 					course.getProfessor().getPersonId());
-			return "redirect:/course/crud/all";
+			return REDIRECT_COURSE_CRUD + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -189,10 +193,10 @@ public class CourseCRUDController {
 			courseCRUDService.addStudentToCourse(courseId, studentId);
 			
 			if (referer != null && referer.startsWith("/")) {
-				return "redirect:" + referer;
+				return REDIRECT_STRING + referer;
 			}
 			
-			return "redirect:/course/crud/" + courseId;
+			return REDIRECT_COURSE_CRUD + courseId;
 			
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -212,7 +216,7 @@ public class CourseCRUDController {
 				redirectUrl += "?referer=" + referer;
 			}
 			
-			return "redirect:" + redirectUrl;
+			return REDIRECT_STRING + redirectUrl;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -226,10 +230,10 @@ public class CourseCRUDController {
 			courseCRUDService.deployLab(courseId);
 			
             if (referer != null && referer.startsWith("/")) {
-				return "redirect:" + referer;
+				return REDIRECT_STRING + referer;
 			}
 			else {
-				return "redirect:/course/crud/" + courseId; 
+				return REDIRECT_COURSE_CRUD + courseId; 
 			}
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -243,10 +247,10 @@ public class CourseCRUDController {
         try {
             courseCRUDService.cleanupLab(courseId);
             if (referer != null && referer.startsWith("/")) {
-				return "redirect:" + referer;
+				return REDIRECT_STRING + referer;
 			}
 			else {
-				return "redirect:/course/crud/" + courseId; 
+				return REDIRECT_COURSE_CRUD + courseId; 
 			}
         } catch (Exception e) {
             model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -263,7 +267,7 @@ public class CourseCRUDController {
 			
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 			
-			return "redirect:/course/crud/" + courseId;
+			return REDIRECT_COURSE_CRUD + courseId;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
