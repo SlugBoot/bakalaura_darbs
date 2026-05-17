@@ -41,15 +41,15 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 				.build().getQueryParams().toSingleValueMap();
 		
 		String instanceIdStr = queryParams.get("instanceId");
-		if (instanceIdStr == null) {
-			session.close(CloseStatus.BAD_DATA.withReason("Missing instanceId"));
-			return;
-		}
+		if (instanceIdStr == null || instanceIdStr.trim().isEmpty()) {
+	        log.error("Guacamole Tunnel Handshake aborted: query parameter 'instanceId' is empty or missing.");
+	        session.close(CloseStatus.BAD_DATA.withReason("Required connection parameter query 'instanceId' was missing."));
+	        return;
+	    }
 		
 		if (instanceIdStr.contains("?")) {
 		    instanceIdStr = instanceIdStr.split("\\?")[0];
 		}
-		instanceIdStr = instanceIdStr.trim();
 
 		log.info("Sanitized UUID hitting Backend String Parser: '{}' (Length: {})", instanceIdStr, instanceIdStr.length());
 		
