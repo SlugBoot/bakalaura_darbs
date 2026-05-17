@@ -294,15 +294,17 @@ public class CourseCRUDController {
 			return ERROR_PAGE;
 		}
 	}
-	
+
 	@GetMapping("/instance/{instanceId}/terminal")
-	public String displayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model) {
-	    try {
-	        model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
-	        return CONTAINER_TERMINAL_PAGE; 
-	    } catch (Exception e) {
-	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
-	        return ERROR_PAGE;
-	    }
+	public String GetControllerDisplayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model,
+			HttpServletRequest request) {
+		try {
+			model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
+			request.getSession().setAttribute("instanceId", instanceId);
+			return CONTAINER_TERMINAL_PAGE;
+		} catch (Exception e) {
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
+		}
 	}
 }

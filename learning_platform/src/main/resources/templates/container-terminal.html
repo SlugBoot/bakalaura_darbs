@@ -33,21 +33,20 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const rawInstanceId = document.getElementById('backendInstanceId').value;
+        const instanceId = document.getElementById('backendInstanceId').value;
 		
 		console.log("Verified Instance ID for WebSocket Handshake:", instanceId);
+		
+		const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel';
+		
+		const viewport = document.getElementById("display-viewport");
+		const statusText = document.getElementById("status-text");
         
-        // Compute WebSocket connection path appending dynamic tracking variables
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-		const tunnelEndpoint = protocol + window.location.host + "/guacamole-tunnel?instanceId=" + encodeURIComponent(rawInstanceId);
-
-        // Construct Tunnel Engine Runtime
-        const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
-        const client = new Guacamole.Client(tunnel);
-
-        const viewport = document.getElementById("display-viewport");
-        const statusText = document.getElementById("status-text");
-
+		// Construct Tunnel Engine Runtime
+		const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
+		const client = new Guacamole.Client(tunnel);
+		
         // Inject display node
         const displayElement = client.getDisplay().getElement();
         viewport.appendChild(displayElement);
@@ -68,6 +67,8 @@
                 statusText.style.color = "#d8dee9";
             }
         };
+		
+		client.connect();
 
         // Pass Keyboard Input Matrix Events to Container Stream
         const keyboard = new Guacamole.Keyboard(document);
@@ -83,8 +84,6 @@
         mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function(e) {
             client.sendMouseState(e.state);
         });
-
-		client.connect();
 		
         // Keep focused input context window active
         window.onresize = function() {

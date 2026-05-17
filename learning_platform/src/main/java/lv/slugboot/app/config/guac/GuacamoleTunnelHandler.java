@@ -37,40 +37,17 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		String query = session.getUri().getQuery();
+		UUID instanceId = (UUID) session.getAttributes().get("instanceId");
 		
-		if (query == null || query.trim().isEmpty()) {
-	        log.error("Guacamole Tunnel Handshake aborted: Entire query string is missing.");
-	        session.close(CloseStatus.BAD_DATA.withReason("Missing query parameters."));
-	        return;
-	    }
+		if (instanceId == null) {
+			log.error("Guacamole Tunnel Handshake aborted: 'instanceId' missing from session attributes.");
+			session.close(CloseStatus.BAD_DATA.withReason("Required connection session attribute 'instanceId' was missing."));
+			return;
+		}
 		
-		Map<String, String> queryParams = UriComponentsBuilder.fromUriString("?" + query)
-				.build().getQueryParams().toSingleValueMap();
-		
-		String instanceIdStr = queryParams.get("instanceId");
-		
-		if (instanceIdStr == null && query.contains("instanceId=")) {
-	        instanceIdStr = query.split("instanceId=")[1].split("&")[0];
-	    }
-		
-		if (instanceIdStr == null || instanceIdStr.trim().isEmpty()) {
-	        log.error("Guacamole Tunnel Handshake aborted: query parameter 'instanceId' is empty or missing.");
-	        session.close(CloseStatus.BAD_DATA.withReason("Required connection parameter query 'instanceId' was missing."));
-	        return;
-	    }
-		
-		if (instanceIdStr.contains("?")) {
-	        instanceIdStr = instanceIdStr.split("\\?")[0];
-	    }
-	    if (instanceIdStr.contains("&")) {
-	        instanceIdStr = instanceIdStr.split("&")[0];
-	    }
-
-		log.info("Sanitized UUID hitting Backend String Parser: '{}' (Length: {})", instanceIdStr, instanceIdStr.length());
+		log.info("Constructing Guacamole session for Instance UUID: {}", instanceId);
 		
 		try {
-			UUID instanceId = UUID.fromString(instanceIdStr);
 			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
 			
 			String containerIp = instance.getIpAddress();
@@ -118,7 +95,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
                     closeTunnel(session);
                 }
             });
-            readThread.setName("guac-reader-" + instanceIdStr);
+            readThread.setName("guac-reader-" + instanceId);
             readThread.start();
             
 		} catch (Exception e) {
