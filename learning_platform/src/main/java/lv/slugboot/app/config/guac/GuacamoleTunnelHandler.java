@@ -83,12 +83,19 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             Thread readThread = new Thread(() -> {
                 try {
                     char[] buffer;
-                    // FIX: Ensure the stream keeps listening and handling exceptions gracefully without crashing out early
-                    while (session.isOpen() && (buffer = reader.read()) != null) {
-                        if (buffer.length > 0) {
+                    
+                    while(session.isOpen()) {
+                    	buffer = reader.read();
+                    	
+                    	if (buffer == null) {
+                    		break;
+                    	}
+                    	
+                    	if (buffer.length > 0) {
                             session.sendMessage(new TextMessage(new String(buffer)));
                         }
                     }
+                    
                 } catch (IOException | GuacamoleException e) {
                     log.debug("Guacamole tunnel read stream closed/interrupted: {}", e.getMessage());
                 } finally {
