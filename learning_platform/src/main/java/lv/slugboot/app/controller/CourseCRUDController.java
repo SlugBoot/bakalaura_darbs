@@ -296,7 +296,7 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/instance/{instanceId}/terminal")
-	public String GetControllerDisplayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model,
+	public String getControllerDisplayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model,
 			HttpServletRequest request) {
 		try {
 			model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
