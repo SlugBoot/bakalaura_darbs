@@ -106,11 +106,7 @@
 		};
 
 		// Pass optimal resolution metrics right inside connection argument metadata
-		const optimalWidth = displayElement.clientWidth || 1024;
-		const optimalHeight = displayElement.clientHeight || 768;
-		const connectArgs = `width=${optimalWidth}&height=${optimalHeight}&dpi=96`;
-
-		client.connect(connectArgs);
+		client.connect();
 
 		// Pass Keyboard Input Matrix Events
 		const keyboard = new Guacamole.Keyboard(document);
