@@ -1,7 +1,6 @@
 package lv.slugboot.app.config.guac;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.guacamole.GuacamoleException;
@@ -18,7 +17,6 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +86,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
                     	buffer = reader.read();
                     	
                     	if (buffer == null) {
+                    		log.info("Guacamole reader received End Of Stream signal (null).");
                     		break;
                     	}
                     	
