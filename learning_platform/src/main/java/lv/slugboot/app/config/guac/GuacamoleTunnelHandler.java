@@ -86,6 +86,15 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
             session.getAttributes().put(TUNNEL_ATTRIBUTE, tunnel);
             
+            String tunnelId = tunnel.getUUID().toString();
+            String handshakeInstruction = "0.,connection," + tunnelId.length() + "." + tunnelId + ";";
+            
+            synchronized (session) {
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(handshakeInstruction));
+                }
+            }
+            
             // Delegate the reading loops safely to a managed thread execution
             Thread readThread = new Thread(() -> {
                 try {
