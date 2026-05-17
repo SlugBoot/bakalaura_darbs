@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 	<head></head>
 	<body>
@@ -42,11 +43,24 @@
 				<td>Student Username</td>
 				<td>IP address</td>
 				<td>Instance status</td>
+				<td>Action</td>
 			</tr>
 			<tr th:each="i : ${instance}">
 				<td th:text="${i.getStudent().getUsername()}"></td>
 				<td th:text="${i.getIpAddress()}"></td>
 				<td th:text="${i.getStatus()}"></td>
+				<td>
+		            <span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
+		                <a th:href="@{/course/crud/instance/{id}/terminal(id=${i.getInstanceId()})}" target="_blank">
+		                    <button type="button" style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; cursor: pointer;">
+		                        Connect to Console
+		                    </button>
+		                </a>
+		            </span>
+		            <span th:unless="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}" style="color: #888; font-style: italic;">
+		                Offline
+		            </span>
+		        </td>
 			</tr>
 		</table>
 	</body>

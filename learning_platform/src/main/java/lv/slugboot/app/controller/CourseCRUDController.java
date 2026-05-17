@@ -43,6 +43,7 @@ public class CourseCRUDController {
 	private static final String ADD_STUDENTS_PAGE = "course-add-student";
 	private static final String CREATE_COURSE_PAGE = "create-course";
 	private static final String UPDATE_COURSE_PAGE = "update-course";
+	private static final String CONTAINER_TERMINAL_PAGE = "container-terminal";
 
 	private static final String STUDENT_ATTRIBUTE = "student";
 	private static final String COURSE_ATTRIBUTE = "course";
@@ -293,5 +294,15 @@ public class CourseCRUDController {
 			return ERROR_PAGE;
 		}
 	}
-
+	
+	@GetMapping("/instance/{instanceId}/terminal")
+	public String displayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model) {
+	    try {
+	        model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
+	        return CONTAINER_TERMINAL_PAGE; 
+	    } catch (Exception e) {
+	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+	        return ERROR_PAGE;
+	    }
+	}
 }

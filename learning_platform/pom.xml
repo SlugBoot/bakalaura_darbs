@@ -101,6 +101,20 @@
 			<artifactId>spring-boot-starter-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+
+    	<!-- Guacamole Java API -->
+    	<dependency>
+        	<groupId>org.apache.guacamole</groupId>
+        	<artifactId>guacamole-common</artifactId>
+        	<version>1.5.5</version>
+    	</dependency>
+    	
+    	<!-- For WebSocket support (Recommended) -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-websocket</artifactId>
+	    </dependency>
 
 	</dependencies>
 
