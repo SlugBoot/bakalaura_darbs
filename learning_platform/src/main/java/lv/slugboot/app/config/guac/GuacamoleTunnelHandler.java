@@ -67,6 +67,10 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 			config.setParameter("terminal-type", "linux");
 			config.setParameter("enable-sftp", "false");
 			
+			config.setParameter("width", "1024");
+			config.setParameter("height", "768");
+			config.setParameter("dpi", "96");
+			
 			GuacamoleSocket socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
 			
 			GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);

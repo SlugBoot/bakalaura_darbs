@@ -1,95 +1,105 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <title>Container Interactive Terminal</title>
-    <style>
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background-color: #1a1a1a; font-family: monospace; overflow: hidden;
-        }
-        #terminal-header {
-            background-color: #2d2d2d; color: #fff; padding: 10px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        #display-viewport {
-            width: 100%; height: calc(100vh - 45px);
-            display: flex; justify-content: center; align-items: center;
-        }
-        canvas { display: block; margin: 0 auto; }
-    </style>
+	<title>Container Interactive Terminal</title>
+	<style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #1a1a1a;
+			font-family: monospace;
+			overflow: hidden;
+		}
+
+		#terminal-header {
+			background-color: #2d2d2d;
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		#display-viewport {
+			width: 100%;
+			height: calc(100vh - 45px);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		canvas {
+			display: block;
+			margin: 0 auto;
+		}
+	</style>
 </head>
+
 <body>
-	
+
 	<input type="hidden" id="backendInstanceId" th:value="${instance}" />
 
-    <div id="terminal-header">
-        <span>⚙️ Proxmox Container Live Console Session</span>
-        <span style="color: #a3be8c;" id="status-text">Connecting Tunnel...</span>
-    </div>
+	<div id="terminal-header">
+		<span>⚙️ Proxmox Container Live Console Session</span>
+		<span style="color: #a3be8c;" id="status-text">Connecting Tunnel...</span>
+	</div>
 
-    <div id="display-viewport"></div>
+	<div id="display-viewport"></div>
 
-    <script th:src="@{/js/guacamole-common.min.js}"></script>
+	<script th:src="@{/js/guacamole-common.min.js}"></script>
 
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        const instanceId = document.getElementById('backendInstanceId').value;
-		
-		console.log("Verified Instance ID for WebSocket Handshake:", instanceId);
-		
-		const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel';
-		
-		const viewport = document.getElementById("display-viewport");
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const instanceId = document.getElementById('backendInstanceId').value;
+		const displayElement = document.getElementById("display-viewport");
 		const statusText = document.getElementById("status-text");
-        
-		// Construct Tunnel Engine Runtime
-		const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
+
+		const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+		const wsUrl = wsProtocol + window.location.host + "/guacamole-tunnel?instanceId=" + encodeURIComponent(instanceId);
+
+		const tunnel = new Guacamole.WebSocketTunnel(wsUrl);
 		const client = new Guacamole.Client(tunnel);
-		
-        // Inject display node
-        const displayElement = client.getDisplay().getElement();
-        viewport.appendChild(displayElement);
 
-        // UI Event Intercept Engine
-        client.onerror = function(error) {
-            statusText.innerText = "Error encountered: " + error.message;
-            statusText.style.color = "#bf616a";
-        };
+		displayElement.appendChild(client.getDisplay().getElement());
 
-        client.onstatechange = function(state) {
-            if (state === 3) { // Connected state ID
-                statusText.innerText = "Connected Active Session";
-                statusText.style.color = "#a3be8c";
-                client.getDisplay().focus();
-            } else if (state === 5) {
-                statusText.innerText = "Disconnected.";
-                statusText.style.color = "#d8dee9";
-            }
-        };
-		
-		client.connect("instanceId=" + encodeURIComponent(instanceId));
+		client.onerror = function (error) {
+			statusText.innerText = "Error encountered: " + error.message;
+			statusText.style.color = "#bf616a";
+		};
 
-        // Pass Keyboard Input Matrix Events to Container Stream
-        const keyboard = new Guacamole.Keyboard(document);
-        keyboard.onkeydown = function (keysym) {
-            client.sendKeyEvent(1, keysym);
-        };
-        keyboard.onkeyup = function (keysym) {
-            client.sendKeyEvent(0, keysym);
-        };
+		client.onstatechange = function (state) {
+			if (state === 3) { // Connected
+				statusText.innerText = "Connected Active Session";
+				statusText.style.color = "#a3be8c";
+				client.getDisplay().focus();
+			} else if (state === 5) { // Disconnected
+				statusText.innerText = "Disconnected.";
+				statusText.style.color = "#d8dee9";
+			}
+		};
 
-        // Route Mouse tracking vectors to prevent display misalignment
-        const mouse = new Guacamole.Mouse(displayElement);
-        mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function(e) {
-            client.sendMouseState(e.state);
-        });
-		
-        // Keep focused input context window active
-        window.onresize = function() {
-            // Optional: You can send terminal resize events back if configuring terminal layout properties
-        };
-        /*]]>*/
-    </script>
+		client.connect();
+
+		// Pass Keyboard Input Matrix Events
+		const keyboard = new Guacamole.Keyboard(document);
+		keyboard.onkeydown = function (keysym) {
+			client.sendKeyEvent(1, keysym);
+		};
+		keyboard.onkeyup = function (keysym) {
+			client.sendKeyEvent(0, keysym);
+		};
+
+		// Route Mouse tracking vectors
+		const mouse = new Guacamole.Mouse(displayElement);
+		mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function (e) {
+			client.sendMouseState(e.state);
+		});
+		/*]]>*/
+	</script>
 </body>
+
 </html>
