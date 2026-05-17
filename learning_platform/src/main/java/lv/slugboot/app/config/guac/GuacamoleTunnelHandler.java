@@ -31,107 +31,88 @@ import lv.slugboot.app.service.ILabInstanceCRUDService;
 public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	private final ILabInstanceCRUDService labInstanceCRUDService;
+    private static final String TUNNEL_ATTRIBUTE = "GUAC_TUNNEL";
 
-	private static final String TUNNEL_ATTRIBUTE = "GUAC_TUNNEL";
-	
-	
-	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		String query = session.getUri().getQuery();
-	    String instanceIdStr = null;
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        Map<String, String> queryParams = UriComponentsBuilder.fromUri(session.getUri())
+                .build()
+                .getQueryParams()
+                .toSingleValueMap();
+        
+        String instanceIdStr = queryParams.get("instanceId");
 
-	    if (query != null) {
-	        // Safely extract parameters avoiding manual string splits
-	        Map<String, String> queryParams = UriComponentsBuilder.fromUri(session.getUri())
-	                .build()
-	                .getQueryParams()
-	                .toSingleValueMap();
-	        
-	        instanceIdStr = queryParams.get("instanceId");
-	    }
+        if (instanceIdStr != null && instanceIdStr.contains("?")) {
+            instanceIdStr = instanceIdStr.split("\\?")[0];
+        }
 
-	    // Clean up fallback parameter if '?undefined' or extra fragments somehow pass through
-	    if (instanceIdStr != null && instanceIdStr.contains("?")) {
-	        instanceIdStr = instanceIdStr.split("\\?")[0];
-	    }
+        if (instanceIdStr == null || instanceIdStr.isEmpty()) {
+            log.error("Missing instanceId parameter.");
+            session.close(CloseStatus.BAD_DATA.withReason("Missing instanceId"));
+            return;
+        }
 
-	    if (instanceIdStr == null || instanceIdStr.isEmpty()) {
-	        log.error("Missing instanceId query parameter inside WebSocket request connection.");
-	        session.close(CloseStatus.BAD_DATA.withReason("Missing instanceId parameter"));
-	        return;
-	    }
-
-	    log.info("Constructing Guacamole session for Instance UUID: {}", instanceIdStr);
-	    UUID instanceId = UUID.fromString(instanceIdStr);
-		
-		try {
-			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
-			
-			String containerIp = instance.getIpAddress();
-			if (containerIp == null || containerIp.isEmpty()) {
-				session.close(CloseStatus.BAD_DATA.withReason("Container IP not allocated"));
-				return;
-			}
-			
-			log.info("Opening Guacamole SSH tunnel to container IP: {}", containerIp);
-			
-			GuacamoleConfiguration config = new GuacamoleConfiguration();
-			config.setProtocol("ssh");
-			config.setParameter("hostname", containerIp);
-			config.setParameter("port", "22");
-			config.setParameter("username", "root");
-			config.setParameter("password", "securepassword");
-
-			config.setParameter("command", "/bin/bash");
-			config.setParameter("terminal-type", "linux");
-			config.setParameter("enable-sftp", "false");
-			
-			config.setParameter("width", "1024");
-			config.setParameter("height", "768");
-			config.setParameter("dpi", "96");
-			
-			GuacamoleSocket socket = new ConfiguredGuacamoleSocket(new InetGuacamoleSocket("localhost", 4822), config);
-			
-			GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
+        UUID instanceId = UUID.fromString(instanceIdStr);
+        
+        try {
+            LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
+            String containerIp = instance.getIpAddress();
+            
+            if (containerIp == null || containerIp.isEmpty()) {
+                session.close(CloseStatus.BAD_DATA.withReason("IP not allocated"));
+                return;
+            }
+            
+            log.info("Connecting Guacamole tunnel to container IP: {}", containerIp);
+            
+            GuacamoleConfiguration config = new GuacamoleConfiguration();
+            config.setProtocol("ssh");
+            config.setParameter("hostname", containerIp);
+            config.setParameter("port", "22");
+            config.setParameter("username", "root");
+            config.setParameter("password", "securepassword");
+            config.setParameter("command", "/bin/bash");
+            config.setParameter("terminal-type", "linux");
+            config.setParameter("enable-sftp", "false");
+            config.setParameter("width", "1024");
+            config.setParameter("height", "768");
+            config.setParameter("dpi", "96");
+            
+            // Connect to your local guacd daemon
+            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket("localhost", 4822), config
+            );
+            
+            GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
             session.getAttributes().put(TUNNEL_ATTRIBUTE, tunnel);
             
-            GuacamoleReader reader = socket.getReader();
-            
-            String tunnelId = tunnel.getUUID().toString();
-            String handshakeInstruction = "0.,connection," + tunnelId.length() + "." + tunnelId + ";";
-            session.sendMessage(new TextMessage(handshakeInstruction));
-            
+            // Delegate the reading loops safely to a managed thread execution
             Thread readThread = new Thread(() -> {
                 try {
+                    GuacamoleReader reader = tunnel.getSocket().getReader();
                     char[] buffer;
-                    
-                    while(session.isOpen()) {
-                    	buffer = reader.read();
-                    	
-                    	if (buffer == null) {
-                    		log.info("Guacamole reader received End Of Stream signal (null).");
-                    		break;
-                    	}
-                    	
-                    	if (buffer.length > 0) {
-                            session.sendMessage(new TextMessage(new String(buffer)));
+                    while (session.isOpen() && (buffer = reader.read()) != null) {
+                        synchronized (session) {
+                            if (session.isOpen()) {
+                                session.sendMessage(new TextMessage(new String(buffer)));
+                            }
                         }
                     }
-                    
-                } catch (IOException | GuacamoleException e) {
-                    log.debug("Guacamole tunnel read stream closed/interrupted: {}", e.getMessage());
+                } catch (Exception e) {
+                    log.debug("Tunnel read loop terminated: {}", e.getMessage());
                 } finally {
                     closeTunnel(session);
                 }
             });
+            
             readThread.setName("guac-reader-" + instanceId);
             readThread.start();
             
-		} catch (Exception e) {
-			log.error("Failed to construct Guacamole tunnel connection", e);
-			session.close(CloseStatus.SERVER_ERROR.withReason(e.getMessage()));
-		}
-	}
+        } catch (Exception e) {
+            log.error("Tunnel building failed", e);
+            session.close(CloseStatus.SERVER_ERROR);
+        }
+    }
 	
 	@Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
