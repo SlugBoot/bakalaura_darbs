@@ -142,10 +142,8 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // Receive instructions from browser/thymeleaf layer and pipe them straight into guacd
         GuacamoleTunnel tunnel = (GuacamoleTunnel) session.getAttributes().get(TUNNEL_ATTRIBUTE);
-        WebSocketSession concurrentSession = (WebSocketSession) session.getAttributes().get("CONCURRENT_SESSION");
 
-        // Ensure we reference the active session condition checking against our thread-safe wrapper
-        if (tunnel != null && tunnel.isOpen() && concurrentSession != null && concurrentSession.isOpen()) {
+        if (tunnel != null && tunnel.isOpen() && session.isOpen()) {
             try {
                 GuacamoleWriter writer = tunnel.getSocket().getWriter();
                 synchronized (tunnel) {
