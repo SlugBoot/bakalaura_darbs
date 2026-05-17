@@ -41,7 +41,7 @@
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel';
+		const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + encodeURIComponent(instanceId);
 
         // Construct Tunnel Engine Runtime
         const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
