@@ -64,8 +64,7 @@
 		const displayElement = document.getElementById("display-viewport");
 		const statusText = document.getElementById("status-text");
 
-		const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-		const urlBase = wsProtocol + window.location.host + "/guacamole-tunnel";
+		const wsUrl = `ws://${window.location.host}/guacamole-tunnel?instanceId=${encodeURIComponent(instanceId.trim())}`;
 		// const params = new URLSearchParams();
 		// params.append("instanceId", instanceId.trim());
 		// const wsUrl = urlBase + "?" + params.toString();
@@ -106,8 +105,7 @@
 		};
 
 		// Pass optimal resolution metrics right inside connection argument metadata
-		const connectionParameters = `instanceId=${instanceId.trim()}`;
-		client.connect(connectionParameters);
+		client.connect("");
 
 		// Pass Keyboard Input Matrix Events
 		const keyboard = new Guacamole.Keyboard(document);
