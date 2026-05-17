@@ -2,6 +2,8 @@ package lv.slugboot.app.config.guac;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
@@ -32,6 +34,12 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	private final ILabInstanceCRUDService labInstanceCRUDService;
     private static final String TUNNEL_ATTRIBUTE = "GUAC_TUNNEL";
+    
+    private final ExecutorService guacReaderExecutor = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true); // Ensure threads don't block application shutdown
+        return t;
+    });
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -98,25 +106,23 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             	concurrentSession.sendMessage(new TextMessage(handshakeInstruction));
             }
             
-            // Delegate the reading loops safely to a managed thread execution
-            Thread readThread = new Thread(() -> {
+            guacReaderExecutor.submit(() -> {
+                Thread.currentThread().setName("guac-reader-" + instanceId);
                 try {
                     GuacamoleReader reader = tunnel.getSocket().getReader();
                     char[] buffer;
-                    while (concurrentSession.isOpen() && (buffer = reader.read()) != null) {
-                    	if (concurrentSession.isOpen()) {
-                    		concurrentSession.sendMessage(new TextMessage(new String(buffer)));
+                    // Ensure blocking read drops loop if socket closes
+                    while (tunnel.isOpen() && concurrentSession.isOpen() && (buffer = reader.read()) != null) {
+                        if (concurrentSession.isOpen()) {
+                            concurrentSession.sendMessage(new TextMessage(new String(buffer)));
                         }
                     }
                 } catch (Exception e) {
-                    log.debug("Tunnel read loop terminated: {}", e.getMessage());
+                    log.debug("Tunnel read loop terminated or socket timed out: {}", e.getMessage());
                 } finally {
                     closeTunnel(session);
                 }
             });
-            
-            readThread.setName("guac-reader-" + instanceId);
-            readThread.start();
             
         } catch (Exception e) {
             log.error("Tunnel building failed", e);

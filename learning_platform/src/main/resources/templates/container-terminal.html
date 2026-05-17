@@ -90,8 +90,27 @@
 				statusText.style.color = "#d8dee9";
 			}
 		};
+		
+		function sendCurrentOptimalSize() {
+		    if (client.getDisplay()) {
+		        const width = displayElement.clientWidth;
+		        const height = displayElement.clientHeight;
+		        // Guacamole instruction: size, width, height
+		        client.sendSize(width, height);
+		    }
+		}
 
-		client.connect("");
+		// Fire size configuration changes dynamically down the pipe
+		window.onresize = function() {
+		    sendCurrentOptimalSize();
+		};
+
+		// Pass optimal resolution metrics right inside connection argument metadata
+		const optimalWidth = displayElement.clientWidth || 1024;
+		const optimalHeight = displayElement.clientHeight || 768;
+		const connectArgs = `width=${optimalWidth}&height=${optimalHeight}&dpi=96`;
+
+		client.connect(connectArgs);
 
 		// Pass Keyboard Input Matrix Events
 		const keyboard = new Guacamole.Keyboard(document);
