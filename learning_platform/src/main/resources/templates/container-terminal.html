@@ -83,7 +83,7 @@
 			if (state === 3) { // Connected
 				statusText.innerText = "Connected Active Session";
 				statusText.style.color = "#a3be8c";
-				client.getDisplay().focus();
+				client.getDisplay().getElement().focus();
 			} else if (state === 5) { // Disconnected
 				statusText.innerText = "Disconnected.";
 				statusText.style.color = "#d8dee9";
@@ -120,7 +120,7 @@
 		const mouse = new Guacamole.Mouse(displayElement);
 		mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function (e) {
 			if (e.type === 'mousedown') {
-				client.getDisplay().focus();
+				client.getDisplay().getElement().focus();
 			}
 			client.sendMouseState(e.state);
 		});
