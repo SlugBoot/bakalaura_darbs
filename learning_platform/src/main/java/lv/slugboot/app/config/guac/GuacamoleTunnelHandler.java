@@ -87,7 +87,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             session.getAttributes().put(TUNNEL_ATTRIBUTE, tunnel);
             
             String tunnelId = tunnel.getUUID().toString();
-            String handshakeInstruction = "0.,connection," + tunnelId.length() + "." + tunnelId + ";";
+            String handshakeInstruction = "0.," + tunnelId.length() + "." + tunnelId + ";";
             
             synchronized (session) {
                 if (session.isOpen()) {
