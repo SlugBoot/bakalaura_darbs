@@ -87,7 +87,8 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 			config.setParameter("port", "22");
 			config.setParameter("username", "root");
 			config.setParameter("password", "securepassword");
-			
+
+			config.setParameter("command", "/bin/bash");
 			config.setParameter("terminal-type", "linux");
 			config.setParameter("enable-sftp", "false");
 			
