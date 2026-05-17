@@ -92,6 +92,8 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             // 5000ms execution timeout, 256KB buffer limit
             WebSocketSession concurrentSession = new ConcurrentWebSocketSessionDecorator(session, 5000, 262144);
             
+            session.getAttributes().put("CONCURRENT_SESSION", concurrentSession);
+            
             if (concurrentSession.isOpen()) {
             	concurrentSession.sendMessage(new TextMessage(handshakeInstruction));
             }
@@ -126,15 +128,18 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // Receive instructions from browser/thymeleaf layer and pipe them straight into guacd
         GuacamoleTunnel tunnel = (GuacamoleTunnel) session.getAttributes().get(TUNNEL_ATTRIBUTE);
-        if (tunnel != null && tunnel.isOpen()) {
-        	try {
-        		GuacamoleWriter writer = tunnel.getSocket().getWriter();
-				synchronized (tunnel) {
-					writer.write(message.getPayload().toCharArray());
-				}
-        	} catch (GuacamoleException e) {
-        		log.error("Failed writing text frame instruction packet to guacd socket", e);
-        	}
+        WebSocketSession concurrentSession = (WebSocketSession) session.getAttributes().get("CONCURRENT_SESSION");
+
+        // Ensure we reference the active session condition checking against our thread-safe wrapper
+        if (tunnel != null && tunnel.isOpen() && concurrentSession != null && concurrentSession.isOpen()) {
+            try {
+                GuacamoleWriter writer = tunnel.getSocket().getWriter();
+                synchronized (tunnel) {
+                    writer.write(message.getPayload().toCharArray());
+                }
+            } catch (GuacamoleException e) {
+                log.error("Failed writing text frame instruction packet to guacd socket", e);
+            }
         }
     }
 
