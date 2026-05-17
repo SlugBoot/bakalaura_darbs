@@ -73,9 +73,6 @@
             }
         };
 
-        // Initialize execution handshake
-        client.connect();
-
         // Pass Keyboard Input Matrix Events to Container Stream
         const keyboard = new Guacamole.Keyboard(document);
         keyboard.onkeydown = function (keysym) {
