@@ -35,7 +35,13 @@
 		canvas {
 			display: block;
 			margin: 0 auto;
+			cursor: text;
 		}
+		
+		#display-viewport canvas:focus {
+		    outline: none;
+		}
+		
 	</style>
 </head>
 
@@ -99,6 +105,9 @@
 		// Route Mouse tracking vectors
 		const mouse = new Guacamole.Mouse(displayElement);
 		mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function (e) {
+			if (e.type === 'mousedown') {
+				client.getDisplay().focus();
+			}
 			client.sendMouseState(e.state);
 		});
 		/*]]>*/
