@@ -34,6 +34,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	private static final String TUNNEL_ATTRIBUTE = "GUAC_TUNNEL";
 	
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String query = session.getUri().getQuery();
@@ -80,17 +81,21 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             GuacamoleReader reader = socket.getReader();
             
             Thread readThread = new Thread(() -> {
-            	try {
+                try {
                     char[] buffer;
+                    // FIX: Ensure the stream keeps listening and handling exceptions gracefully without crashing out early
                     while (session.isOpen() && (buffer = reader.read()) != null) {
-                        session.sendMessage(new TextMessage(new String(buffer)));
+                        if (buffer.length > 0) {
+                            session.sendMessage(new TextMessage(new String(buffer)));
+                        }
                     }
                 } catch (IOException | GuacamoleException e) {
-                    log.debug("Guacamole read stream closed: {}", e.getMessage());
+                    log.debug("Guacamole tunnel read stream closed/interrupted: {}", e.getMessage());
                 } finally {
                     closeTunnel(session);
                 }
             });
+            readThread.setName("guac-reader-" + instanceIdStr);
             readThread.start();
             
 		} catch (Exception e) {
