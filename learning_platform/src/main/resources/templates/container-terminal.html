@@ -59,7 +59,7 @@
 		const statusText = document.getElementById("status-text");
 
 		const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-		const wsUrl = wsProtocol + window.location.host + "/guacamole-tunnel?instanceId=" + encodeURIComponent(instanceId);
+		const wsUrl = wsProtocol + window.location.host + "/guacamole-tunnel?instanceId=" + instanceId.trim();
 
 		const tunnel = new Guacamole.WebSocketTunnel(wsUrl);
 		const client = new Guacamole.Client(tunnel);
