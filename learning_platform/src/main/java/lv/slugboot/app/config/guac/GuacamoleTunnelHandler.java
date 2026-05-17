@@ -1,6 +1,5 @@
 package lv.slugboot.app.config.guac;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -89,10 +89,11 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             String tunnelId = tunnel.getUUID().toString();
             String handshakeInstruction = "0.," + tunnelId.length() + "." + tunnelId + ";";
             
-            synchronized (session) {
-                if (session.isOpen()) {
-                    session.sendMessage(new TextMessage(handshakeInstruction));
-                }
+            // 5000ms execution timeout, 256KB buffer limit
+            WebSocketSession concurrentSession = new ConcurrentWebSocketSessionDecorator(session, 5000, 262144);
+            
+            if (concurrentSession.isOpen()) {
+            	concurrentSession.sendMessage(new TextMessage(handshakeInstruction));
             }
             
             // Delegate the reading loops safely to a managed thread execution
@@ -100,11 +101,9 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
                 try {
                     GuacamoleReader reader = tunnel.getSocket().getReader();
                     char[] buffer;
-                    while (session.isOpen() && (buffer = reader.read()) != null) {
-                        synchronized (session) {
-                            if (session.isOpen()) {
-                                session.sendMessage(new TextMessage(new String(buffer)));
-                            }
+                    while (concurrentSession.isOpen() && (buffer = reader.read()) != null) {
+                    	if (concurrentSession.isOpen()) {
+                    		concurrentSession.sendMessage(new TextMessage(new String(buffer)));
                         }
                     }
                 } catch (Exception e) {
