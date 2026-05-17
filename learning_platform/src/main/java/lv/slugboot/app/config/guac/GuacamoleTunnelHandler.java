@@ -127,9 +127,15 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         // Receive instructions from browser/thymeleaf layer and pipe them straight into guacd
         GuacamoleTunnel tunnel = (GuacamoleTunnel) session.getAttributes().get(TUNNEL_ATTRIBUTE);
-        if (tunnel != null) {
-            GuacamoleWriter writer = tunnel.getSocket().getWriter();
-            writer.write(message.getPayload().toCharArray());
+        if (tunnel != null && tunnel.isOpen()) {
+        	try {
+        		GuacamoleWriter writer = tunnel.getSocket().getWriter();
+				synchronized (tunnel) {
+					writer.write(message.getPayload().toCharArray());
+				}
+        	} catch (GuacamoleException e) {
+        		log.error("Failed writing text frame instruction packet to guacd socket", e);
+        	}
         }
     }
 
