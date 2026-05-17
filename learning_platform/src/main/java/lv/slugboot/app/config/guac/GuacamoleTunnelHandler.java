@@ -1,6 +1,7 @@
 package lv.slugboot.app.config.guac;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.guacamole.GuacamoleException;
@@ -17,6 +18,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +37,32 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		UUID instanceId = (UUID) session.getAttributes().get("instanceId");
-		
-		if (instanceId == null) {
-			log.error("Guacamole Tunnel Handshake aborted: 'instanceId' missing from session attributes.");
-			session.close(CloseStatus.BAD_DATA.withReason("Required connection session attribute 'instanceId' was missing."));
-			return;
-		}
-		
-		log.info("Constructing Guacamole session for Instance UUID: {}", instanceId);
+		String query = session.getUri().getQuery();
+	    String instanceIdStr = null;
+
+	    if (query != null) {
+	        // Safely extract parameters avoiding manual string splits
+	        Map<String, String> queryParams = UriComponentsBuilder.fromUri(session.getUri())
+	                .build()
+	                .getQueryParams()
+	                .toSingleValueMap();
+	        
+	        instanceIdStr = queryParams.get("instanceId");
+	    }
+
+	    // Clean up fallback parameter if '?undefined' or extra fragments somehow pass through
+	    if (instanceIdStr != null && instanceIdStr.contains("?")) {
+	        instanceIdStr = instanceIdStr.split("\\?")[0];
+	    }
+
+	    if (instanceIdStr == null || instanceIdStr.isEmpty()) {
+	        log.error("Missing instanceId query parameter inside WebSocket request connection.");
+	        session.close(CloseStatus.BAD_DATA.withReason("Missing instanceId parameter"));
+	        return;
+	    }
+
+	    log.info("Constructing Guacamole session for Instance UUID: {}", instanceIdStr);
+	    UUID instanceId = UUID.fromString(instanceIdStr);
 		
 		try {
 			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
