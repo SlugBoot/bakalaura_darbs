@@ -35,17 +35,13 @@
         /*<![CDATA[*/
         const rawInstanceId = document.getElementById('backendInstanceId').value;
 		
-		let instanceId = '';
-		
-		if (rawInstanceId && typeof rawInstanceId === 'string') {
-	        instanceId = rawInstanceId.trim();
-	    }
+		let instanceId = rawInstanceId ? rawInstanceId.trim() : '';
 		
 		console.log("Verified Instance ID for WebSocket Handshake:", instanceId);
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + instanceId;
+        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel';
 
         // Construct Tunnel Engine Runtime
         const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
@@ -53,6 +49,8 @@
 
         const viewport = document.getElementById("display-viewport");
         const statusText = document.getElementById("status-text");
+		
+		client.connect("instanceId=" + instanceId);
 
         // Inject display node
         const displayElement = client.getDisplay().getElement();

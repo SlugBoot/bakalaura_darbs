@@ -80,6 +80,10 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             
             GuacamoleReader reader = socket.getReader();
             
+            String tunnelId = tunnel.getUUID().toString();
+            String handshakeInstruction = "0.,connection," + tunnelId.length() + "." + tunnelId + ";";
+            session.sendMessage(new TextMessage(handshakeInstruction));
+            
             Thread readThread = new Thread(() -> {
                 try {
                     char[] buffer;
