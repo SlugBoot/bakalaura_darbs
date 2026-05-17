@@ -38,7 +38,7 @@
 		let instanceId = '';
 		
 		if (rawInstanceId && typeof rawInstanceId === 'string') {
-	        instanceId = instanceId.trim();
+	        instanceId = rawInstanceId.trim();
 	    }
 		
 		console.log("Verified Instance ID for WebSocket Handshake:", instanceId);
