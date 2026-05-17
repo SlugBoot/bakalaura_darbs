@@ -32,10 +32,12 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         const instanceId = /*[[${instanceId}]]*/ '';
+		
+		console.log("Extracted Instance ID:", instanceId);
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + instanceId;
+        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + String(instanceId);
 
         // Construct Tunnel Engine Runtime
         const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
