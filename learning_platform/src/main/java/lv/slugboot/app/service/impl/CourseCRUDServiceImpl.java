@@ -210,9 +210,9 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				      shell: "pct exec {{ item.vmid }} -- sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config"
 				      loop: "{{ containers }}"
 
-                    - name: Force PasswordAuthentication via pct exec
-                      shell: "pct exec {{ item.vmid }} -- sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config"
-                      loop: "{{ containers }}"
+				    - name: Force PasswordAuthentication via pct exec
+				      shell: "pct exec {{ item.vmid }} -- sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config"
+				      loop: "{{ containers }}"
 
 				    - name: Restart SSH service inside container
 				      shell: "pct exec {{ item.vmid }} -- systemctl restart ssh"
