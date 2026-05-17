@@ -19,6 +19,8 @@
     </style>
 </head>
 <body>
+	
+	<input type="hidden" id="backendInstanceId" th:value="${instance}" />
 
     <div id="terminal-header">
         <span>⚙️ Proxmox Container Live Console Session</span>
@@ -31,15 +33,15 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const rawInstanceId = /*[[${instance}]]*/ '';
+        const rawInstanceId = document.getElementById('backendInstanceId').value;
 		
 		let instanceId = '';
 		
 		if (rawInstanceId && typeof rawInstanceId === 'string') {
-	        instanceId = instanceId.trim().split('?')[0];
+	        instanceId = instanceId.trim();
 	    }
 		
-		console.log("Verified Clean UUID String:", instanceId);
+		console.log("Verified Instance ID for WebSocket Handshake:", instanceId);
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
