@@ -221,7 +221,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
 		for (LabInstance inst : instances) {
-			inst.setStatus(LabInstanceStatus.RUNNIING);
+			inst.setStatus(LabInstanceStatus.RUNNING);
 			instanceRepo.save(inst);
 			if (inst.getIpAddress() != null) {
 				ips.add(inst.getIpAddress());
