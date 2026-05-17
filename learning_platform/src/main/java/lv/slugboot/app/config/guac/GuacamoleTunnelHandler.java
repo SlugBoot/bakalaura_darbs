@@ -79,7 +79,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             config.setParameter("port", "22");
             config.setParameter("username", "root");
             config.setParameter("password", "securepassword");
-            config.setParameter("command", "/bin/bash");
+//            config.setParameter("command", "/bin/bash");
             config.setParameter("terminal-type", "linux");
             config.setParameter("enable-sftp", "false");
             config.setParameter("width", "1024");
@@ -99,22 +99,30 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
             
             // 5000ms execution timeout, 256KB buffer limit
             WebSocketSession concurrentSession = new ConcurrentWebSocketSessionDecorator(session, 5000, 262144);
-            
             session.getAttributes().put("CONCURRENT_SESSION", concurrentSession);
             
             if (concurrentSession.isOpen()) {
             	concurrentSession.sendMessage(new TextMessage(handshakeInstruction));
             }
             
+            
             guacReaderExecutor.submit(() -> {
                 Thread.currentThread().setName("guac-reader-" + instanceId);
                 try {
                     GuacamoleReader reader = tunnel.getSocket().getReader();
                     char[] buffer;
-                    // Ensure blocking read drops loop if socket closes
-                    while (tunnel.isOpen() && concurrentSession.isOpen() && (buffer = reader.read()) != null) {
-                        if (concurrentSession.isOpen()) {
-                            concurrentSession.sendMessage(new TextMessage(new String(buffer)));
+                    
+                    // Loop runs continuously as long as the underlying tunnel remains open
+                    while (tunnel.isOpen() && (buffer = reader.read()) != null) {
+                        
+                        // Dynamic look-up ensures we are always grabbing the live, decorated concurrent session instance
+                        WebSocketSession activeConcurrentSession = (WebSocketSession) session.getAttributes().get("CONCURRENT_SESSION");
+                        
+                        if (activeConcurrentSession != null && activeConcurrentSession.isOpen()) {
+                            activeConcurrentSession.sendMessage(new TextMessage(new String(buffer)));
+                        } else {
+                            // If the client truly dropped or closed, we stop the thread
+                            break;
                         }
                     }
                 } catch (Exception e) {
