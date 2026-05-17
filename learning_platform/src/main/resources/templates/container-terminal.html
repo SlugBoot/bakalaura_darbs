@@ -33,11 +33,19 @@
         /*<![CDATA[*/
         const instanceId = /*[[${instance}]]*/ '';
 		
+		if (instanceId && typeof instanceId === 'string') {
+	        // Strip out anything starting from an accidental secondary question mark or space
+	        if (instanceId.includes('?')) {
+	            instanceId = instanceId.split('?')[0];
+	        }
+	        instanceId = instanceId.trim();
+	    }
+		
 		console.log("Extracted Instance ID:", instanceId);
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + String(instanceId);
+        const tunnelEndpoint = protocol + window.location.host + '/guacamole-tunnel?instanceId=' + instanceId;
 
         // Construct Tunnel Engine Runtime
         const tunnel = new Guacamole.WebSocketTunnel(tunnelEndpoint);
