@@ -34,6 +34,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	private final ILabInstanceCRUDService labInstanceCRUDService;
 	private static final String TUNNEL_ATTRIBUTE = "GUAC_TUNNEL";
+	private static final String CONCURRENT_SESSION_ATTRIBUTE = "CONCURRENT_SESSION";
 
 	private final ExecutorService guacReaderExecutor = Executors.newCachedThreadPool(r -> {
 		Thread t = new Thread(r);
@@ -90,9 +91,9 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 			GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
 			session.getAttributes().put(TUNNEL_ATTRIBUTE, tunnel);
 
-			// 5000ms execution timeout, 256KB buffer limit
-			WebSocketSession concurrentSession = new ConcurrentWebSocketSessionDecorator(session, 5000, 262144);
-			session.getAttributes().put("CONCURRENT_SESSION", concurrentSession);
+			// 5000ms execution timeout, 512KB buffer limit
+			WebSocketSession concurrentSession = new ConcurrentWebSocketSessionDecorator(session, 5000, 524288);
+			session.getAttributes().put(CONCURRENT_SESSION_ATTRIBUTE, concurrentSession);
 
 			guacReaderExecutor.submit(() -> {
 				Thread.currentThread().setName("guac-reader-" + instanceId);
@@ -106,7 +107,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 						// Dynamic look-up ensures we are always grabbing the live, decorated concurrent
 						// session instance
 						WebSocketSession activeConcurrentSession = (WebSocketSession) session.getAttributes()
-								.get("CONCURRENT_SESSION");
+								.get(CONCURRENT_SESSION_ATTRIBUTE);
 
 						if (activeConcurrentSession != null && activeConcurrentSession.isOpen()) {
 							activeConcurrentSession.sendMessage(new TextMessage(new String(buffer)));
@@ -130,8 +131,13 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		// Receive instructions from browser/thymeleaf layer and pipe them straight into
-		// guacd
+		String payload = message.getPayload();
+		
+		if (payload != null && payload.startsWith("connect")) {
+			log.debug("Filtered out initial client handshake connection frame.");
+			return;
+		}
+		
 		GuacamoleTunnel tunnel = (GuacamoleTunnel) session.getAttributes().get(TUNNEL_ATTRIBUTE);
 
 		if (tunnel != null && tunnel.isOpen() && session.isOpen()) {
