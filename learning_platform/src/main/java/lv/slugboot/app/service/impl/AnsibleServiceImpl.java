@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.models.enums.LabInstanceStatus;
@@ -18,6 +19,7 @@ import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AnsibleServiceImpl implements IAnsibleService {
 
@@ -68,6 +70,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 			Student student = studentRepo.findById(studentId).get();
 			command += " --limit " + student.getUsername() + "-" + courseShortId + "-vm";
 		}
+		log.info("Running playbook: " + playbookName + " with inventory: " + inventoryName);
 		return systemTaskService.executeCommand(command);
 	}
 
