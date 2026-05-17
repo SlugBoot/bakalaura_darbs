@@ -46,6 +46,13 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 			return;
 		}
 		
+		if (instanceIdStr.contains("?")) {
+		    instanceIdStr = instanceIdStr.split("\\?")[0];
+		}
+		instanceIdStr = instanceIdStr.trim();
+
+		log.info("Sanitized UUID hitting Backend String Parser: '{}' (Length: {})", instanceIdStr, instanceIdStr.length());
+		
 		try {
 			UUID instanceId = UUID.fromString(instanceIdStr);
 			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);

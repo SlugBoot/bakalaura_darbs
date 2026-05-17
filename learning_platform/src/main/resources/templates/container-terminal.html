@@ -31,17 +31,15 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        let instanceId = /*[[${instance}]]*/ '';
+        const rawInstanceId = /*[[${instance}]]*/ '';
 		
-		if (instanceId && typeof instanceId === 'string') {
-	        // Strip out anything starting from an accidental secondary question mark or space
-	        if (instanceId.includes('?')) {
-	            instanceId = instanceId.split('?')[0];
-	        }
-	        instanceId = instanceId.trim();
+		let instanceId = '';
+		
+		if (rawInstanceId && typeof rawInstanceId === 'string') {
+	        instanceId = instanceId.trim().split('?')[0];
 	    }
 		
-		console.log("Extracted Instance ID:", instanceId);
+		console.log("Verified Clean UUID String:", instanceId);
         
         // Compute WebSocket connection path appending dynamic tracking variables
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
