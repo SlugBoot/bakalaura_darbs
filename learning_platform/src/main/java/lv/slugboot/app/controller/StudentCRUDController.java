@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -105,7 +106,7 @@ public class StudentCRUDController {
 	@GetMapping("/update-password/{uuid}")
 	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId, Model model) {
 		try {
-			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(studentId));
+			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
 			model.addAttribute("userType", "student");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 			return "update-password";
@@ -117,7 +118,7 @@ public class StudentCRUDController {
 
 	@PostMapping("/update-password/{uuid}")
 	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId,
-			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
+			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		Runnable populateErrorModel = () -> {
 	        model.addAttribute("userId", studentId);
 	        model.addAttribute("userType", "student");
