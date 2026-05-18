@@ -25,7 +25,7 @@
         </tr>
         <tr>
           <td>Surname:</td>
-          <td><select th:field="*{professor}">
+          <td><select th:field="*{professorId}">
 			<option th:each="temp : ${professor}" th:value="${temp.getPersonId()}" th:text="${temp.getName()+' '+temp.getSurname()}"/>
 		  </select></td>
         </tr>
