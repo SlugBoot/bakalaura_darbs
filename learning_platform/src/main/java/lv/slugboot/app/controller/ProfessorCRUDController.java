@@ -121,6 +121,7 @@ public class ProfessorCRUDController {
 		if (result.hasErrors()) {
 			model.addAttribute(USER_ID_ATTRIBUTE, professorId);
 			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
+			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
 			return UPDATE_PASSWORD_PAGE;
 		}
 		

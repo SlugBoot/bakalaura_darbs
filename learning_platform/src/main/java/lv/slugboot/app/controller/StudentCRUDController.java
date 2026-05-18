@@ -121,6 +121,7 @@ public class StudentCRUDController {
 		if (result.hasErrors()) {
 			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
 			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
+			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
 			return UPDATE_PASSWORD_PAGE;
 		}
 		
