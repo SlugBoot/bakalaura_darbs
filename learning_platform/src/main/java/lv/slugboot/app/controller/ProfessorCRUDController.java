@@ -60,7 +60,7 @@ public class ProfessorCRUDController {
 		try {
 			professorCRUDService.createProfessor(professor.getName(), professor.getMiddleName(), professor.getSurname(),
 					professor.getEmail());
-			return PROFESSOR_REDIRECT_PAGE;
+			return PROFESSOR_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -104,6 +104,7 @@ public class ProfessorCRUDController {
 	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId, Model model) {
 	    try {
 	        model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(professorId));
+			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {
 	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
