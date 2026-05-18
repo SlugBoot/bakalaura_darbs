@@ -28,7 +28,7 @@ public class ProfessorCRUDController {
 	private static final String CREATE_PROFESSOR_PAGE = "create-professor";
 	private static final String UPDATE_PROFESSOR_PAGE = "update-professor";
 	private static final String UPDATE_PASSWORD_PAGE = "update-password";
-	private static final String PROFESSOR_REDIRECT_PAGE = "redirect:/professor/crud/";
+	private static final String PROFESSOR_REDIRECT_PAGE = "redirect:/professor/crud/all";
 
 	private static final String PROFESSOR_ATTRIBUTE = "professor";
 	private static final String ERROR_ATTRIBUTE = "error";
@@ -62,7 +62,7 @@ public class ProfessorCRUDController {
 		try {
 			professorCRUDService.createProfessor(professor.getName(), professor.getMiddleName(), professor.getSurname(),
 					professor.getEmail());
-			return PROFESSOR_REDIRECT_PAGE + "all";
+			return PROFESSOR_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -70,7 +70,7 @@ public class ProfessorCRUDController {
 	}
 
 	@GetMapping("/update/{uuid}")
-	public String getControllerUpdateStudentById(@PathVariable(name = "uuid") UUID professorId, Model model) {
+	public String getControllerUpdateProfessorById(@PathVariable(name = "uuid") UUID professorId, Model model) {
 		try {
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(professorId));
 			return UPDATE_PROFESSOR_PAGE;
@@ -81,7 +81,7 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update/{uuid}")
-	public String postControllerUpdateStudentById(@PathVariable(name = "uuid") UUID professorId,
+	public String postControllerUpdateProfessorById(@PathVariable(name = "uuid") UUID professorId,
 			@Valid ProfessorDTO professor, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
@@ -131,7 +131,7 @@ public class ProfessorCRUDController {
 		
 		try {
 	        professorCRUDService.updatePasswordById(professorId, passwordDto);
-	        return PROFESSOR_REDIRECT_PAGE + professorId.toString();
+	        return PROFESSOR_REDIRECT_PAGE;
 	    } catch (IllegalArgumentException e) {
 	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
