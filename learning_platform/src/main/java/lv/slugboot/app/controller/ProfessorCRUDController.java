@@ -33,6 +33,8 @@ public class ProfessorCRUDController {
 	private static final String PROFESSOR_ATTRIBUTE = "professor";
 	private static final String ERROR_ATTRIBUTE = "error";
 	private static final String PASSWORD_ATTRIBUTE = "password";
+	private static final String USER_TYPE_ATTRIBUTE = "userType";
+	private static final String USER_ID_ATTRIBUTE = "userId";
 
 	@GetMapping("/all")
 	public String getControllerGetAllProfessors(Model model) {
@@ -103,7 +105,8 @@ public class ProfessorCRUDController {
 	@GetMapping("/update-password/{uuid}")
 	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId, Model model) {
 	    try {
-	        model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(professorId));
+	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
+			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {
@@ -116,7 +119,8 @@ public class ProfessorCRUDController {
 	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId,
 			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorId);
+			model.addAttribute(USER_ID_ATTRIBUTE, professorId);
+			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
 			return UPDATE_PASSWORD_PAGE;
 		}
 		
@@ -130,7 +134,7 @@ public class ProfessorCRUDController {
 	        return PROFESSOR_REDIRECT_PAGE + professorId.toString();
 	    } catch (IllegalArgumentException e) {
 	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
-	        model.addAttribute(PROFESSOR_ATTRIBUTE, professorId);
+	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
 	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {
 	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());

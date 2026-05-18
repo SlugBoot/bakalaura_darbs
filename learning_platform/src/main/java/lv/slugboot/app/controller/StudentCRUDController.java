@@ -33,7 +33,9 @@ public class StudentCRUDController {
 	private static final String STUDENT_ATTRIBUTE = "student";
 	private static final String ERROR_ATTRIBUTE = "error";
 	private static final String PASSWORD_ATTRIBUTE = "password";
-
+	private static final String USER_TYPE_ATTRIBUTE = "userType";
+	private static final String USER_ID_ATTRIBUTE = "userId";
+	
 	@GetMapping("/all")
 	public String getControllerGetAllStudents(Model model) {
 		try {
@@ -104,6 +106,7 @@ public class StudentCRUDController {
 	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId, Model model) {
 		try {
 			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(studentId));
+			model.addAttribute("userType", "student");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 			return "update-password";
 		} catch (Exception e) {
@@ -116,7 +119,8 @@ public class StudentCRUDController {
 	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId,
 			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			model.addAttribute(STUDENT_ATTRIBUTE, studentId);
+			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
+			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
 			return UPDATE_PASSWORD_PAGE;
 		}
 		
@@ -126,13 +130,13 @@ public class StudentCRUDController {
 		}
 		
 		try {
-	        // 3. Delegate execution safely to the service
 	        studentCRUDService.updatePasswordById(studentId, passwordDto);
 	        return "redirect:/student/crud/all";
 	    } catch (IllegalArgumentException e) {
 	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
-	        model.addAttribute("studentId", studentId);
-	        return "update-student-password";
+			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
+			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
+	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {
 	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 	        return ERROR_PAGE;
