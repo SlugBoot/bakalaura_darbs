@@ -38,6 +38,9 @@
 		  <td><input type="submit" /></td>
 		</tr>
       </table>
+	  <a th:href="@{/professor/crud/update-password/{uuid}(uuid=${professor.getPersonId()})}">
+	  	<button type="button">Change password</button>
+	  </a>
     </form>
   </body>
 </html>
