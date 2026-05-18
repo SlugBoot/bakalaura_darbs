@@ -129,3 +129,10 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 # 17. maijs
 
 1. Pievienots Guacamole konfigurācijas prototips
+    - Piezīme: 6 stundas "uz rinķi" konfigurācijas izmaiņas atkļūdošanai, kas beigās bija kļūda JavaScript kodā
+
+# 18. maijs
+
+1. Izveidoti Datu Pārsūtīšanas Objekti (Data Transfer Object), pēc SonarQube ieteikuma
+2. Pārveidota Servisu un Kontrolieru struktūra, lai to atbalstītu
+3. Izveidotas Lietotāju paroļu pārvaldības funkcijas

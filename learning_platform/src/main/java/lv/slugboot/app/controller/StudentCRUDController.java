@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lv.slugboot.app.models.Student;
+import lv.slugboot.app.dto.PasswordUpdateDTO;
+import lv.slugboot.app.dto.StudentDTO;
 import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
@@ -26,9 +27,12 @@ public class StudentCRUDController {
 	private static final String ERROR_PAGE = "show-error";
 	private static final String CREATE_STUDENT_PAGE = "create-student";
 	private static final String UPDATE_STUDENT_PAGE = "update-student";
+	private static final String UPDATE_PASSWORD_PAGE = "update-password";
+	private static final String STUDENT_REDIRECT_PAGE = "redirect:/student/crud/";
 
 	private static final String STUDENT_ATTRIBUTE = "student";
 	private static final String ERROR_ATTRIBUTE = "error";
+	private static final String PASSWORD_ATTRIBUTE = "password";
 
 	@GetMapping("/all")
 	public String getControllerGetAllStudents(Model model) {
@@ -43,12 +47,12 @@ public class StudentCRUDController {
 
 	@GetMapping("/create")
 	public String getControllerCreateStudent(Model model) {
-		model.addAttribute(STUDENT_ATTRIBUTE, new Student());
+		model.addAttribute(STUDENT_ATTRIBUTE, new StudentDTO());
 		return CREATE_STUDENT_PAGE;
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateStudent(@Valid Student student, BindingResult result, Model model) {
+	public String postControllerCreateStudent(@Valid StudentDTO student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return CREATE_STUDENT_PAGE;
 		}
@@ -56,7 +60,7 @@ public class StudentCRUDController {
 		try {
 			studentCRUDService.createStudent(student.getName(), student.getMiddleName(), student.getSurname(),
 					student.getEmail());
-			return "redirect:/student/crud/all";
+			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -75,8 +79,8 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update/{uuid}")
-	public String postControllerUpdateStudentById(@PathVariable(name = "uuid") UUID studentId, @Valid Student student,
-			BindingResult result, Model model) {
+	public String postControllerUpdateStudentById(@PathVariable(name = "uuid") UUID studentId,
+			@Valid StudentDTO student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
 				return UPDATE_STUDENT_PAGE;
@@ -89,11 +93,50 @@ public class StudentCRUDController {
 		try {
 			studentCRUDService.updateStudentById(studentId, student.getName(), student.getMiddleName(),
 					student.getSurname(), student.getEmail());
-			return "redirect:/student/crud/all";
+			return STUDENT_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
+	}
+
+	@GetMapping("/update-password/{uuid}")
+	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId, Model model) {
+		try {
+			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(studentId));
+			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
+			return "update-password";
+		} catch (Exception e) {
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
+		}
+	}
+
+	@PostMapping("/update-password/{uuid}")
+	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId,
+			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			model.addAttribute(STUDENT_ATTRIBUTE, studentId);
+			return UPDATE_PASSWORD_PAGE;
+		}
+		
+		if (!passwordDto.isNewPasswordMatching()) {
+			result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
+			model.addAttribute(STUDENT_ATTRIBUTE, studentId);
+		}
+		
+		try {
+	        // 3. Delegate execution safely to the service
+	        studentCRUDService.updatePasswordById(studentId, passwordDto);
+	        return "redirect:/student/crud/all";
+	    } catch (IllegalArgumentException e) {
+	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
+	        model.addAttribute("studentId", studentId);
+	        return "update-student-password";
+	    } catch (Exception e) {
+	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+	        return ERROR_PAGE;
+	    }
 	}
 
 	@GetMapping("/delete/{uuid}")

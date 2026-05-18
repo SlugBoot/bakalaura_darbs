@@ -3,21 +3,27 @@ package lv.slugboot.app.service.impl;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lv.slugboot.app.dto.PasswordUpdateDTO;
+import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentCRUDService;
+import utils.PasswordGenerator;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class StudentCRUDServiceImpl implements IStudentCRUDService {
 
 	private final IStudentRepo studentRepo;
-
 	private final IPersonRepo personRepo;
+	private final PasswordEncoder passwordEncoder;
 
 	@Override
 	public void createStudent(String name, String middleName, String surname, String email) {
@@ -32,6 +38,13 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 			throw new IllegalArgumentException("The email has already been used for a different account");
 		} else {
 			Student newStudent = new Student(name, middleName, surname, email);
+			
+			String rawPassword = PasswordGenerator.generateRandomPassword(12);
+			
+			log.debug("[SECURITY DEBUG] Generated password for student: ("+ newStudent.getUsername() +"), " + rawPassword);
+			
+			newStudent.setPassword(passwordEncoder.encode(rawPassword));
+			
 			studentRepo.save(newStudent);
 		}
 	}
@@ -103,5 +116,21 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 		Student studentToDelete = retrieveById(id);
 
 		studentRepo.delete(studentToDelete);
+	}
+
+	@Override
+	public void updatePasswordById(UUID studentId, PasswordUpdateDTO passwordDTO) throws NoSuchFieldException {
+		
+		String plainPassword = passwordDTO.getNewPassword();
+		
+		if (plainPassword == null || plainPassword.trim().isEmpty()) {
+			throw new IllegalArgumentException("Password cannot be empty");
+		}
+		
+		Student student = retrieveById(studentId);
+		
+		student.setPassword(passwordEncoder.encode(plainPassword));
+		
+		studentRepo.save(student);
 	}
 }

@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IAnsibleService;
@@ -112,7 +113,7 @@ public class CourseCRUDController {
 		try {
 			String referer = request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
-			model.addAttribute(COURSE_ATTRIBUTE, new Course());
+			model.addAttribute(COURSE_ATTRIBUTE, new CourseDTO());
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return CREATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
@@ -124,15 +125,19 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateCourse(@Valid Course course,
+	public String postControllerCreateCourse(@Valid CourseDTO course,
 			@RequestParam(value = "referer", required = false) String referer, BindingResult result, Model model) {
 		if (result.hasErrors()) {
+			try {
+				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+			} catch (Exception ignored) {}
+			
 			return CREATE_COURSE_PAGE;
 		}
 
 		try {
 			courseCRUDService.createCourse(course.getCourseName(), course.getCourseDesc(),
-					course.getProfessor().getPersonId());
+					course.getProfessorId());
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
