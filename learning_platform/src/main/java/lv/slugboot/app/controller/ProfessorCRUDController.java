@@ -118,23 +118,29 @@ public class ProfessorCRUDController {
 	@PostMapping("/update-password/{uuid}")
 	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId,
 			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			model.addAttribute(USER_ID_ATTRIBUTE, professorId);
-			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
-			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
-			return UPDATE_PASSWORD_PAGE;
-		}
-		
-		if (!passwordDto.isNewPasswordMatching()) {
-			result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorId);
-		}
+		Runnable populateErrorModel = () -> {
+	        model.addAttribute("userId", professorId);
+	        model.addAttribute("userType", "professor");
+	        model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
+	    };
+
+	    if (result.hasErrors()) {
+	        populateErrorModel.run();
+	        return UPDATE_PASSWORD_PAGE;
+	    }
+	    
+	    if (!passwordDto.isNewPasswordMatching()) {
+	        result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
+	        populateErrorModel.run();
+	        return UPDATE_PASSWORD_PAGE;
+	    }
 		
 		try {
 	        professorCRUDService.updatePasswordById(professorId, passwordDto);
 	        return PROFESSOR_REDIRECT_PAGE;
 	    } catch (IllegalArgumentException e) {
 	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
+	        populateErrorModel.run();
 	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
 	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {

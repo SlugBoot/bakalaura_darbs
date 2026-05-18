@@ -118,25 +118,29 @@ public class StudentCRUDController {
 	@PostMapping("/update-password/{uuid}")
 	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId,
 			@Valid PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
-			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
-			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
-			return UPDATE_PASSWORD_PAGE;
-		}
-		
-		if (!passwordDto.isNewPasswordMatching()) {
-			result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
-			model.addAttribute(STUDENT_ATTRIBUTE, studentId);
-		}
+		Runnable populateErrorModel = () -> {
+	        model.addAttribute("userId", studentId);
+	        model.addAttribute("userType", "student");
+	        model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
+	    };
+
+	    if (result.hasErrors()) {
+	        populateErrorModel.run();
+	        return UPDATE_PASSWORD_PAGE;
+	    }
+	    
+	    if (!passwordDto.isNewPasswordMatching()) {
+	        result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
+	        populateErrorModel.run();
+	        return UPDATE_PASSWORD_PAGE;
+	    }
 		
 		try {
 	        studentCRUDService.updatePasswordById(studentId, passwordDto);
 	        return "redirect:/student/crud/all";
 	    } catch (IllegalArgumentException e) {
-	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
-			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
-			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
+	    	result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
+	        populateErrorModel.run();
 	        return UPDATE_PASSWORD_PAGE;
 	    } catch (Exception e) {
 	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
