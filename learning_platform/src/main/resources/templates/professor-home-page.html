@@ -24,7 +24,9 @@
 			</tr>
 			<tr>
 				<td colspan="4">
-					<button onclick="location.href='/course/crud/create'">Create New Course</button>
+					<a th:href="@{course/crud/create(username=${professor.getUsername()})">
+					<button type="button"> New Course</button>
+					</a>
 				</td>
 		    </tr>	
 		</table>

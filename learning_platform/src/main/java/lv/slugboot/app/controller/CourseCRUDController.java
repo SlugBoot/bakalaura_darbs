@@ -76,10 +76,10 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}")
 	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug,
-			@RequestParam(value = "referer", required = false) String manualReferer, HttpServletRequest request,
+			@RequestParam(value = "referer", required = false) String referer, HttpServletRequest request,
 			Model model) {
 		try {
-			String referer = (manualReferer != null) ? manualReferer : request.getHeader(REFERRER_HEADER);
+			referer = (referer != null) ? referer : request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
@@ -96,8 +96,12 @@ public class CourseCRUDController {
 
 	@PostMapping("/delete")
 	@PreAuthorize("hasRole('PROFESSOR') and @courseCRUDService.retrieveById(#courseId).getProfessor().getUsername() == authentication.name")
-	public String postControllerDeleteCourse(@RequestParam(name = "uuid") UUID courseId, Model model) {
+	public String postControllerDeleteCourse(@RequestParam(name = "uuid") UUID courseId,
+			@RequestParam(name = "referer") String referer, Model model) {
 		try {
+			if (referer != null) {
+				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			}
 			courseCRUDService.deleteCourseById(courseId);
 			ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
 			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
@@ -133,6 +137,7 @@ public class CourseCRUDController {
 		if (result.hasErrors()) {
 			try {
 				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(course.getProfessorId()));
+				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 			} catch (Exception ignored) {
 			}
 
@@ -155,7 +160,7 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}/update")
 	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug,
-			@RequestParam(name="username") String username,Model model) {
+			@RequestParam(name = "username") String username, Model model) {
 		try {
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
