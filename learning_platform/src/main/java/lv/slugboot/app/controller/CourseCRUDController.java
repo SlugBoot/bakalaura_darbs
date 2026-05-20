@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -57,7 +56,12 @@ public class CourseCRUDController {
 	private static final String PROXMOX_FILE = "provisioning";
 	private static final String HOSTS_FILE = "hosts";
 
-	private static final String REFERRER_HEADER = "Referer";
+	private static final String REFERER_PARAMETER = "referer";
+	private static final String USERNAME_PARAMETER = "username";
+	private static final String UUID_PARAMETER = "uuid";
+	private static final String STUDENT_ID_PARAMETER = "studentId";
+	private static final String INSTANCE_ID_PARAMETER = "instanceId";
+
 	private static final String REDIRECT_STRING = "redirect:";
 	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
 
@@ -75,12 +79,14 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}")
-	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug,
-			@RequestParam(value = "referer", required = false) String referer, HttpServletRequest request,
+	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
-			referer = (referer != null) ? referer : request.getHeader(REFERRER_HEADER);
-			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			String referer = request.getParameter(REFERER_PARAMETER);
+
+			if (referer != null) {
+				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			}
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
@@ -96,14 +102,21 @@ public class CourseCRUDController {
 
 	@PostMapping("/delete")
 	@PreAuthorize("hasRole('PROFESSOR') and @courseCRUDService.retrieveById(#courseId).getProfessor().getUsername() == authentication.name")
-	public String postControllerDeleteCourse(@RequestParam(name = "uuid") UUID courseId,
-			@RequestParam(name = "referer") String referer, Model model) {
+	public String postControllerDeleteCourse(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			UUID courseId;
+			if (courseIdStr != null) {
+				courseId = UUID.fromString(courseIdStr);
+				courseCRUDService.deleteCourseById(courseId);
+				ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
+			}
+
+			String referer = request.getParameter(REFERER_PARAMETER);
 			if (referer != null) {
 				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 			}
-			courseCRUDService.deleteCourseById(courseId);
-			ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
+
 			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
 			return COURSE_LIST;
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
@@ -115,13 +128,21 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/create")
-	public String getControllerCreateCourse(@RequestParam(name = "username", required = false) String username,
-			HttpServletRequest request, Model model) {
+	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
-			String referer = request.getHeader(REFERRER_HEADER);
-			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			String referer = request.getParameter(REFERER_PARAMETER);
+
+			if (referer != null) {
+				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			}
+
+			String username = request.getParameter(USERNAME_PARAMETER);
+			if (username != null) {
+				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+			}
+
 			model.addAttribute(COURSE_ATTRIBUTE, new CourseDTO());
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+
 			return CREATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -132,12 +153,17 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateCourse(@Valid CourseDTO course,
-			@RequestParam(value = "referer", required = false) String referer, BindingResult result, Model model) {
+	public String postControllerCreateCourse(@Valid CourseDTO course, HttpServletRequest request, BindingResult result,
+			Model model) {
+		String referer = request.getParameter(REFERER_PARAMETER);
 		if (result.hasErrors()) {
 			try {
+				if (referer != null) {
+					model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+				}
+
 				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(course.getProfessorId()));
-				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+
 			} catch (Exception ignored) {
 			}
 
@@ -159,12 +185,17 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}/update")
-	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug,
-			@RequestParam(name = "username") String username, Model model) {
+	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
+			Model model) {
 		try {
+			String username = request.getParameter(USERNAME_PARAMETER);
+			if (username != null) {
+				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+			}
+
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+
 			return UPDATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -175,8 +206,11 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateCourse(@RequestParam(name = "uuid") UUID courseId, @Valid Course course,
-			BindingResult result, Model model) {
+	public String postControllerUpdateCourse(HttpServletRequest request, @Valid Course course, BindingResult result,
+			Model model) {
+		String courseIdStr = request.getParameter(USERNAME_PARAMETER);
+		UUID courseId = UUID.fromString(courseIdStr);
+
 		if (result.hasErrors()) {
 			return UPDATE_COURSE_PAGE;
 		}
@@ -194,12 +228,13 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}/add")
-	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug,
-			@RequestParam(value = "referer", required = false) String referer, HttpServletRequest request,
+	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
-			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
-
+			String referer = request.getParameter(REFERER_PARAMETER);
+			if (referer != null) {
+				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+			}
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(course.getCId());
 			model.addAttribute(STUDENT_ATTRIBUTE, studentsNotInCourse);
@@ -214,10 +249,16 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/add-student")
-	public String postControllerAddStudentToCourse(@RequestParam(name = "uuid") UUID courseId,
-			@RequestParam(name = "studentId") UUID studentId,
-			@RequestParam(value = "referer", required = false) String referer, Model model) {
+	public String postControllerAddStudentToCourse(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String studentIdStr = request.getParameter(STUDENT_ID_PARAMETER);
+
+			UUID courseId = UUID.fromString(courseIdStr);
+			UUID studentId = UUID.fromString(studentIdStr);
+
+			String referer = request.getParameter(REFERER_PARAMETER);
+
 			courseCRUDService.addStudentToCourse(courseId, studentId);
 
 			Course course = courseCRUDService.retrieveById(courseId);
@@ -237,10 +278,16 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/remove-student")
-	public String postControllerRemoveStudentFromCourse(@RequestParam(name = "uuid") UUID courseId,
-			@RequestParam(name = "studentId") UUID studentId,
-			@RequestParam(name = "referer", required = false) String referer, Model model) {
+	public String postControllerRemoveStudentFromCourse(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String studentIdStr = request.getParameter(STUDENT_ID_PARAMETER);
+
+			UUID courseId = UUID.fromString(courseIdStr);
+			UUID studentId = UUID.fromString(studentIdStr);
+
+			String referer = request.getParameter(REFERER_PARAMETER);
+
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 			Course course = courseCRUDService.retrieveById(courseId);
 			String redirectUrl = "/course/crud/" + course.getSlug();
@@ -258,9 +305,13 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/deploy")
-	public String postControllerDeployLab(@RequestParam(name = "uuid") UUID courseId,
-			@RequestParam(value = "referer", required = false) String referer, Model model) {
+	public String postControllerDeployLab(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			UUID courseId = UUID.fromString(courseIdStr);
+
+			String referer = request.getParameter(REFERER_PARAMETER);
+
 			courseCRUDService.deployLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
@@ -278,9 +329,13 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/cleanup")
-	public String postControllerCleanupLab(@RequestParam(name = "uuid") UUID courseId,
-			@RequestParam(value = "referer", required = false) String referer, Model model) {
+	public String postControllerCleanupLab(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			UUID courseId = UUID.fromString(courseIdStr);
+
+			String referer = request.getParameter(REFERER_PARAMETER);
+
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
@@ -298,8 +353,11 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/provision")
-	public String postControllerProvisionCourseInfrastructure(@RequestParam(name = "uuid") UUID courseId, Model model) {
+	public String postControllerProvisionCourseInfrastructure(HttpServletRequest request, Model model) {
 		try {
+			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			UUID courseId = UUID.fromString(courseIdStr);
+
 			courseCRUDService.prepareProxmoxProvisioning(courseId);
 
 			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
@@ -316,9 +374,10 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/instance/terminal")
-	public String getControllerDisplayContainerTerminal(@RequestParam(name = "instanceId") UUID instanceId, Model model,
-			HttpServletRequest request) {
+	public String getControllerDisplayContainerTerminal(HttpServletRequest request, Model model) {
 		try {
+			String instanceId = request.getParameter(INSTANCE_ID_PARAMETER);
+			
 			model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
 			request.getSession().setAttribute("instanceId", instanceId);
 			return CONTAINER_TERMINAL_PAGE;

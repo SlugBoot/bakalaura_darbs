@@ -2,7 +2,6 @@ package lv.slugboot.app.controller;
 
 import java.util.UUID;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
@@ -39,6 +38,8 @@ public class ProfessorCRUDController {
 	private static final String PASSWORD_ATTRIBUTE = "password";
 	private static final String USER_TYPE_ATTRIBUTE = "userType";
 	private static final String USER_ID_ATTRIBUTE = "userId";
+	
+	private static final String UUID_PARAMETER = "uuid";
 
 	@GetMapping("/all")
 	public String getControllerGetAllProfessors(Model model) {
@@ -85,8 +86,11 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateProfessorById(@RequestParam(name = "professorId") UUID professorId,
+	public String postControllerUpdateProfessorById(HttpServletRequest request,
 			@Valid ProfessorDTO professor, BindingResult result, Model model) {
+		String professorIdStr = request.getParameter(UUID_PARAMETER);
+		UUID professorId = UUID.fromString(professorIdStr);
+		
 		if (result.hasErrors()) {
 			try {
 				return UPDATE_PROFESSOR_PAGE;
@@ -121,8 +125,11 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update-password")
-	public String postControllerUpdatePassword(@RequestParam(name = "uuid") UUID professorId,
+	public String postControllerUpdatePassword(HttpServletRequest request,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
+		String professorIdStr = request.getParameter(UUID_PARAMETER);
+		UUID professorId = UUID.fromString(professorIdStr);
+		
 		Runnable populateErrorModel = () -> {
 	        model.addAttribute("userId", professorId);
 	        model.addAttribute("userType", "professor");
@@ -155,8 +162,11 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/delete")
-	public String getControllerDeleteProfessorById(@RequestParam(name = "uuid") UUID professorId, Model model) {
+	public String getControllerDeleteProfessorById(HttpServletRequest request, Model model) {
 		try {
+			String professorIdStr = request.getParameter(UUID_PARAMETER);
+			UUID professorId = UUID.fromString(professorIdStr);
+						
 			professorCRUDService.deleteProfessorById(professorId);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return MULTIPLE_PROFESSORS_PAGE;

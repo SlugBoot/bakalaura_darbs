@@ -7,14 +7,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
-import lv.slugboot.app.service.IStudentCRUDService;
 import lv.slugboot.app.service.IStudentHomeService;
 
 @Controller
@@ -22,7 +21,6 @@ import lv.slugboot.app.service.IStudentHomeService;
 @RequiredArgsConstructor
 public class StudentHomeController {
 
-	private final IStudentCRUDService studentCRUDService;
 	private final IStudentHomeService studentHomeService;
 
 	private static final String STUDENT_HOME_PAGE = "student-home-page";
@@ -32,6 +30,8 @@ public class StudentHomeController {
 	private static final String FILTERED_COURSE_ATTRIBUTE = "filtered_courses";
 	private static final String ERROR_ATTRIBUTE = "error";
 
+	private static final String COURSE_ID_PARAMETER = "courseId";
+	
 	@GetMapping
 	public String getControllerStudentHomePage(Authentication authentication, Model model) {
 		try {
@@ -50,9 +50,12 @@ public class StudentHomeController {
 	}
 
 	@GetMapping("/remove")
-	public String getControllerRemoveCourseFromStudent(@RequestParam(name = "courseId") UUID courseId,
+	public String getControllerRemoveCourseFromStudent(HttpServletRequest request,
 			Authentication authentication, Model model) {
 		try {
+			String courseIdStr = request.getParameter(COURSE_ID_PARAMETER);
+			UUID courseId = UUID.fromString(courseIdStr);
+			
 			String username = authentication.getName();
 			Student student = studentHomeService.getStudentByUsername(username);
 			UUID studentId = student.getPersonId();
