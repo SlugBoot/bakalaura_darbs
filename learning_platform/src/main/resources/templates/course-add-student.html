@@ -26,8 +26,8 @@
 				<td th:text="${temp.getUsername()}"></td>
 				<td>
 					<form th:action="@{/course/crud/add-student}" method=post>
-						<input type="hidden" name="uuid" th:value="${course.cId}" />
-						    <input type="hidden" name="studentId" th:value="${student.personId}" />
+						<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+						<input type="hidden" name="studentId" th:value="${student.getPersonId()}" />
 						<button type="submit">Add to Course</button>
 					</form>
 					</a>
