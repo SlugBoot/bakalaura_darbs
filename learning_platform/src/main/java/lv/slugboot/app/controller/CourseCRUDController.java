@@ -287,14 +287,8 @@ public class CourseCRUDController {
 			UUID courseId = UUID.fromString(courseIdStr);
 			UUID studentId = UUID.fromString(studentIdStr);
 
-			String referer = request.getParameter(REFERER_PARAMETER);
-
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 			Course course = courseCRUDService.retrieveById(courseId);
-			String redirectUrl = "/course/crud/" + course.getSlug();
-			if (referer != null && referer.startsWith("/")) {
-				redirectUrl += "?referer=" + referer;
-			}
 
 			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
@@ -330,8 +324,6 @@ public class CourseCRUDController {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
 			UUID courseId = UUID.fromString(courseIdStr);
 
-			String referer = request.getParameter(REFERER_PARAMETER);
-
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
@@ -357,7 +349,7 @@ public class CourseCRUDController {
 
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 
-			return REDIRECT_COURSE_CRUD + "/name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
@@ -369,9 +361,10 @@ public class CourseCRUDController {
 	@GetMapping("/instance/terminal")
 	public String getControllerDisplayContainerTerminal(HttpServletRequest request, Model model) {
 		try {
-			String instanceId = request.getParameter(INSTANCE_ID_PARAMETER);
+			String instanceIdStr = request.getParameter(INSTANCE_ID_PARAMETER);
+			UUID instanceId = UUID.fromString(instanceIdStr);
 			
-			model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());
+			model.addAttribute(INSTANCE_ATTRIBUTE, instanceIdStr);
 			request.getSession().setAttribute("instanceId", instanceId);
 			return CONTAINER_TERMINAL_PAGE;
 		} catch (Exception e) {
