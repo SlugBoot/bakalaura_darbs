@@ -175,7 +175,7 @@ public class CourseCRUDController {
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
-			
+
 			return REDIRECT_COURSE_CRUD + "all";
 		} catch (NullPointerException | IllegalArgumentException e) {
 			Thread.currentThread().interrupt();
@@ -309,7 +309,7 @@ public class CourseCRUDController {
 			Course course = courseCRUDService.retrieveById(courseId);
 
 			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
-	
+
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
@@ -363,7 +363,7 @@ public class CourseCRUDController {
 		try {
 			String instanceIdStr = request.getParameter(INSTANCE_ID_PARAMETER);
 			UUID instanceId = UUID.fromString(instanceIdStr);
-			
+
 			model.addAttribute(INSTANCE_ATTRIBUTE, instanceIdStr);
 			request.getSession().setAttribute("instanceId", instanceId);
 			return CONTAINER_TERMINAL_PAGE;
