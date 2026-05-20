@@ -25,9 +25,11 @@ public class Student extends Person {
 	private Collection<Course> course;
 
 	@OneToMany(mappedBy = "student")
+	@ToString.Exclude
 	private Collection<Grade> grades;
 
 	@OneToMany(mappedBy = "student")
+	@ToString.Exclude
 	private Collection<LabInstance> labs;
 
 	private String createUsername() {

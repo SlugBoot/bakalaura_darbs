@@ -53,6 +53,7 @@ public class Course {
 	private Collection<Student> students;
 
 	@OneToMany(mappedBy = "course")
+	@ToString.Exclude
 	private Collection<LabInstance> labs;
 	
 	@Column(name = "slug", unique = true, nullable = false)

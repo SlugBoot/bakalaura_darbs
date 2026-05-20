@@ -26,8 +26,8 @@ public class SecurityConfig {
 				.requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
 				.requestMatchers("/login").permitAll()
 				
-				.requestMatchers("/professor/**").hasRole("PROFESSOR")
-				.requestMatchers("/student/**").hasRole("STUDENT")
+				.requestMatchers("/professor/**").hasAuthority("PROFESSOR")
+				.requestMatchers("/student/**").hasAuthority("STUDENT")
 				
 				.requestMatchers("/course/crud/**").authenticated()
 				
