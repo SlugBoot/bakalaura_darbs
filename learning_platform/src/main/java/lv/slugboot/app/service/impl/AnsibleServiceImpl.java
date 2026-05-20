@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -54,9 +56,12 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		systemTaskService.createFile(path, playbookYaml);
 	}
 
+	@Async
 	@Override
-	public String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
+	public void runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
+		log.info("Starting Ansible playbook in background for course: {}", (Object) courseId);
+		
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
 		String playbookPath = Paths.get(baseDir, playbookName + ".yml").toString();
 		String inventoryPath = Paths.get(baseDir, inventoryName).toString();
@@ -71,13 +76,17 @@ public class AnsibleServiceImpl implements IAnsibleService {
 			command += " --limit " + student.getUsername() + "-" + courseShortId + "-vm";
 		}
 		log.info("Running playbook: " + playbookName + " with inventory: " + inventoryName);
-		return systemTaskService.executeCommand(command);
+		 try {
+			systemTaskService.executeCommand(command);
+		} catch (Exception e) {
+			log.error("Async Ansible task failed");
+		}
 	}
 
 	@Override
-	public String runPlaybook(UUID courseId, String playbookName, String inventoryName)
+	public void runPlaybook(UUID courseId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
-		return runPlaybook(courseId, null, playbookName, inventoryName);
+		runPlaybook(courseId, null, playbookName, inventoryName);
 	}
 
 	@Override

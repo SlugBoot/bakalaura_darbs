@@ -15,10 +15,10 @@ public interface IAnsibleService {
 
 	public abstract void createPlaybook(UUID courseId, String playbookYaml, String playbookName) throws IOException;
 
-	public abstract String runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
+	public abstract void runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException;
 
-	public abstract String runPlaybook(UUID courseId, String playbookName, String inventoryName)
+	public abstract void runPlaybook(UUID courseId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException;
 
 	public abstract void createProxmoxVarsFile(UUID courseId, List<LabInstance> instances)
