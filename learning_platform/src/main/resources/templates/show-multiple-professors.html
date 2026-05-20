@@ -22,7 +22,7 @@
         <td th:text="${temp.getSurname()}"></td>
         <td th:text="${temp.getEmail()}"></td>
 		<td th:text="${temp.getUsername()}"></td>
-		<td><a th:href="@{/professor/home})}"><button type="button">Profile</button></a></td>
+		<td><a th:href="@{/professor/home}}"><button type="button">Profile</button></a></td>
 		<td><a th:href="@{/professor/crud/delete?{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Delete</button></a></td>
 		<td><a th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()})}"><button type="button">Update</button></a></td>
       </tr>
