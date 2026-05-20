@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,6 +168,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		courseRepo.save(course);
 	}
 
+	@Async
 	@Override
 	@Transactional
 	public void deployLab(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException {
@@ -255,6 +257,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		ansibleService.runPlaybook(courseId, PLAYBOOK_FILE, STUDENT_HOSTS_FILE);
 	}
 
+	@Async
 	@Override
 	public void cleanupLab(UUID courseId) throws IOException, InterruptedException, NoSuchFieldException {
 		ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
@@ -270,6 +273,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
 
+	@Async
 	@Override
 	public void prepareProxmoxProvisioning(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException {
