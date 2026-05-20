@@ -1,4 +1,4 @@
-package utils;
+package lv.slugboot.app.utils;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;

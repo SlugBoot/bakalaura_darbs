@@ -9,12 +9,11 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
-import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentCRUDService;
-import utils.PasswordGenerator;
+import lv.slugboot.app.utils.PasswordGenerator;
 
 @Service
 @Slf4j

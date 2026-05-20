@@ -13,7 +13,7 @@ import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IProfessorRepo;
 import lv.slugboot.app.service.IProfessorCRUDService;
-import utils.PasswordGenerator;
+import lv.slugboot.app.utils.PasswordGenerator;
 
 @Service
 @Slf4j
