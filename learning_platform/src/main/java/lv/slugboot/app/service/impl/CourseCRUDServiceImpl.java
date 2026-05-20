@@ -180,7 +180,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		}
 
 		for (LabInstance inst : instances) {
-			if (inst.getStatus() == null || inst.getStatus() != LabInstanceStatus.INITIALIZED) {
+			if (inst.getStatus() == null || inst.getStatus() == LabInstanceStatus.UNINITIALIZED) {
 				throw new IllegalArgumentException("Cannot deploy lab: Student '" + inst.getStudent().getUsername()
 						+ "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
 			}
@@ -300,7 +300,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				        hostname: "{{ item.hostname }}"
 				        vmid: "{{ item.vmid }}"
 				        netif:
-				          net0: "name=eth0,gw=192.168.15.1,ip={{ item.ip }}/24,bridge=vmbr0"
+				          net0: "name=eth0,gw=192.168.15.1,ip={{ item.ip }}/24,bridge=vmbr1"
 				        password: "securepassword"
 				        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
 				        disk: "local-lvm:30"
