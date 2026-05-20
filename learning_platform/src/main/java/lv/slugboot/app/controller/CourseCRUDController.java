@@ -78,7 +78,7 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{slug}")
+	@GetMapping("/name/{slug}")
 	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
@@ -218,7 +218,7 @@ public class CourseCRUDController {
 		try {
 			courseCRUDService.updateCourseById(courseId, course.getCourseName(), course.getCourseDesc(),
 					course.getProfessor().getPersonId());
-			return REDIRECT_COURSE_CRUD + "all";
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
 
