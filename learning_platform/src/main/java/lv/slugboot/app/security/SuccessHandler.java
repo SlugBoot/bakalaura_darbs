@@ -23,10 +23,10 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 		String redirectUrl = "/login?error";
 		
 		for (var authority : authorities) {
-			if (authority.getAuthority().equals("PROFESSOR")) {
+			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
 				redirectUrl = "/professor/home";
 				break;
-			} else if (authority.getAuthority().equals("STUDENT")) {
+			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
 				redirectUrl = "/student/home";
 				break;
 			}
