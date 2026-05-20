@@ -229,7 +229,7 @@ public class CourseCRUDController {
 		}
 	}
 
-	@PostMapping("/{remove-student}")
+	@PostMapping("/remove-student")
 	public String postControllerRemoveStudentFromCourse(@RequestParam(name = "uuid") UUID courseId,
 			@RequestParam(name = "studentId") UUID studentId,
 			@RequestParam(name = "referer", required = false) String referer, Model model) {
