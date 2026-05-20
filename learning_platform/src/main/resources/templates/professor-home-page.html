@@ -17,7 +17,7 @@
 				<td th:text="${course.getCourseName()}"></td>
 				<td th:text="${course.getCourseDesc()}"></td>
 				<td>
-					<a th:href="@{/course/crud/{uuid}(uuid=${course.getCId()}, referer='/professor/home/' + ${professor.getPersonId()})}">
+					<a th:href="@{/course/crud/{slug}(slug=${course.getSlug()}, referer='/professor/home/' + ${professor.getPersonId()})}">
 						<button type="button">Info</button>
 					</a>
 				</td>

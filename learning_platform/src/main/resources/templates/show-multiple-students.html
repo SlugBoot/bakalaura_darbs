@@ -23,8 +23,8 @@
         <td th:text="${temp.getEmail()}"></td>
 		<td th:text="${temp.getUsername()}"></td>
 		<td><a th:href="@{/student/home/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Profile</button></a></td>
-		<td><a th:href="@{/student/crud/delete/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Delete</button></a></td>
-		<td><a th:href="@{/student/crud/update/{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Update</button></a></td>
+		<td><a th:href="@{/student/crud/delete?{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Delete</button></a></td>
+		<td><a th:href="@{/student/crud/update/{username}(username=${temp.getUsername()})}"><button type="button">Update</button></a></td>
       </tr>
 	  <tr>
 		<td colspan="9"><button onclick="location.href='/student/crud/create'">Create New Student</button></td>

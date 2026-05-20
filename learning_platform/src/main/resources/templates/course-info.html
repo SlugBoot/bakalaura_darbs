@@ -7,10 +7,10 @@
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
 		
-		<a th:href="@{/course/crud/{uuid}/add(uuid=${course.getCId()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
-		<a th:href="@{/course/crud/{uuid}/provision(uuid=${course.getCId()})}"><button type="button">Initialize Instances</button></a>
-		<a th:href="@{/course/crud/{uuid}/deploy(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
-		<a th:href="@{/course/crud/{uuid}/cleanup(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
+		<a th:href="@{/course/crud/{slug}/add(uuid=${course.getSlug()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
+		<a th:href="@{/course/crud/provision(uuid=${course.getCId()})}"><button type="button">Initialize Instances</button></a>
+		<a th:href="@{/course/crud/deploy(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
+		<a th:href="@{/course/crud/cleanup(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
 		<p>Note: Initialization and Deployment can take some time.</p>
 		<table border = 1px>
 			<th colspan="7">Student List</th>
@@ -31,7 +31,7 @@
 				<td th:text="${student.getEmail()}"></td>
 				<td th:text="${student.getUsername()}"></td>
 				<td>
-					<a th:href="@{/course/crud/{uuid}/remove/{studentId}(uuid=${course.getCId()},studentId=${student.getPersonId()}, referer=${previousUrl})}">
+					<a th:href="@{/course/crud/remove-student(uuid=${course.getCId()},studentId=${student.getPersonId()}, referer=${previousUrl})}">
 						<button type="button">Remove from course</button>
 					</a>
 				</td>
@@ -51,7 +51,7 @@
 				<td th:text="${i.getStatus()}"></td>
 				<td>
 		            <span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
-		                <a th:href="@{/course/crud/instance/{id}/terminal(id=${i.getInstanceId()})}" target="_blank">
+		                <a th:href="@{/course/crud/instance/terminal(instanceId=${i.getInstanceId()})}" target="_blank">
 		                    <button type="button" style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; cursor: pointer;">
 		                        Connect to Console
 		                    </button>
