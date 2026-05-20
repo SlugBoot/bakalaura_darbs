@@ -25,8 +25,11 @@
 				<td th:text="${temp.getEmail()}"></td>
 				<td th:text="${temp.getUsername()}"></td>
 				<td>
-					<a th:href="@{/course/crud/add-student(uuid=${course.getCId()},studentId=${temp.getPersonId()}, referer=${previousUrl})}">
-					<button type="button">Add to Course</button>
+					<form th:action="@{/course/crud/add-student}" method=post>
+						<input type="hidden" name="uuid" th:value="${course.cId}" />
+						    <input type="hidden" name="studentId" th:value="${student.personId}" />
+						<button type="submit">Add to Course</button>
+					</form>
 					</a>
 				</td>
 			</tr>
