@@ -7,7 +7,7 @@
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
 		
-		<a th:href="@{/course/crud/{slug}/add(uuid=${course.getSlug()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
+		<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
 		<a th:href="@{/course/crud/provision(uuid=${course.getCId()})}"><button type="button">Initialize Instances</button></a>
 		<a th:href="@{/course/crud/deploy(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
 		<a th:href="@{/course/crud/cleanup(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
