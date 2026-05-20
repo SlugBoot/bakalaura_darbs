@@ -12,6 +12,7 @@
 		</a>
 		<form th:action="@{/course/crud/provision}" method=post>
 			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
 			<button type="submit">Create Instances</button>
 		</form>
 		<form th:action="@{/course/crud/deploy}" method=post>

@@ -296,7 +296,7 @@ public class CourseCRUDController {
 				redirectUrl += "?referer=" + referer;
 			}
 
-			return REDIRECT_STRING + redirectUrl;
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
 
@@ -311,16 +311,11 @@ public class CourseCRUDController {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
 			UUID courseId = UUID.fromString(courseIdStr);
 
-			String referer = request.getParameter(REFERER_PARAMETER);
-
 			courseCRUDService.deployLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			if (referer != null && referer.startsWith("/")) {
-				return REDIRECT_STRING + referer;
-			} else {
-				return REDIRECT_COURSE_CRUD + "name" + course.getSlug();
-			}
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+	
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
@@ -340,11 +335,7 @@ public class CourseCRUDController {
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			if (referer != null && referer.startsWith("/")) {
-				return REDIRECT_STRING + referer;
-			} else {
-				return REDIRECT_COURSE_CRUD + course.getSlug();
-			}
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
