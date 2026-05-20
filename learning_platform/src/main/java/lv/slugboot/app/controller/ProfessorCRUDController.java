@@ -107,7 +107,7 @@ public class ProfessorCRUDController {
 	}
 	
 	@GetMapping("/update-password/{username}")
-	public String getControllerUpdatePassword(@RequestParam(name = "username") String username, Model model) {
+	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model) {
 	    try {
 	    	Professor professor = professorCRUDService.retrieveByUsername(username);
 	        model.addAttribute(USER_ID_ATTRIBUTE, professor.getPersonId());
