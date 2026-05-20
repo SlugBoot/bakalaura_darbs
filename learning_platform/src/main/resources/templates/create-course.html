@@ -23,12 +23,7 @@
           <td><input type="text" th:field="*{courseDesc}" /></td>
 		  <td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
         </tr>
-        <tr>
-          <td>Surname:</td>
-          <td><select th:field="*{professorId}">
-			<option th:each="temp : ${professor}" th:value="${temp.getPersonId()}" th:text="${temp.getName()+' '+temp.getSurname()}"/>
-		  </select></td>
-        </tr>
+		<input type="hidden" th:field="*{professor}" th:value="*{professor.getPersonId()}"/>
 		<tr>
 		  <td><input type="submit" /></td>
 		</tr>

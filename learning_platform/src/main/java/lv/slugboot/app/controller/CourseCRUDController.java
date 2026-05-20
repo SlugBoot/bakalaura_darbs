@@ -111,12 +111,13 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/create")
-	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
+	public String getControllerCreateCourse(@RequestParam(name = "username", required = false) String username,
+			HttpServletRequest request, Model model) {
 		try {
 			String referer = request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 			model.addAttribute(COURSE_ATTRIBUTE, new CourseDTO());
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
 			return CREATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -131,7 +132,7 @@ public class CourseCRUDController {
 			@RequestParam(value = "referer", required = false) String referer, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
-				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(course.getProfessorId()));
 			} catch (Exception ignored) {
 			}
 
@@ -153,11 +154,12 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}/update")
-	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, Model model) {
+	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug,
+			@RequestParam(name="username") String username,Model model) {
 		try {
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
 			return UPDATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -188,8 +190,8 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}/add")
 	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug,
-			@RequestParam(value = "referer", required = false) String referer,
-			HttpServletRequest request, Model model) {
+			@RequestParam(value = "referer", required = false) String referer, HttpServletRequest request,
+			Model model) {
 		try {
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 
@@ -212,9 +214,9 @@ public class CourseCRUDController {
 			@RequestParam(value = "referer", required = false) String referer, Model model) {
 		try {
 			courseCRUDService.addStudentToCourse(courseId, studentId);
-			
+
 			Course course = courseCRUDService.retrieveById(courseId);
-			
+
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
@@ -276,7 +278,7 @@ public class CourseCRUDController {
 		try {
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
-			
+
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			} else {
