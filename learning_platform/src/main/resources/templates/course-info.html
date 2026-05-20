@@ -33,10 +33,9 @@
 				<td>
 					<form th:action="@{/course/crud/remove-student}" method=post>
 						<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-						<input type="hidden" name="studentId" th:value="${temp.getPersonId()}" />
+						<input type="hidden" name="studentId" th:value="${student.getPersonId()}" />
 						<button type="submit">Add to Course</button>
 					</form>
-					</a>
 				</td>
 			</tr>
 		</table>
