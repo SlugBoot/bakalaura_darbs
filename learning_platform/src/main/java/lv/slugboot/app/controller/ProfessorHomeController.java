@@ -1,18 +1,16 @@
 package lv.slugboot.app.controller;
 
 import java.util.List;
-import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Professor;
-import lv.slugboot.app.service.IProfessorCRUDService;
 import lv.slugboot.app.service.IProfessorHomeService;
 
 @Controller
@@ -21,15 +19,15 @@ import lv.slugboot.app.service.IProfessorHomeService;
 public class ProfessorHomeController {
 
 	private final IProfessorHomeService professorHomeService;
-	private final IProfessorCRUDService professorCRUDService;
 
-	@GetMapping("/{uuid}")
-	public String getControllerProfessorHomePage(@PathVariable(name = "uuid") UUID professorId, Model model) {
+	@GetMapping
+	public String getControllerProfessorHomePage(Authentication authentication, Model model) {
 		try {
-			Professor professor = professorCRUDService.retrieveById(professorId);
+			String username = authentication.getName();
+			Professor professor = professorHomeService.retrieveByUsername(username);
 			model.addAttribute("professor", professor);
 
-			List<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professorId);
+			List<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professor.getPersonId());
 			model.addAttribute("filtered_courses", filteredCourses);
 
 			return "professor-home-page";

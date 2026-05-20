@@ -2,6 +2,7 @@ package lv.slugboot.app.controller;
 
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,11 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
 import lv.slugboot.app.dto.ProfessorDTO;
+import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -70,10 +73,10 @@ public class ProfessorCRUDController {
 		}
 	}
 
-	@GetMapping("/update/{uuid}")
-	public String getControllerUpdateProfessorById(@PathVariable(name = "uuid") UUID professorId, Model model) {
+	@GetMapping("/update/{username}")
+	public String getControllerUpdateProfessorByUsername(@PathVariable(name = "username") String username, Model model) {
 		try {
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(professorId));
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
 			return UPDATE_PROFESSOR_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -81,8 +84,8 @@ public class ProfessorCRUDController {
 		}
 	}
 
-	@PostMapping("/update/{uuid}")
-	public String postControllerUpdateProfessorById(@PathVariable(name = "uuid") UUID professorId,
+	@PostMapping("/update")
+	public String postControllerUpdateProfessorById(@RequestParam(name = "professorId") UUID professorId,
 			@Valid ProfessorDTO professor, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
@@ -103,10 +106,11 @@ public class ProfessorCRUDController {
 		}
 	}
 	
-	@GetMapping("/update-password/{uuid}")
-	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId, Model model) {
+	@GetMapping("/update-password/{username}")
+	public String getControllerUpdatePassword(@RequestParam(name = "username") String username, Model model) {
 	    try {
-	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
+	    	Professor professor = professorCRUDService.retrieveByUsername(username);
+	        model.addAttribute(USER_ID_ATTRIBUTE, professor.getPersonId());
 			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 	        return UPDATE_PASSWORD_PAGE;
@@ -116,8 +120,8 @@ public class ProfessorCRUDController {
 	    }
 	}
 
-	@PostMapping("/update-password/{uuid}")
-	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID professorId,
+	@PostMapping("/update-password")
+	public String postControllerUpdatePassword(@RequestParam(name = "uuid") UUID professorId,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		Runnable populateErrorModel = () -> {
 	        model.addAttribute("userId", professorId);
@@ -150,8 +154,8 @@ public class ProfessorCRUDController {
 	    }
 	}
 
-	@GetMapping("/delete/{uuid}")
-	public String getControllerDeleteProfessorById(@PathVariable(name = "uuid") UUID professorId, Model model) {
+	@PostMapping("/delete")
+	public String getControllerDeleteProfessorById(@RequestParam(name = "uuid") UUID professorId, Model model) {
 		try {
 			professorCRUDService.deleteProfessorById(professorId);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());

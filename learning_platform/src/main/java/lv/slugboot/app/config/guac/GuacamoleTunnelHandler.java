@@ -44,23 +44,16 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		Map<String, String> queryParams = UriComponentsBuilder.fromUri(session.getUri()).build().getQueryParams()
-				.toSingleValueMap();
+		
 
-		String instanceIdStr = queryParams.get("instanceId");
+		UUID instanceId = (UUID) session.getAttributes().get("instanceId");
 
-		if (instanceIdStr != null && instanceIdStr.contains("?")) {
-			instanceIdStr = instanceIdStr.split("\\?")[0];
-		}
-
-		if (instanceIdStr == null || instanceIdStr.isEmpty()) {
-			log.error("Missing instanceId parameter.");
-			session.close(CloseStatus.BAD_DATA.withReason("Missing instanceId"));
+		if (instanceId == null) {
+			log.error("Security violation attempt: Missing instanceId in WebSocket session attributes.");
+			session.close(CloseStatus.BAD_DATA.withReason("Missing secure terminal token context"));
 			return;
 		}
-
-		UUID instanceId = UUID.fromString(instanceIdStr);
-
+		
 		try {
 			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
 			String containerIp = instance.getIpAddress();

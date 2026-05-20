@@ -44,4 +44,10 @@ public class StudentHomeServiceImpl implements IStudentHomeService {
 		studentRepo.save(student);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public Student getStudentByUsername(String username) {
+		return studentRepo.findByUsername(username);
+	}
+
 }

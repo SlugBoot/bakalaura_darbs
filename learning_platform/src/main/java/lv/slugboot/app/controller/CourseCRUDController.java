@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -73,17 +74,17 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}")
-	public String getControllerCourseInfo(@PathVariable(name = "uuid") UUID courseId,
+	@GetMapping("/{slug}")
+	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug,
 			@RequestParam(value = "referer", required = false) String manualReferer, HttpServletRequest request,
 			Model model) {
 		try {
 			String referer = (manualReferer != null) ? manualReferer : request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 
-			Course course = courseCRUDService.retrieveById(courseId);
+			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
-			model.addAttribute(INSTANCE_ATTRIBUTE, instanceCRUDService.retrieveByCourseId(courseId));
+			model.addAttribute(INSTANCE_ATTRIBUTE, instanceCRUDService.retrieveByCourseId(course.getCId()));
 			return COURSE_INFO_PAGE;
 		} catch (NullPointerException | NoSuchFieldException e) {
 			Thread.currentThread().interrupt();
@@ -93,8 +94,9 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/delete/{uuid}")
-	public String getControllerDeleteCourse(@PathVariable(name = "uuid") UUID courseId, Model model) {
+	@PostMapping("/delete")
+	@PreAuthorize("hasRole('PROFESSOR') and @courseCRUDService.retrieveById(#courseId).getProfessor().getUsername() == authentication.name")
+	public String postControllerDeleteCourse(@RequestParam(name = "uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.deleteCourseById(courseId);
 			ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
@@ -130,14 +132,14 @@ public class CourseCRUDController {
 		if (result.hasErrors()) {
 			try {
 				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
-			} catch (Exception ignored) {}
-			
+			} catch (Exception ignored) {
+			}
+
 			return CREATE_COURSE_PAGE;
 		}
 
 		try {
-			courseCRUDService.createCourse(course.getCourseName(), course.getCourseDesc(),
-					course.getProfessorId());
+			courseCRUDService.createCourse(course.getCourseName(), course.getCourseDesc(), course.getProfessorId());
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
@@ -150,10 +152,10 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/update")
-	public String getControllerUpdateCourse(@PathVariable(name = "uuid") UUID courseId, Model model) {
+	@GetMapping("/{slug}/update")
+	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, Model model) {
 		try {
-			Course course = courseCRUDService.retrieveById(courseId);
+			Course course = courseCRUDService.retrieveBySlug(slug);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return UPDATE_COURSE_PAGE;
@@ -165,8 +167,8 @@ public class CourseCRUDController {
 		}
 	}
 
-	@PostMapping("/{uuid}/update")
-	public String postControllerUpdateCourse(@PathVariable(name = "uuid") UUID courseId, @Valid Course course,
+	@PostMapping("/update")
+	public String postControllerUpdateCourse(@RequestParam(name = "uuid") UUID courseId, @Valid Course course,
 			BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return UPDATE_COURSE_PAGE;
@@ -184,15 +186,15 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/add")
-	public String getControllerStudentsNotInCourse(@PathVariable(name = "uuid") UUID courseId,
+	@GetMapping("/{slug}/add")
+	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug,
 			HttpServletRequest request, Model model) {
 		try {
 			String referer = request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 
-			Course course = courseCRUDService.retrieveById(courseId);
-			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(courseId);
+			Course course = courseCRUDService.retrieveBySlug(slug);
+			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(course.getCId());
 			model.addAttribute(STUDENT_ATTRIBUTE, studentsNotInCourse);
 			model.addAttribute(COURSE_ATTRIBUTE, course);
 			return ADD_STUDENTS_PAGE;
@@ -204,18 +206,20 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/add/{studentId}")
-	public String getControllerAddStudentToCourse(@PathVariable(name = "uuid") UUID courseId,
-			@PathVariable(name = "studentId") UUID studentId,
+	@PostMapping("/add-student")
+	public String postControllerAddStudentToCourse(@RequestParam(name = "uuid") UUID courseId,
+			@RequestParam(name = "studentId") UUID studentId,
 			@RequestParam(value = "referer", required = false) String referer, Model model) {
 		try {
 			courseCRUDService.addStudentToCourse(courseId, studentId);
-
+			
+			Course course = courseCRUDService.retrieveById(courseId);
+			
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
 
-			return REDIRECT_COURSE_CRUD + courseId;
+			return REDIRECT_COURSE_CRUD + course.getSlug();
 
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -225,13 +229,14 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/remove/{studentId}")
-	public String getControllerRemoveStudentFromCourse(@PathVariable(name = "uuid") UUID courseId,
-			@PathVariable(name = "studentId") UUID studentId,
+	@PostMapping("/{remove-student}")
+	public String postControllerRemoveStudentFromCourse(@RequestParam(name = "uuid") UUID courseId,
+			@RequestParam(name = "studentId") UUID studentId,
 			@RequestParam(name = "referer", required = false) String referer, Model model) {
 		try {
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
-			String redirectUrl = "/course/crud/" + courseId;
+			Course course = courseCRUDService.retrieveById(courseId);
+			String redirectUrl = "/course/crud/" + course.getSlug();
 			if (referer != null && referer.startsWith("/")) {
 				redirectUrl += "?referer=" + referer;
 			}
@@ -245,16 +250,17 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/deploy")
-	public String getControllerDeployLab(@PathVariable(name = "uuid") UUID courseId,
+	@PostMapping("/deploy")
+	public String postControllerDeployLab(@RequestParam(name = "uuid") UUID courseId,
 			@RequestParam(value = "referer", required = false) String referer, Model model) {
 		try {
 			courseCRUDService.deployLab(courseId);
+			Course course = courseCRUDService.retrieveById(courseId);
 
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			} else {
-				return REDIRECT_COURSE_CRUD + courseId;
+				return REDIRECT_COURSE_CRUD + course.getSlug();
 			}
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -264,15 +270,17 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/cleanup")
-	public String getControllerCleanupLab(@PathVariable(name = "uuid") UUID courseId,
+	@PostMapping("/cleanup")
+	public String postControllerCleanupLab(@RequestParam(name = "uuid") UUID courseId,
 			@RequestParam(value = "referer", required = false) String referer, Model model) {
 		try {
 			courseCRUDService.cleanupLab(courseId);
+			Course course = courseCRUDService.retrieveById(courseId);
+			
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			} else {
-				return REDIRECT_COURSE_CRUD + courseId;
+				return REDIRECT_COURSE_CRUD + course.getSlug();
 			}
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -282,8 +290,8 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/{uuid}/provision")
-	public String getControllerProvisionCourseInfrastructure(@PathVariable(name = "uuid") UUID courseId, Model model) {
+	@PostMapping("/provision")
+	public String postControllerProvisionCourseInfrastructure(@RequestParam(name = "uuid") UUID courseId, Model model) {
 		try {
 			courseCRUDService.prepareProxmoxProvisioning(courseId);
 
@@ -300,8 +308,8 @@ public class CourseCRUDController {
 		}
 	}
 
-	@GetMapping("/instance/{instanceId}/terminal")
-	public String getControllerDisplayContainerTerminal(@PathVariable(name = "instanceId") UUID instanceId, Model model,
+	@GetMapping("/instance/terminal")
+	public String getControllerDisplayContainerTerminal(@RequestParam(name = "instanceId") UUID instanceId, Model model,
 			HttpServletRequest request) {
 		try {
 			model.addAttribute(INSTANCE_ATTRIBUTE, instanceId.toString());

@@ -333,4 +333,17 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		ansibleService.createPlaybook(courseId, removePlaybook, REMOVE_VMS_FILE);
 	}
 
+	@Override
+	public Course retrieveBySlug(String slug) throws NoSuchFieldException {
+		if (slug == null) {
+			throw new NullPointerException("Course ID cannot be null");
+		}
+
+		if (!courseRepo.existsBySlug(slug)) {
+			throw new NoSuchFieldException("Course with id " + slug + "does not exist");
+		}
+
+		return courseRepo.findBySlug(slug).get();
+	}
+
 }

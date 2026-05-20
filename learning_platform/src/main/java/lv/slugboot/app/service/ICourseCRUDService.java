@@ -28,4 +28,6 @@ public interface ICourseCRUDService {
 
 	public abstract void prepareProxmoxProvisioning(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException;
+
+	public abstract Course retrieveBySlug(String slug) throws NoSuchFieldException;
 }

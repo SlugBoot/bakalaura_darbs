@@ -12,4 +12,8 @@ public interface IProfessorRepo extends JpaRepository<Professor, UUID> {
 
 	boolean existsByEmail(String email);
 
+	Professor findByUsername(String username);
+
+	boolean existsByUsername(String username);
+
 }

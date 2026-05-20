@@ -134,4 +134,16 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 		
 		professorRepo.save(professor);
 	}
+
+	@Override
+	public Professor retrieveByUsername(String username) throws NoSuchFieldException{
+		if (username == null) {
+			throw new NullPointerException("Professor ID cannot be null");
+		}
+		if (!professorRepo.existsByUsername(username)) {
+			throw new NoSuchFieldException("Professor with this ID does not exist");
+		}
+
+		return professorRepo.findByUsername(username);
+	}
 }

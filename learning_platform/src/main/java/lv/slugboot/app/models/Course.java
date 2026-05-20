@@ -1,5 +1,6 @@
 package lv.slugboot.app.models;
 
+import java.text.Normalizer;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -51,6 +54,9 @@ public class Course {
 
 	@OneToMany(mappedBy = "course")
 	private Collection<LabInstance> labs;
+	
+	@Column(name = "slug", unique = true, nullable = false)
+	private String slug;
 
 	public Course(String courseName, Professor professor) {
 		setCourseName(courseName);
@@ -61,6 +67,21 @@ public class Course {
 		setCourseName(courseName);
 		setCourseDesc(courseDesc);
 		setProfessor(professor);
+	}
+	
+	@PrePersist
+	@PreUpdate
+	private void generateSlug() {
+		if (this.courseName != null) {
+			String normalized = Normalizer.normalize(this.courseName, Normalizer.Form.NFD);
+			this.slug = normalized.toLowerCase()
+					.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+					.replaceAll("[^a-z0-9\\s-]", "")
+					.replaceAll("\\s+", "-")
+					.replaceAll("-+", "-")
+					.replaceAll("^-|-$", "");
+			
+		}
 	}
 
 }

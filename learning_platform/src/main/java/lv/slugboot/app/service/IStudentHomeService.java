@@ -4,10 +4,13 @@ import java.util.Collection;
 import java.util.UUID;
 
 import lv.slugboot.app.models.Course;
+import lv.slugboot.app.models.Student;
 
 public interface IStudentHomeService {
 
 	public abstract Collection<Course> getAllCourses(UUID studentId);
 
 	public abstract void removeCourseFromStudent(UUID studentId, UUID courseId);
+
+	public abstract Student getStudentByUsername(String username);
 }

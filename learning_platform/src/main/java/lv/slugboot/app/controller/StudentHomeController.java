@@ -2,11 +2,14 @@ package lv.slugboot.app.controller;
 
 import java.util.Collection;
 import java.util.UUID;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
@@ -29,13 +32,14 @@ public class StudentHomeController {
 	private static final String FILTERED_COURSE_ATTRIBUTE = "filtered_courses";
 	private static final String ERROR_ATTRIBUTE = "error";
 
-	@GetMapping("/{uuid}")
-	public String getControllerStudentHomePage(@PathVariable(name = "uuid") UUID studentId, Model model) {
+	@GetMapping
+	public String getControllerStudentHomePage(Authentication authentication, Model model) {
 		try {
-			Student student = studentCRUDService.retrieveById(studentId);
+			String username = authentication.getName();
+			Student student = studentHomeService.getStudentByUsername(username);
 			model.addAttribute(STUDENT_ATTRIBUTE, student);
 
-			Collection<Course> filteredCourses = studentHomeService.getAllCourses(studentId);
+			Collection<Course> filteredCourses = studentHomeService.getAllCourses(student.getPersonId());
 			model.addAttribute(FILTERED_COURSE_ATTRIBUTE, filteredCourses);
 
 			return STUDENT_HOME_PAGE;
@@ -45,11 +49,13 @@ public class StudentHomeController {
 		}
 	}
 
-	@GetMapping("/{uuid}/remove/{courseId}")
-	public String getControllerRemoveCourseFromStudent(@PathVariable(name = "uuid") UUID studentId,
-			@PathVariable(name = "courseId") UUID courseId, Model model) {
+	@GetMapping("/remove")
+	public String getControllerRemoveCourseFromStudent(@RequestParam(name = "courseId") UUID courseId,
+			Authentication authentication, Model model) {
 		try {
-			Student student = studentCRUDService.retrieveById(studentId);
+			String username = authentication.getName();
+			Student student = studentHomeService.getStudentByUsername(username);
+			UUID studentId = student.getPersonId();
 			model.addAttribute(STUDENT_ATTRIBUTE, student);
 
 			studentHomeService.removeCourseFromStudent(studentId, courseId);

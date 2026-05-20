@@ -136,3 +136,8 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Izveidoti Datu Pārsūtīšanas Objekti (Data Transfer Object), pēc SonarQube ieteikuma
 2. Pārveidota Servisu un Kontrolieru struktūra, lai to atbalstītu
 3. Izveidotas Lietotāju paroļu pārvaldības funkcijas
+
+## 19. maijs
+
+1. Pastiprināta drošība izmantojot Spring Security
+    - Noņemti UUID no lapas ceļa mainīgajiem (page path variable) uz pieprasījuma parametriem (request parameter)

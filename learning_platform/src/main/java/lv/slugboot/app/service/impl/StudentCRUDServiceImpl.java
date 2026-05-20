@@ -132,4 +132,16 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 		
 		studentRepo.save(student);
 	}
+
+	@Override
+	public Student retrieveByUsername(String username) throws NoSuchFieldException {
+		if (username == null) {
+			throw new NullPointerException("Student ID cannot be null");
+		}
+		if (!studentRepo.existsByUsername(username)) {
+			throw new NoSuchFieldException("Student with this ID does not exist");
+		}
+
+		return studentRepo.findByUsername(username);
+	}
 }

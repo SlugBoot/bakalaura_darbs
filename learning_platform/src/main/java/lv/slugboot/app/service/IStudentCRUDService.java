@@ -20,4 +20,6 @@ public interface IStudentCRUDService {
 	public abstract void deleteById(UUID id) throws NoSuchFieldException;
 	
 	public abstract void updatePasswordById(UUID studentId, PasswordUpdateDTO passwordDTO) throws NoSuchFieldException;
+
+	public abstract Student retrieveByUsername(String username) throws NoSuchFieldException;
 }

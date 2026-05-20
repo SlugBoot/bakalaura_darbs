@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
 import lv.slugboot.app.dto.StudentDTO;
+import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
@@ -70,10 +72,11 @@ public class StudentCRUDController {
 		}
 	}
 
-	@GetMapping("/update/{uuid}")
-	public String getControllerUpdateStudentById(@PathVariable(name = "uuid") UUID studentId, Model model) {
+	@GetMapping("/update/{username}")
+	public String getControllerUpdateStudentById(@PathVariable(name = "username") String username, Model model) {
 		try {
-			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(studentId));
+			Student student = studentCRUDService.retrieveByUsername(username);
+			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(student.getPersonId()));
 			return UPDATE_STUDENT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -81,8 +84,8 @@ public class StudentCRUDController {
 		}
 	}
 
-	@PostMapping("/update/{uuid}")
-	public String postControllerUpdateStudentById(@PathVariable(name = "uuid") UUID studentId,
+	@PostMapping("/update")
+	public String postControllerUpdateStudentById(@RequestParam(name = "uuid") UUID studentId,
 			@Valid StudentDTO student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			try {
@@ -96,17 +99,18 @@ public class StudentCRUDController {
 		try {
 			studentCRUDService.updateStudentById(studentId, student.getName(), student.getMiddleName(),
 					student.getSurname(), student.getEmail());
-			return STUDENT_REDIRECT_PAGE;
+			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
 
-	@GetMapping("/update-password/{uuid}")
-	public String getControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId, Model model) {
+	@GetMapping("/update-password/{username}")
+	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model) {
 		try {
-			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
+			Student student = studentCRUDService.retrieveByUsername(username);
+			model.addAttribute(USER_ID_ATTRIBUTE, student.getPersonId());
 			model.addAttribute("userType", "student");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
 			return "update-password";
@@ -116,8 +120,8 @@ public class StudentCRUDController {
 		}
 	}
 
-	@PostMapping("/update-password/{uuid}")
-	public String postControllerUpdatePassword(@PathVariable(name = "uuid") UUID studentId,
+	@PostMapping("/update-password")
+	public String postControllerUpdatePassword(@RequestParam(name = "uuid") UUID studentId,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		Runnable populateErrorModel = () -> {
 	        model.addAttribute("userId", studentId);
@@ -138,7 +142,7 @@ public class StudentCRUDController {
 		
 		try {
 	        studentCRUDService.updatePasswordById(studentId, passwordDto);
-	        return "redirect:/student/crud/all";
+	        return STUDENT_REDIRECT_PAGE + "all";
 	    } catch (IllegalArgumentException e) {
 	    	result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 	        populateErrorModel.run();
@@ -149,8 +153,8 @@ public class StudentCRUDController {
 	    }
 	}
 
-	@GetMapping("/delete/{uuid}")
-	public String getControllerDeleteStudent(@PathVariable(name = "uuid") UUID studentId, Model model) {
+	@PostMapping("/delete")
+	public String postControllerDeleteStudent(@RequestParam(name = "uuid") UUID studentId, Model model) {
 		try {
 			studentCRUDService.deleteById(studentId);
 			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
