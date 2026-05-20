@@ -175,6 +175,7 @@ public class CourseCRUDController {
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
+			
 			return REDIRECT_COURSE_CRUD + "all";
 		} catch (NullPointerException | IllegalArgumentException e) {
 			Thread.currentThread().interrupt();
@@ -267,7 +268,7 @@ public class CourseCRUDController {
 				return REDIRECT_STRING + referer;
 			}
 
-			return REDIRECT_COURSE_CRUD + course.getSlug();
+			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -318,7 +319,7 @@ public class CourseCRUDController {
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			} else {
-				return REDIRECT_COURSE_CRUD + course.getSlug();
+				return REDIRECT_COURSE_CRUD + "name" + course.getSlug();
 			}
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -357,6 +358,7 @@ public class CourseCRUDController {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
 			UUID courseId = UUID.fromString(courseIdStr);
+			Course course = courseCRUDService.retrieveById(courseId);
 
 			courseCRUDService.prepareProxmoxProvisioning(courseId);
 
@@ -364,7 +366,7 @@ public class CourseCRUDController {
 
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 
-			return REDIRECT_COURSE_CRUD + courseId;
+			return REDIRECT_COURSE_CRUD + "/name/" + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
