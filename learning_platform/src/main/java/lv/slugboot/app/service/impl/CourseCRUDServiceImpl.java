@@ -296,7 +296,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				        hostname: "{{ item.hostname }}"
 				        vmid: "{{ item.vmid }}"
 				        netif:
-				          net0: "name=eth0,gw=192.168.0.1,ip={{ item.ip }}/24,bridge=vmbr0"
+				          net0: "name=eth0,gw=192.168.15.1,ip={{ item.ip }}/24,bridge=vmbr0"
 				        password: "securepassword"
 				        ostemplate: 'local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst'
 				        disk: "local-lvm:30"

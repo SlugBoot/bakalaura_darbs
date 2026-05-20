@@ -93,7 +93,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		int courseBlock = Math.floorMod(courseId.hashCode(), 9);
 		int vmidCounter = 1000 + (courseBlock * 50);
 
-		int startOctet = 160 + (courseBlock * 10);
+		int startOctet = 20 + (courseBlock * 10);
 		int currentOctet = startOctet;
 
 		for (LabInstance inst : instances) {
@@ -104,7 +104,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 
 			String allocatedIp = inst.getIpAddress();
 			if (allocatedIp == null || allocatedIp.isEmpty() || allocatedIp.equalsIgnoreCase("null")) {
-				allocatedIp = "192.168.0." + currentOctet;
+				allocatedIp = "192.168.15." + currentOctet;
 				inst.setIpAddress(allocatedIp);
 				inst.setStatus(LabInstanceStatus.INITIALIZED);
 				labInstanceRepo.save(inst);
