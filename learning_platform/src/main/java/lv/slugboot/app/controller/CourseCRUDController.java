@@ -188,9 +188,9 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}/add")
 	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug,
+			@RequestParam(value = "referer", required = false) String referer,
 			HttpServletRequest request, Model model) {
 		try {
-			String referer = request.getHeader(REFERRER_HEADER);
 			model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
