@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
-import lv.slugboot.app.dto.StudentDTO;
+import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IStudentCRUDService;
 
@@ -54,12 +54,12 @@ public class StudentCRUDController {
 
 	@GetMapping("/create")
 	public String getControllerCreateStudent(Model model) {
-		model.addAttribute(STUDENT_ATTRIBUTE, new StudentDTO());
+		model.addAttribute(STUDENT_ATTRIBUTE, new PersonDTO());
 		return CREATE_STUDENT_PAGE;
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateStudent(@Valid StudentDTO student, BindingResult result, Model model) {
+	public String postControllerCreateStudent(@Valid PersonDTO student, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return CREATE_STUDENT_PAGE;
 		}
@@ -87,7 +87,7 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid StudentDTO student,
+	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid PersonDTO student,
 			BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_PARAMETER);
 		UUID studentId = UUID.fromString(studentIdStr);

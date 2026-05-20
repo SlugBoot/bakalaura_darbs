@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
-import lv.slugboot.app.dto.ProfessorDTO;
+import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,12 +54,12 @@ public class ProfessorCRUDController {
 
 	@GetMapping("/create")
 	public String getControllerCreateProfessor(Model model) {
-		model.addAttribute(PROFESSOR_ATTRIBUTE, new ProfessorDTO());
+		model.addAttribute(PROFESSOR_ATTRIBUTE, new PersonDTO());
 		return CREATE_PROFESSOR_PAGE;
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateProfessor(@Valid ProfessorDTO professor, BindingResult result, Model model) {
+	public String postControllerCreateProfessor(@Valid PersonDTO professor, BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return CREATE_PROFESSOR_PAGE;
 		}
@@ -87,7 +87,7 @@ public class ProfessorCRUDController {
 
 	@PostMapping("/update")
 	public String postControllerUpdateProfessorById(HttpServletRequest request,
-			@Valid ProfessorDTO professor, BindingResult result, Model model) {
+			@Valid PersonDTO professor, BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
 		

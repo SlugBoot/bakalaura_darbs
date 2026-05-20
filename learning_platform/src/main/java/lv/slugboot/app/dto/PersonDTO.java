@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ProfessorDTO {
+public class PersonDTO {
 
 	private static final String NAME_REGEX_PATTERN = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 
