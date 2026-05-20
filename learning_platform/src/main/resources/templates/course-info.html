@@ -7,10 +7,23 @@
 		<h2 th:text="${course.getCourseDesc()}"></h2>
 		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
 		
-		<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${previousUrl})}"><button type="button">Add student to Course</button></a>
-		<a th:href="@{/course/crud/provision(uuid=${course.getCId()})}"><button type="button">Initialize Instances</button></a>
-		<a th:href="@{/course/crud/deploy(uuid=${course.getCId()})}"><button type="button">Deploy Lab</button></a>
-		<a th:href="@{/course/crud/cleanup(uuid=${course.getCId()})}"><button type="button">Delete Files</button></a>
+		<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${previousUrl})}">
+			<button type="button">Add student to Course</button>
+		</a>
+		<form th:action="@{/course/crud/provision}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<button type="submit">Create Instances</button>
+		</form>
+		<form th:action="@{/course/crud/deploy}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+			<button type="submit">Start and Deploy Lab</button>
+		</form>
+		<form th:action="@{/course/crud/cleanup}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="studentId" th:value="${student.getPersonId()}" />
+			<button type="submit">Delete all instances</button>
+		</form>
 		<p>Note: Initialization and Deployment can take some time.</p>
 		<table border = 1px>
 			<th colspan="7">Student List</th>
