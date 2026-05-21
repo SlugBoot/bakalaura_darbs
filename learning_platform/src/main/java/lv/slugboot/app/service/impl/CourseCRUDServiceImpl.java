@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Professor;
@@ -25,6 +26,7 @@ import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.ISystemTaskService;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
@@ -35,6 +37,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 	private final IAnsibleService ansibleService;
 	private final ISystemTaskService systemTaskService;
+	
+	private final SimpMessagingTemplate messagingTemplate;
 
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
@@ -44,8 +48,12 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	private static final String HOSTS_FILE = "hosts";
 	private static final String STUDENT_HOSTS_FILE = "student_hosts";
 	private static final String START_VMS_FILE = "start_vms";
+	private static final String STOP_VMS_FILE = "stop_vms";
 	
-
+	private void notifyStatusChange(UUID courseId) {
+		String destination = "/topic/course" + courseId;
+		messagingTemplate.convertAndSend(destination, "refresh");
+	}
 
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) {
@@ -171,7 +179,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		courseRepo.save(course);
 	}
 
-	@Async
+	@Async("taskExecutor")
 	@Override
 	@Transactional
 	public void deployLab(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException {
@@ -232,14 +240,17 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
 		for (LabInstance inst : instances) {
-			inst.setStatus(LabInstanceStatus.RUNNING);
+			inst.setStatus(LabInstanceStatus.DEPLOYING);
 			instanceRepo.save(inst);
 			if (inst.getIpAddress() != null) {
 				ips.add(inst.getIpAddress());
 			}
 		}
+		
+		notifyStatusChange(courseId);
+		
 		ansibleService.createInventoryFile(courseId, hostGroup, ips, STUDENT_HOSTS_FILE);
-
+		
 		String installPlaybook = """
 				---
 				- name: Install Necessary Packages
@@ -260,9 +271,12 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		ansibleService.createPlaybook(courseId, installPlaybook, PLAYBOOK_FILE);
 
 		ansibleService.runPlaybook(courseId, PLAYBOOK_FILE, STUDENT_HOSTS_FILE);
+		
+		updateInstancesStatus(instances, LabInstanceStatus.RUNNING);
+		notifyStatusChange(courseId);
 	}
 
-	@Async
+	@Async("taskExecutor")
 	@Override
 	public void cleanupLab(UUID courseId) throws IOException, InterruptedException, NoSuchFieldException {
 		ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
@@ -274,16 +288,19 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			inst.setStatus(LabInstanceStatus.UNINITIALIZED);
 			instanceRepo.save(inst);
 		}
+		
+		notifyStatusChange(courseId);
+		
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
 
-	@Async
+	@Async("taskExecutor")
 	@Override
 	public void prepareProxmoxProvisioning(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException {
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
-
+	
 		ansibleService.createProxmoxVarsFile(courseId, instances);
 		ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), HOSTS_FILE);
 
@@ -339,6 +356,28 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				""";
 
 		ansibleService.createPlaybook(courseId, removePlaybook, REMOVE_VMS_FILE);
+		
+		String stopPlaybook = """
+				---
+				- name: Stop Course Containers
+				  hosts: proxmox
+				  vars_files:
+				    - multi-container.yml
+				  tasks:
+				    - name: Stop containers by VMID
+				      community.proxmox.proxmox:
+				        node: "prox-bak"
+				        api_host: "192.168.0.112"
+				        api_token_id: "ansible-token"
+				        api_token_secret: "e7c7ea4a-8e10-4547-acd6-c145da35e1d3"
+				        api_user: "root@pam"
+				        vmid: "{{ item.vmid }}"
+				        state: stopped
+				        force: yes
+				      loop: "{{ containers }}"
+				""";
+		
+		ansibleService.createPlaybook(courseId, stopPlaybook, STOP_VMS_FILE);
 	}
 
 	@Override
@@ -352,6 +391,42 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		}
 
 		return courseRepo.findBySlug(slug).get();
+	}
+
+	@Async("taskExecutor")
+	@Override
+	@Transactional
+	public void provisionCourseInfrastructure(UUID courseId)
+			throws NoSuchFieldException, IOException, InterruptedException {
+		List<LabInstance> instances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
+		
+		try {
+			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZING);
+			notifyStatusChange(courseId);
+			
+			prepareProxmoxProvisioning(courseId);
+			
+			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
+			
+			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZED);
+			notifyStatusChange(courseId);
+			
+		} catch (Exception e) {
+			log.error("Provisioning failed for course {}", courseId, e);
+	        updateInstancesStatus(instances, LabInstanceStatus.UNINITIALIZED);
+	        notifyStatusChange(courseId);
+		}
+		
+	}
+	
+	private void updateInstancesStatus(List<LabInstance> instances, LabInstanceStatus status) {
+		for (LabInstance inst : instances) {
+	        inst.setStatus(status);
+	        instanceRepo.save(inst);
+	    }
+	    if (!instances.isEmpty()) {
+	        notifyStatusChange(instances.get(0).getCourse().getCId());
+	    }
 	}
 
 }

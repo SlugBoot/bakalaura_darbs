@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -65,7 +64,6 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		systemTaskService.createFile(path, playbookYaml);
 	}
 
-	@Async("taskExecutor")
 	@Override
 	public void runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
@@ -87,13 +85,11 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		log.info("Running playbook: " + playbookName + " with inventory: " + inventoryName);
 		 try {
 			systemTaskService.executeCommand(command);
-			notifyStatusChange(courseId);
 		} catch (Exception e) {
 			log.error("Async Ansible task failed");
 		}
 	}
 
-	@Async("taskExecutor")
 	@Override
 	public void runPlaybook(UUID courseId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {

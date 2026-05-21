@@ -343,11 +343,8 @@ public class CourseCRUDController {
 			UUID courseId = UUID.fromString(courseIdStr);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			courseCRUDService.prepareProxmoxProvisioning(courseId);
-
-			log.info("Files prepared. Starting playbook execution for course: {}", courseId);
-
-			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
+			log.info("Starting provisioning for course: {}", courseId);
+			courseCRUDService.provisionCourseInfrastructure(courseId);
 
 			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
