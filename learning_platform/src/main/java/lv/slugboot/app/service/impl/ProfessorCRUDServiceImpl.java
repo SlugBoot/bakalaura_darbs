@@ -41,13 +41,14 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 			throw new IllegalArgumentException("The email has already been used for a different account");
 		} else {
 			Professor newProfessor = new Professor(name, middleName, surname, email);
-			
+
 			String rawPassword = PasswordGenerator.generateRandomPassword(12);
-			
-			log.debug("[SECURITY DEBUG] Generated password for professor: ("+ newProfessor.getUsername() +"), " + rawPassword);
-			
+
+			log.debug("[SECURITY DEBUG] Generated password for professor: (" + newProfessor.getUsername() + "), "
+					+ rawPassword);
+
 			newProfessor.setPassword(passwordEncoder.encode(rawPassword));
-			
+
 			professorRepo.save(newProfessor);
 		}
 	}
@@ -123,20 +124,20 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 	@Override
 	public void updatePasswordById(UUID professorId, PasswordUpdateDTO passwordDTO) throws NoSuchFieldException {
 		String plainPassword = passwordDTO.getNewPassword();
-		
+
 		if (plainPassword == null || plainPassword.trim().isEmpty()) {
 			throw new IllegalArgumentException("Password cannot be empty");
 		}
-		
+
 		Professor professor = retrieveById(professorId);
-		
+
 		professor.setPassword(passwordEncoder.encode(plainPassword));
-		
+
 		professorRepo.save(professor);
 	}
 
 	@Override
-	public Professor retrieveByUsername(String username) throws NoSuchFieldException{
+	public Professor retrieveByUsername(String username) throws NoSuchFieldException {
 		if (username == null) {
 			throw new NullPointerException("Professor ID cannot be null");
 		}

@@ -38,7 +38,7 @@ public class ProfessorCRUDController {
 	private static final String PASSWORD_ATTRIBUTE = "password";
 	private static final String USER_TYPE_ATTRIBUTE = "userType";
 	private static final String USER_ID_ATTRIBUTE = "userId";
-	
+
 	private static final String UUID_PARAMETER = "uuid";
 
 	@GetMapping("/all")
@@ -75,7 +75,8 @@ public class ProfessorCRUDController {
 	}
 
 	@GetMapping("/update/{username}")
-	public String getControllerUpdateProfessorByUsername(@PathVariable(name = "username") String username, Model model) {
+	public String getControllerUpdateProfessorByUsername(@PathVariable(name = "username") String username,
+			Model model) {
 		try {
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
 			return UPDATE_PROFESSOR_PAGE;
@@ -86,11 +87,11 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateProfessorById(HttpServletRequest request,
-			@Valid PersonDTO professor, BindingResult result, Model model) {
+	public String postControllerUpdateProfessorById(HttpServletRequest request, @Valid PersonDTO professor,
+			BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
-		
+
 		if (result.hasErrors()) {
 			try {
 				return UPDATE_PROFESSOR_PAGE;
@@ -109,19 +110,19 @@ public class ProfessorCRUDController {
 			return ERROR_PAGE;
 		}
 	}
-	
+
 	@GetMapping("/update-password/{username}")
 	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model) {
-	    try {
-	    	Professor professor = professorCRUDService.retrieveByUsername(username);
-	        model.addAttribute(USER_ID_ATTRIBUTE, professor.getPersonId());
+		try {
+			Professor professor = professorCRUDService.retrieveByUsername(username);
+			model.addAttribute(USER_ID_ATTRIBUTE, professor.getPersonId());
 			model.addAttribute(USER_TYPE_ATTRIBUTE, "professor");
 			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
-	        return UPDATE_PASSWORD_PAGE;
-	    } catch (Exception e) {
-	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
-	        return ERROR_PAGE;
-	    }
+			return UPDATE_PASSWORD_PAGE;
+		} catch (Exception e) {
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
+		}
 	}
 
 	@PostMapping("/update-password")
@@ -129,36 +130,36 @@ public class ProfessorCRUDController {
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
-		
-		Runnable populateErrorModel = () -> {
-	        model.addAttribute("userId", professorId);
-	        model.addAttribute("userType", "professor");
-	        model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
-	    };
 
-	    if (result.hasErrors()) {
-	        populateErrorModel.run();
-	        return UPDATE_PASSWORD_PAGE;
-	    }
-	    
-	    if (!passwordDto.isNewPasswordMatching()) {
-	        result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
-	        populateErrorModel.run();
-	        return UPDATE_PASSWORD_PAGE;
-	    }
-		
+		Runnable populateErrorModel = () -> {
+			model.addAttribute("userId", professorId);
+			model.addAttribute("userType", "professor");
+			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
+		};
+
+		if (result.hasErrors()) {
+			populateErrorModel.run();
+			return UPDATE_PASSWORD_PAGE;
+		}
+
+		if (!passwordDto.isNewPasswordMatching()) {
+			result.rejectValue("confirmPassword", "error.passwordDto", "New Passwords do not match");
+			populateErrorModel.run();
+			return UPDATE_PASSWORD_PAGE;
+		}
+
 		try {
-	        professorCRUDService.updatePasswordById(professorId, passwordDto);
-	        return PROFESSOR_REDIRECT_PAGE;
-	    } catch (IllegalArgumentException e) {
-	        result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
-	        populateErrorModel.run();
-	        model.addAttribute(USER_ID_ATTRIBUTE, professorId);
-	        return UPDATE_PASSWORD_PAGE;
-	    } catch (Exception e) {
-	        model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
-	        return ERROR_PAGE;
-	    }
+			professorCRUDService.updatePasswordById(professorId, passwordDto);
+			return PROFESSOR_REDIRECT_PAGE;
+		} catch (IllegalArgumentException e) {
+			result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
+			populateErrorModel.run();
+			model.addAttribute(USER_ID_ATTRIBUTE, professorId);
+			return UPDATE_PASSWORD_PAGE;
+		} catch (Exception e) {
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
+		}
 	}
 
 	@PostMapping("/delete")
@@ -166,7 +167,7 @@ public class ProfessorCRUDController {
 		try {
 			String professorIdStr = request.getParameter(UUID_PARAMETER);
 			UUID professorId = UUID.fromString(professorIdStr);
-						
+
 			professorCRUDService.deleteProfessorById(professorId);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveAll());
 			return MULTIPLE_PROFESSORS_PAGE;

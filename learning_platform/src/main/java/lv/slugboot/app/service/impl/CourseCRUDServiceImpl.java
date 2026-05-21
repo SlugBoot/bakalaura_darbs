@@ -38,7 +38,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 	private final IAnsibleService ansibleService;
 	private final ISystemTaskService systemTaskService;
-	
+
 	private final SimpMessagingTemplate messagingTemplate;
 	private final TransactionTemplate transactionTemplate;
 
@@ -51,7 +51,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	private static final String STUDENT_HOSTS_FILE = "student_hosts";
 	private static final String START_VMS_FILE = "start_vms";
 	private static final String STOP_VMS_FILE = "stop_vms";
-	
+
 	private void notifyStatusChange(UUID courseId) {
 		String destination = "/topic/course/" + courseId;
 		messagingTemplate.convertAndSend(destination, "refresh");
@@ -197,7 +197,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 						+ "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
 			}
 		}
-		
+
 		updateInstancesStatus(instances, LabInstanceStatus.DEPLOYING);
 		notifyStatusChange(courseId);
 
@@ -238,26 +238,24 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 		ansibleService.createPlaybook(courseId, startPlaybook, START_VMS_FILE);
 		ansibleService.runPlaybook(courseId, START_VMS_FILE, HOSTS_FILE);
-		
-		
 
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
-		
+
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-	        for (LabInstance inst : instances) {
-	            inst.setStatus(LabInstanceStatus.DEPLOYING);
-	            instanceRepo.save(inst);
-	            if (inst.getIpAddress() != null) {
-	                ips.add(inst.getIpAddress());
-	            }
-	        }
-	    });
-		
+			for (LabInstance inst : instances) {
+				inst.setStatus(LabInstanceStatus.DEPLOYING);
+				instanceRepo.save(inst);
+				if (inst.getIpAddress() != null) {
+					ips.add(inst.getIpAddress());
+				}
+			}
+		});
+
 		notifyStatusChange(courseId);
-		
+
 		ansibleService.createInventoryFile(courseId, hostGroup, ips, STUDENT_HOSTS_FILE);
-		
+
 		String installPlaybook = """
 				---
 				- name: Install Necessary Packages
@@ -278,7 +276,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		ansibleService.createPlaybook(courseId, installPlaybook, PLAYBOOK_FILE);
 
 		ansibleService.runPlaybook(courseId, PLAYBOOK_FILE, STUDENT_HOSTS_FILE);
-		
+
 		updateInstancesStatus(instances, LabInstanceStatus.RUNNING);
 		notifyStatusChange(courseId);
 	}
@@ -295,9 +293,9 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			inst.setStatus(LabInstanceStatus.UNINITIALIZED);
 			instanceRepo.save(inst);
 		}
-		
+
 		notifyStatusChange(courseId);
-		
+
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
 
@@ -307,7 +305,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			throws NoSuchFieldException, IOException, InterruptedException {
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
-	
+
 		ansibleService.createProxmoxVarsFile(courseId, instances);
 		ansibleService.createInventoryFile(courseId, "proxmox", List.of("192.168.0.112"), HOSTS_FILE);
 
@@ -363,7 +361,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				""";
 
 		ansibleService.createPlaybook(courseId, removePlaybook, REMOVE_VMS_FILE);
-		
+
 		String stopPlaybook = """
 				---
 				- name: Stop Course Containers
@@ -383,12 +381,12 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				        force: yes
 				      loop: "{{ containers }}"
 				""";
-		
+
 		ansibleService.createPlaybook(courseId, stopPlaybook, STOP_VMS_FILE);
-		
+
 		updateInstancesStatus(instances, LabInstanceStatus.INITIALIZING);
 		notifyStatusChange(courseId);
-		
+
 	}
 
 	@Override
@@ -409,36 +407,44 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	public void provisionCourseInfrastructure(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException {
 		List<LabInstance> instances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
-		
-		try {			
+
+		try {
 			prepareProxmoxProvisioning(courseId);
-			
+
 			notifyStatusChange(courseId);
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
-			
+
 			List<LabInstance> freshInstances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
 			updateInstancesStatus(freshInstances, LabInstanceStatus.INITIALIZED);
 			notifyStatusChange(courseId);
-			
-		} catch (Exception e) {
-			log.error("Provisioning failed for course {}", courseId, e);
-	        updateInstancesStatus(instances, LabInstanceStatus.UNINITIALIZED);
-	        notifyStatusChange(courseId);
+		} catch (InterruptedException e) {
+			log.error("Provisioning interrupted for course {}", courseId, e);
+			updateInstancesStatus(instances, LabInstanceStatus.UNINITIALIZED);
+			notifyStatusChange(courseId);
+
+			Thread.currentThread().interrupt();
+			throw e;
 		}
-		
+
+		catch (Exception e) {
+			log.error("Provisioning failed for course {}", courseId, e);
+			updateInstancesStatus(instances, LabInstanceStatus.UNINITIALIZED);
+			notifyStatusChange(courseId);
+		}
+
 	}
-	
+
 	private void updateInstancesStatus(List<LabInstance> instances, LabInstanceStatus status) {
 		transactionTemplate.executeWithoutResult(transactionStatus -> {
-	        for (LabInstance inst : instances) {
-	            inst.setStatus(status);
-	            instanceRepo.save(inst);
-	        }
-	    });
-		
-	    if (!instances.isEmpty()) {
-	        notifyStatusChange(instances.get(0).getCourse().getCId());
-	    }
+			for (LabInstance inst : instances) {
+				inst.setStatus(status);
+				instanceRepo.save(inst);
+			}
+		});
+
+		if (!instances.isEmpty()) {
+			notifyStatusChange(instances.get(0).getCourse().getCId());
+		}
 	}
 
 }

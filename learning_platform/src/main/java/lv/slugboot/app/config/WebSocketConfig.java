@@ -35,24 +35,20 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		ThreadPoolTaskScheduler heartbeatScheduler = new ThreadPoolTaskScheduler();
-        heartbeatScheduler.setPoolSize(1);
-        heartbeatScheduler.setThreadNamePrefix("ws-heartbeat-thread-");
-        heartbeatScheduler.initialize();
-        
-		config.enableSimpleBroker("/topic")
-			.setHeartbeatValue(new long[]{10000, 10000})
-			.setTaskScheduler(heartbeatScheduler);
-		
+		heartbeatScheduler.setPoolSize(1);
+		heartbeatScheduler.setThreadNamePrefix("ws-heartbeat-thread-");
+		heartbeatScheduler.initialize();
+
+		config.enableSimpleBroker("/topic").setHeartbeatValue(new long[] { 10000, 10000 })
+				.setTaskScheduler(heartbeatScheduler);
+
 		config.setApplicationDestinationPrefixes("/app");
 	}
-	
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws-status")
-			.setAllowedOrigins("https://project.server-schmingus.com")
-			.withSockJS()
-			.setHeartbeatTime(10_000)
-			.setDisconnectDelay(120_000);
+		registry.addEndpoint("/ws-status").setAllowedOrigins("https://project.server-schmingus.com").withSockJS()
+				.setHeartbeatTime(10_000).setDisconnectDelay(120_000);
 	}
 
 	@Override

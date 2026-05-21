@@ -55,7 +55,7 @@ public class Course {
 	@OneToMany(mappedBy = "course")
 	@ToString.Exclude
 	private Collection<LabInstance> labs;
-	
+
 	@Column(name = "slug", unique = true, nullable = false)
 	private String slug;
 
@@ -69,19 +69,16 @@ public class Course {
 		setCourseDesc(courseDesc);
 		setProfessor(professor);
 	}
-	
+
 	@PrePersist
 	@PreUpdate
 	private void generateSlug() {
 		if (this.courseName != null) {
 			String normalized = Normalizer.normalize(this.courseName, Normalizer.Form.NFD);
-			this.slug = normalized.toLowerCase()
-					.replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-					.replaceAll("[^a-z0-9\\s-]", "")
-					.replaceAll("\\s+", "-")
-					.replaceAll("-+", "-")
+			this.slug = normalized.toLowerCase().replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+					.replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-").replaceAll("-+", "-")
 					.replaceAll("^-|-$", "");
-			
+
 		}
 	}
 

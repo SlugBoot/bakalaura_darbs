@@ -130,7 +130,7 @@ public class StudentCRUDController {
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_PARAMETER);
 		UUID studentId = UUID.fromString(studentIdStr);
-		
+
 		Runnable populateErrorModel = () -> {
 			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
 			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
@@ -166,7 +166,7 @@ public class StudentCRUDController {
 		try {
 			String studentIdStr = request.getParameter(UUID_PARAMETER);
 			UUID studentId = UUID.fromString(studentIdStr);
-			
+
 			studentCRUDService.deleteById(studentId);
 			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;

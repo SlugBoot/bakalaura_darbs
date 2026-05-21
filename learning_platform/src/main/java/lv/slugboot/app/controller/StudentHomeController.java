@@ -30,7 +30,7 @@ public class StudentHomeController {
 	private static final String ERROR_ATTRIBUTE = "error";
 
 	private static final String COURSE_ID_PARAMETER = "courseId";
-	
+
 	@GetMapping
 	public String getControllerStudentHomePage(Authentication authentication, Model model) {
 		try {
@@ -49,12 +49,12 @@ public class StudentHomeController {
 	}
 
 	@GetMapping("/remove")
-	public String getControllerRemoveCourseFromStudent(HttpServletRequest request,
-			Authentication authentication, Model model) {
+	public String getControllerRemoveCourseFromStudent(HttpServletRequest request, Authentication authentication,
+			Model model) {
 		try {
 			String courseIdStr = request.getParameter(COURSE_ID_PARAMETER);
 			UUID courseId = UUID.fromString(courseIdStr);
-			
+
 			String username = authentication.getName();
 			Student student = studentHomeService.getStudentByUsername(username);
 			UUID studentId = student.getPersonId();

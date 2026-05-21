@@ -42,7 +42,6 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		
 
 		UUID instanceId = (UUID) session.getAttributes().get("instanceId");
 
@@ -51,7 +50,7 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 			session.close(CloseStatus.BAD_DATA.withReason("Missing secure terminal token context"));
 			return;
 		}
-		
+
 		try {
 			LabInstance instance = labInstanceCRUDService.retrieveById(instanceId);
 			String containerIp = instance.getIpAddress();
@@ -123,12 +122,12 @@ public class GuacamoleTunnelHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
-		
+
 		if (payload != null && payload.startsWith("connect")) {
 			log.debug("Filtered out initial client handshake connection frame.");
 			return;
 		}
-		
+
 		GuacamoleTunnel tunnel = (GuacamoleTunnel) session.getAttributes().get(TUNNEL_ATTRIBUTE);
 
 		if (tunnel != null && tunnel.isOpen() && session.isOpen()) {

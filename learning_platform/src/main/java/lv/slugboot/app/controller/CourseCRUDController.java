@@ -53,7 +53,6 @@ public class CourseCRUDController {
 	private static final String PROFESSOR_ATTRIBUTE = "professor";
 	private static final String PREVIOUS_URL_ATTRIBUTE = "previousUrl";
 
-	private static final String PROXMOX_FILE = "provisioning";
 	private static final String HOSTS_FILE = "hosts";
 
 	private static final String REFERER_PARAMETER = "referer";

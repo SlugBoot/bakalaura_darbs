@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
-import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.repo.ILabInstanceRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IAnsibleService;
@@ -27,7 +26,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 	private final ISystemTaskService systemTaskService;
 	private final ILabInstanceRepo labInstanceRepo;
 	private final IStudentRepo studentRepo;
-	
+
 	private final SimpMessagingTemplate messagingTemplate;
 
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
@@ -36,7 +35,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		String destination = "/topic/course/" + courseId;
 		messagingTemplate.convertAndSend(destination, "refresh");
 	}
-	
+
 	@Override
 	public void createVarsFile(UUID courseId, Map<String, Object> variables) throws IOException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "vars.yml").toString();
@@ -68,7 +67,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 	public void runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
 		log.info("Starting Ansible playbook in background for course: {}", (Object) courseId);
-		
+
 		String baseDir = Paths.get(ANSIBLE_BASE_PATH, courseId.toString()).toString();
 		String playbookPath = Paths.get(baseDir, playbookName + ".yml").toString();
 		String inventoryPath = Paths.get(baseDir, inventoryName).toString();
@@ -83,8 +82,14 @@ public class AnsibleServiceImpl implements IAnsibleService {
 			command += " --limit " + student.getUsername() + "-" + courseShortId + "-vm";
 		}
 		log.info("Running playbook: " + playbookName + " with inventory: " + inventoryName);
-		 try {
+		try {
 			systemTaskService.executeCommand(command);
+		} catch (InterruptedException e) {
+			log.error("Async Ansible task failed");
+
+			Thread.currentThread().interrupt();
+			throw e;
+
 		} catch (Exception e) {
 			log.error("Async Ansible task failed");
 		}

@@ -21,18 +21,18 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-		http.authorizeHttpRequests(
-				auth -> auth
-				.requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-				.requestMatchers("/login").permitAll()
-				
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**")
+				.permitAll().requestMatchers("/login").permitAll()
+
 				.requestMatchers("/professor/**").hasRole("PROFESSOR")
+
+				.requestMatchers("/student/crud/**").hasRole("PROFESSOR")
+
 				.requestMatchers("/student/**").hasRole("STUDENT")
-				
+
 				.requestMatchers("/course/crud/**").authenticated()
-				
-				.anyRequest().authenticated())
-				.formLogin(form -> form.successHandler(successHandler).permitAll())
+
+				.anyRequest().authenticated()).formLogin(form -> form.successHandler(successHandler).permitAll())
 				.logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
 
 		return http.build();

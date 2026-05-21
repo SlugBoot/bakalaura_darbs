@@ -27,7 +27,8 @@ public class ProfessorHomeController {
 			Professor professor = professorHomeService.retrieveByUsername(username);
 			model.addAttribute("professor", professor);
 
-			List<Course> filteredCourses = professorHomeService.getAllCoursesWhereProfessorIdEquals(professor.getPersonId());
+			List<Course> filteredCourses = professorHomeService
+					.getAllCoursesWhereProfessorIdEquals(professor.getPersonId());
 			model.addAttribute("filtered_courses", filteredCourses);
 
 			return "professor-home-page";

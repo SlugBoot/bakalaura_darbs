@@ -31,5 +31,6 @@ public interface ICourseCRUDService {
 
 	public abstract Course retrieveBySlug(String slug) throws NoSuchFieldException;
 
-	public abstract void provisionCourseInfrastructure(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException;
+	public abstract void provisionCourseInfrastructure(UUID courseId)
+			throws NoSuchFieldException, IOException, InterruptedException;
 }

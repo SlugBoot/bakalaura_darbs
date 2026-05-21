@@ -18,10 +18,10 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
-		
+
 		var authorities = authentication.getAuthorities();
 		String redirectUrl = "/login?error";
-		
+
 		for (var authority : authorities) {
 			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
 				redirectUrl = "/professor/home";
@@ -31,7 +31,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 				break;
 			}
 		}
-		
+
 		response.sendRedirect(redirectUrl);
 	}
 
