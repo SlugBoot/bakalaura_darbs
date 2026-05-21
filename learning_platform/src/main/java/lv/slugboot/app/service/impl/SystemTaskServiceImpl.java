@@ -42,7 +42,7 @@ public class SystemTaskServiceImpl implements ISystemTaskService {
 		ProcessBuilder processBuilder = new ProcessBuilder();
 
 		Map<String, String> env = processBuilder.environment();
-		env.put("PATH", "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin");
+		env.put("PATH", "/usr/bin:/bin:/usr/sbin:/sbin");
 
 		processBuilder.command("sh", "-c", command);
 
