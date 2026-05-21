@@ -77,7 +77,7 @@ public class Course {
 			String normalized = Normalizer.normalize(this.courseName, Normalizer.Form.NFD);
 			this.slug = normalized.toLowerCase().replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
 					.replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-").replaceAll("-+", "-")
-					.replaceAll("^-|-$", "");
+					.replaceAll("(?:^-)|(?:-$)", "");
 
 		}
 	}
