@@ -44,6 +44,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		StringBuilder sb = new StringBuilder("---\n");
 		variables.forEach((key, value) -> sb.append(key).append(": ").append(value).append("\n"));
 		systemTaskService.createFile(path, sb.toString());
+		notifyStatusChange(courseId);
 	}
 
 	@Override
@@ -55,6 +56,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 			sb.append(ip).append(" ansible_ssh_user=root\n");
 		}
 		systemTaskService.createFile(path, sb.toString());
+		notifyStatusChange(courseId);
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		systemTaskService.createFile(path, playbookYaml);
 	}
 
-	@Async
+	@Async("taskExecutor")
 	@Override
 	public void runPlaybook(UUID courseId, UUID studentId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
@@ -91,6 +93,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		}
 	}
 
+	@Async("taskExecutor")
 	@Override
 	public void runPlaybook(UUID courseId, String playbookName, String inventoryName)
 			throws IOException, InterruptedException {
