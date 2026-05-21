@@ -24,7 +24,7 @@
 			</tr>
 			<tr>
 				<td colspan="4">
-					<a th:href="@{/course/crud/create(username=${professor.getUsername()})}">
+					<a th:href="@{/course/crud/create(username=${professor.getUsername()},referer='/professor/home')}">
 						<button type="button"> New Course</button>
 					</a>
 				</td>
