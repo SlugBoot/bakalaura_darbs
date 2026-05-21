@@ -94,7 +94,10 @@
 		var courseId = [[${course.getCId()}]];
 		var socket = new SockJS('/ws-status');
 		var stompClient = Stomp.over(socket);
-
+		
+		stompClient.heartbeat.outgoing = 10000;
+		stompClient.heartbeat.incoming = 10000;
+		
 		stompClient.connect({}, function (frame) {
 			console.log('Connected to Status WebSocket');
 
