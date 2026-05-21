@@ -413,7 +413,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			notifyStatusChange(courseId);
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 			
-			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZED);
+			List<LabInstance> freshInstances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
+			updateInstancesStatus(freshInstances, LabInstanceStatus.INITIALIZED);
 			notifyStatusChange(courseId);
 			
 		} catch (Exception e) {
