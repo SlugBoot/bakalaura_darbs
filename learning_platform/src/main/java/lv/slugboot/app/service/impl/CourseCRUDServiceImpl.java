@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	private final ISystemTaskService systemTaskService;
 	
 	private final SimpMessagingTemplate messagingTemplate;
+	private final TransactionTemplate transactionTemplate;
 
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
@@ -181,7 +183,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 	@Async("taskExecutor")
 	@Override
-	@Transactional
 	public void deployLab(UUID courseId) throws NoSuchFieldException, IOException, InterruptedException {
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
@@ -239,13 +240,16 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
-		for (LabInstance inst : instances) {
-			inst.setStatus(LabInstanceStatus.DEPLOYING);
-			instanceRepo.save(inst);
-			if (inst.getIpAddress() != null) {
-				ips.add(inst.getIpAddress());
-			}
-		}
+		
+		transactionTemplate.executeWithoutResult(transactionStatus -> {
+	        for (LabInstance inst : instances) {
+	            inst.setStatus(LabInstanceStatus.DEPLOYING);
+	            instanceRepo.save(inst);
+	            if (inst.getIpAddress() != null) {
+	                ips.add(inst.getIpAddress());
+	            }
+	        }
+	    });
 		
 		notifyStatusChange(courseId);
 		
@@ -395,7 +399,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 	@Async("taskExecutor")
 	@Override
-	@Transactional
 	public void provisionCourseInfrastructure(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException {
 		List<LabInstance> instances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
@@ -420,10 +423,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	}
 	
 	private void updateInstancesStatus(List<LabInstance> instances, LabInstanceStatus status) {
-		for (LabInstance inst : instances) {
-	        inst.setStatus(status);
-	        instanceRepo.save(inst);
-	    }
+		transactionTemplate.executeWithoutResult(transactionStatus -> {
+	        for (LabInstance inst : instances) {
+	            inst.setStatus(status);
+	            instanceRepo.save(inst);
+	        }
+	    });
+		
 	    if (!instances.isEmpty()) {
 	        notifyStatusChange(instances.get(0).getCourse().getCId());
 	    }
