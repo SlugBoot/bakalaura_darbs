@@ -39,7 +39,9 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/ws-status").withSockJS();
+		registry.addEndpoint("/ws-status")
+			.setAllowedOrigins("https://project.server-schmingus.com")
+			.withSockJS();
 	}
 
 	@Override
