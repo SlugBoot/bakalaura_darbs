@@ -402,10 +402,10 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		
 		try {
 			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZING);
-			notifyStatusChange(courseId);
 			
 			prepareProxmoxProvisioning(courseId);
 			
+			notifyStatusChange(courseId);
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 			
 			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZED);
