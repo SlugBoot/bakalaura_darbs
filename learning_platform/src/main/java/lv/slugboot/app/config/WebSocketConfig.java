@@ -41,7 +41,9 @@ public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBro
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws-status")
 			.setAllowedOrigins("https://project.server-schmingus.com")
-			.withSockJS();
+			.withSockJS()
+			.setHeartbeatTime(10_000)
+			.setDisconnectDelay(120_000);
 	}
 
 	@Override
