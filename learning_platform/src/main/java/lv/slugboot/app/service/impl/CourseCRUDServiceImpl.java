@@ -51,7 +51,7 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	private static final String STOP_VMS_FILE = "stop_vms";
 	
 	private void notifyStatusChange(UUID courseId) {
-		String destination = "/topic/course" + courseId;
+		String destination = "/topic/course/" + courseId;
 		messagingTemplate.convertAndSend(destination, "refresh");
 	}
 

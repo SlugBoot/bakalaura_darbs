@@ -33,7 +33,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
 	private void notifyStatusChange(UUID courseId) {
-		String destination = "/topic/course" + courseId;
+		String destination = "/topic/course/" + courseId;
 		messagingTemplate.convertAndSend(destination, "refresh");
 	}
 	
