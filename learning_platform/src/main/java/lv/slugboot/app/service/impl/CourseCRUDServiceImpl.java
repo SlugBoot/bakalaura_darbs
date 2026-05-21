@@ -197,6 +197,9 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 						+ "' has a lab container instance that is not Initialized. Please run preparation/provisioning first.");
 			}
 		}
+		
+		updateInstancesStatus(instances, LabInstanceStatus.DEPLOYING);
+		notifyStatusChange(courseId);
 
 		String startPlaybook = """
 				---
