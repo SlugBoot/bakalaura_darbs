@@ -11,7 +11,7 @@
 		th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}">
 	</p>
 
-	<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${previousUrl})}">
+	<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${'/course/crud/name/' + course.getSlug()})}">
 		<button type="button">Add student to Course</button>
 	</a>
 	<form th:action="@{/course/crud/provision}" method=post>
