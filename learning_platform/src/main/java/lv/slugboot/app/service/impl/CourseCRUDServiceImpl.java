@@ -382,6 +382,10 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 				""";
 		
 		ansibleService.createPlaybook(courseId, stopPlaybook, STOP_VMS_FILE);
+		
+		updateInstancesStatus(instances, LabInstanceStatus.INITIALIZING);
+		notifyStatusChange(courseId);
+		
 	}
 
 	@Override
@@ -403,14 +407,13 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			throws NoSuchFieldException, IOException, InterruptedException {
 		List<LabInstance> instances = instanceRepo.findByCourse(courseRepo.findById(courseId).get());
 		
-		try {
-			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZING);
-			
+		try {			
 			prepareProxmoxProvisioning(courseId);
 			
 			notifyStatusChange(courseId);
 			ansibleService.runPlaybook(courseId, PROXMOX_FILE, HOSTS_FILE);
 			
+			updateInstancesStatus(instances, LabInstanceStatus.INITIALIZED);
 			notifyStatusChange(courseId);
 			
 		} catch (Exception e) {

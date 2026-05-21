@@ -122,7 +122,6 @@ public class AnsibleServiceImpl implements IAnsibleService {
 			if (allocatedIp == null || allocatedIp.isEmpty() || allocatedIp.equalsIgnoreCase("null")) {
 				allocatedIp = "192.168.15." + currentOctet;
 				inst.setIpAddress(allocatedIp);
-				inst.setStatus(LabInstanceStatus.INITIALIZED);
 				labInstanceRepo.save(inst);
 			}
 
