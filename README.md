@@ -137,9 +137,13 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 2. Pārveidota Servisu un Kontrolieru struktūra, lai to atbalstītu
 3. Izveidotas Lietotāju paroļu pārvaldības funkcijas
 
-## 19. maijs
+## 19. - 20. maijs
 
 1. Pastiprināta drošība izmantojot Spring Security
     - Noņemti UUID no lapas ceļa mainīgajiem (page path variable) uz pieprasījuma parametriem (request parameter)
 2. Izveidots jauns apakštīkls (subnet) virtuālajām mašīnām
 3. Izveidotas asinhronas darbības, lai nebūtu ilgas aizkaves starp pieprasījumiem
+
+## 21. maijs
+
+1. Izveidota lapas atjaunošana, kad mainās Laboratorijas vides statuss

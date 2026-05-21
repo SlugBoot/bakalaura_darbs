@@ -80,5 +80,26 @@
 		        </td>
 			</tr>
 		</table>
+		
+		<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+		<script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
+		
+		<script th:inline="javascript">
+		    var courseId = [[${course.courseId}]]; 
+		    var socket = new SockJS('/ws-status');
+		    var stompClient = Stomp.over(socket);
+
+		    stompClient.connect({}, function (frame) {
+		        console.log('Connected to Status WebSocket');
+		        
+
+		        stompClient.subscribe('/topic/course/' + courseId, function (message) {
+		            if (message.body === "refresh") {
+		                console.log("Status update received. Refreshing page...");
+		                window.location.reload();
+		            }
+		        });
+		    });
+		</script>
 	</body>
 </html>

@@ -28,9 +28,16 @@ public class AnsibleServiceImpl implements IAnsibleService {
 	private final ISystemTaskService systemTaskService;
 	private final ILabInstanceRepo labInstanceRepo;
 	private final IStudentRepo studentRepo;
+	
+	private final SimpMessagingTemplate messagingTemplate;
 
 	private static final String ANSIBLE_BASE_PATH = "ansible_workspace";
 
+	private void notifyStatusChange(UUID courseId) {
+		String destination = "/topic/course" + courseId;
+		messagingTemplate.convertAndSend(destination, "refresh");
+	}
+	
 	@Override
 	public void createVarsFile(UUID courseId, Map<String, Object> variables) throws IOException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "vars.yml").toString();
@@ -78,6 +85,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 		log.info("Running playbook: " + playbookName + " with inventory: " + inventoryName);
 		 try {
 			systemTaskService.executeCommand(command);
+			notifyStatusChange(courseId);
 		} catch (Exception e) {
 			log.error("Async Ansible task failed");
 		}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	private static final String HOSTS_FILE = "hosts";
 	private static final String STUDENT_HOSTS_FILE = "student_hosts";
 	private static final String START_VMS_FILE = "start_vms";
+	
+
 
 	@Override
 	public void createCourse(String courseName, String courseDesc, UUID professorId) {
@@ -223,6 +226,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 		ansibleService.createPlaybook(courseId, startPlaybook, START_VMS_FILE);
 		ansibleService.runPlaybook(courseId, START_VMS_FILE, HOSTS_FILE);
+		
+		
 
 		String hostGroup = "target_vms";
 		List<String> ips = new ArrayList<>();
@@ -269,7 +274,6 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			inst.setStatus(LabInstanceStatus.UNINITIALIZED);
 			instanceRepo.save(inst);
 		}
-
 		systemTaskService.deleteDirectory(ANSIBLE_BASE_PATH + "/" + courseId);
 	}
 

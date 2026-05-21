@@ -1,5 +1,5 @@
 package lv.slugboot.app.models.enums;
 
 public enum LabInstanceStatus {
-	UNINITIALIZED, INITIALIZED, RUNNING, STOPPED
+	UNINITIALIZED, INITIALIZED, DEPLOYING, RUNNING, STOPPED
 }
