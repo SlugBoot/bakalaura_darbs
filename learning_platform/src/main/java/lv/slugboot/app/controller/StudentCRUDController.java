@@ -85,15 +85,14 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid @ModelAttribute("student") PersonDTO student,
+	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid @ModelAttribute("student") PersonDTO studentDTO,
 			BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
 		if (result.hasErrors()) {
 			try {
-				Student studentObj = studentCRUDService.retrieveById(studentId);
-				model.addAttribute(STUDENT_STR, studentObj);
+				model.addAttribute(STUDENT_STR, studentDTO);
 				
 				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
@@ -103,7 +102,7 @@ public class StudentCRUDController {
 		}
 
 		try {
-			studentCRUDService.updateStudentById(studentId, student);
+			studentCRUDService.updateStudentById(studentId, studentDTO);
 			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_STR, e.getMessage());
