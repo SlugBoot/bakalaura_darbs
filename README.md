@@ -151,3 +151,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 ## 22. maijs
 
 1. Izmainīta lapu struktūra
+2. Pievienots CustomErrorController
