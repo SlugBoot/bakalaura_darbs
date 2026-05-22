@@ -36,7 +36,7 @@
 				<td><input type="submit" /></td>
 			</tr>
 		</table>
-		<a th:href="@{/professor/crud/update-password/{username}(username=${professor.getUsername()}, referer=/professor/home)}">
+		<a th:href="@{/professor/crud/update-password/{username}(username=${professor.getUsername()}, referer='/professor/home')}">
 		    <button type="button">Change Password</button>
 		</a>
 	</form>
