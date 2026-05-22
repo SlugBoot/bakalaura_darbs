@@ -12,6 +12,8 @@ import lombok.Setter;
 @Setter
 public class PersonDTO {
 
+	public interface OnCreate extends jakarta.validation.groups.Default{}
+	
 	private static final String NAME_REGEX_PATTERN = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 
 	@NotNull
@@ -30,7 +32,7 @@ public class PersonDTO {
 	@Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Invalid email")
 	private String email;
 	
-	@NotBlank(message = "Password is required")
+	@NotBlank(message = "Password is required", groups = OnCreate.class)
 	@Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters")
 	private String password;
 }
