@@ -1,34 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
-	<head></head>
-	<body>
-		<button onclick="history.back()">Back</button>
-		<button onclick="location.href='/logout'">Logout</button>
-		<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
-		<table border = 1px>
-			<tr>
-				<td>Course ID</td>
-				<td>Course Name</td>
-				<td>Course Description</td>
-				<td>Course Info</td>
-			</tr>
-			<tr th:each="course : ${filtered_courses}">
-				<td th:text="${course.getCId()}"></td>
-				<td th:text="${course.getCourseName()}"></td>
-				<td th:text="${course.getCourseDesc()}"></td>
-				<td>
-					<a th:href="@{/course/crud/name/{slug}(slug=${course.getSlug()}, referer='/professor/home')}">
-						<button type="button">Info</button>
-					</a>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="4">
-					<a th:href="@{/course/crud/create(username=${professor.getUsername()},referer='/professor/home')}">
-						<button type="button"> New Course</button>
-					</a>
-				</td>
-		    </tr>	
-		</table>
-	</body>
+
+<head></head>
+
+<body>
+	<nav>
+		<a th:href="@{/logout}">
+			<button type="button">Logout</button>
+		</a>
+		<a th:href="@{/student/crud/all, referer='/professor/home')}">
+			<button type="button">Student account management</button>
+		</a>
+		<a th:href="@{/professor/crud/update/username(username=${course.getProfessor().getUsername()}, referer='/professor/home')}">
+			<button type="button">Update Personal info</button>
+		</a>
+	</nav>
+	<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
+	<table border=1px>
+		<tr>
+			<td>Course ID</td>
+			<td>Course Name</td>
+			<td>Course Description</td>
+			<td>Course Info</td>
+		</tr>
+		<tr th:each="course : ${filtered_courses}">
+			<td th:text="${course.getCId()}"></td>
+			<td th:text="${course.getCourseName()}"></td>
+			<td th:text="${course.getCourseDesc()}"></td>
+			<td>
+				<a th:href="@{/course/crud/name/{slug}(slug=${course.getSlug()}, referer='/professor/home')}">
+					<button type="button">Info</button>
+				</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<a th:href="@{/course/crud/create(username=${professor.getUsername()},referer='/professor/home')}">
+					<button type="button"> New Course</button>
+				</a>
+			</td>
+		</tr>
+	</table>
+</body>
+
 </html>

@@ -147,3 +147,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 ## 21. maijs
 
 1. Izveidota lapas atjaunošana, kad mainās Laboratorijas vides statuss
+
+## 22. maijs
+
+1. Izmainīta lapu struktūra

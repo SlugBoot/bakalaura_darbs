@@ -63,6 +63,8 @@ public class CourseCRUDController {
 
 	private static final String REDIRECT_STRING = "redirect:";
 	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
+	private static final String REDIRECT_COURSE_CRUD_NAME = REDIRECT_COURSE_CRUD + "name/";
+	private static final String REDIRECT_PROFESSOR_HOME = "redirect:/professor/home";
 
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
@@ -218,7 +220,7 @@ public class CourseCRUDController {
 		try {
 			courseCRUDService.updateCourseById(courseId, course.getCourseName(), course.getCourseDesc(),
 					course.getProfessor().getPersonId());
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
 
@@ -267,7 +269,7 @@ public class CourseCRUDController {
 				return REDIRECT_STRING + referer;
 			}
 
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
@@ -289,7 +291,7 @@ public class CourseCRUDController {
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
 
@@ -307,7 +309,7 @@ public class CourseCRUDController {
 			courseCRUDService.deployLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
@@ -326,7 +328,7 @@ public class CourseCRUDController {
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
@@ -345,7 +347,7 @@ public class CourseCRUDController {
 			log.info("Starting provisioning for course: {}", courseId);
 			courseCRUDService.provisionCourseInfrastructure(courseId);
 
-			return REDIRECT_COURSE_CRUD + "name/" + course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME+ course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 

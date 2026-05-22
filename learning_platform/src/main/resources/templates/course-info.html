@@ -4,31 +4,44 @@
 <head></head>
 
 <body>
-	<a th:href="${previousUrl}"><button type="button">Back</button></a>
+	<nav>
+		<a th:href="@{/professor/home}">
+			<button type="button">Home Page</button>
+		</a>
+		<a th:href="@{/course/crud/update}">
+			<button type="button">Update course Info</button>
+		</a>
+		<a th:href="@{/course/crud/delete(uuid=${course.getCId()})}">
+			<button type="button">Delete Course</button>
+		</a>
+	</nav>
 	<h1 th:text="${course.getCourseName()}"></h1>
 	<h2 th:text="${course.getCourseDesc()}"></h2>
 	<p
 		th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}">
 	</p>
 
-	<a th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${'/course/crud/name/' + course.getSlug()})}">
+	<a
+		th:href="@{/course/crud/{slug}/add(slug=${course.getSlug()}, referer=${'/course/crud/name/' + course.getSlug()})}">
 		<button type="button">Add student to Course</button>
 	</a>
-	<form th:action="@{/course/crud/provision}" method=post>
-		<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-		<input type="hidden" name="referer" th:value="${previousUrl}" />
-		<button type="submit">Create Instances</button>
-	</form>
-	<form th:action="@{/course/crud/deploy}" method=post>
-		<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-		<input type="hidden" name="referer" th:value="${previousUrl}" />
-		<button type="submit">Start and Deploy Lab</button>
-	</form>
-	<form th:action="@{/course/crud/cleanup}" method=post>
-		<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-		<input type="hidden" name="referer" th:value="${previousUrl}" />
-		<button type="submit">Delete all instances</button>
-	</form>
+	<nav>
+		<form th:action="@{/course/crud/provision}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+			<button type="submit">Create Instances</button>
+		</form>
+		<form th:action="@{/course/crud/deploy}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+			<button type="submit">Start and Deploy Lab</button>
+		</form>
+		<form th:action="@{/course/crud/cleanup}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+			<button type="submit">Delete all instances</button>
+		</form>
+	</nav>
 	<p>Note: Initialization and Deployment can take some time.</p>
 	<p>It is recommended to refresh the page at least 5 minutes after deployment, to allow packages to install</p>
 	<table border=1px>
@@ -94,10 +107,10 @@
 		var courseId = [[${course.getCId().toString()}]];
 		var socket = new SockJS('/ws-status');
 		var stompClient = Stomp.over(socket);
-		
+
 		stompClient.heartbeat.outgoing = 10000;
 		stompClient.heartbeat.incoming = 10000;
-		
+
 		stompClient.connect({}, function (frame) {
 			console.log('Connected to Status WebSocket');
 
