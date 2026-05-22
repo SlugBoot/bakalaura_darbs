@@ -3,7 +3,9 @@ package lv.slugboot.app.service;
 import java.util.List;
 import java.util.UUID;
 
+import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
+import lv.slugboot.app.models.Student;
 import lv.slugboot.app.models.enums.LabInstanceStatus;
 
 public interface ILabInstanceCRUDService {
@@ -22,5 +24,7 @@ public interface ILabInstanceCRUDService {
 			throws NoSuchFieldException;
 
 	public abstract void updateIPAddressById(UUID instanceId, String ipAddress) throws NoSuchFieldException;
+
+	public abstract LabInstance retrieveByCourseAndStudent(Course course, Student student);
 
 }

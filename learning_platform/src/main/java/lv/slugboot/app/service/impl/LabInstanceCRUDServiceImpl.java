@@ -102,4 +102,11 @@ public class LabInstanceCRUDServiceImpl implements ILabInstanceCRUDService {
 		labInstanceRepo.save(labInstance);
 	}
 
+	@Override
+	public LabInstance retrieveByCourseAndStudent(Course course, Student student) {
+		LabInstance labInstance = labInstanceRepo.findByCourseAndStudent(course, student);
+		
+		return labInstance;
+	}
+
 }

@@ -181,6 +181,12 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		LabInstance instance = instanceRepo.findByCourseAndStudent(course, student);
 
 		if (student.getCourse().contains(course)) {
+			LabInstanceStatus status = instanceRepo.findByCourseAndStudent(course, student).getStatus();
+			
+			if (status != LabInstanceStatus.UNINITIALIZED) {
+				throw new IllegalArgumentException("Cannot remove student from course until instances are Uninitialized");
+			}
+			
 			student.getCourse().remove(course);
 			course.getStudents().remove(student);
 			instanceRepo.delete(instance);

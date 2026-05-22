@@ -21,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
+import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
+import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
 @RequestMapping("/course/crud")
@@ -34,6 +36,7 @@ import lv.slugboot.app.service.IProfessorCRUDService;
 public class CourseCRUDController {
 
 	private final ICourseCRUDService courseCRUDService;
+	private final IStudentCRUDService studentCRUDService;
 	private final IFilterService filterService;
 	private final IProfessorCRUDService professorCRUDService;
 	private final ILabInstanceCRUDService instanceCRUDService;
@@ -197,12 +200,12 @@ public class CourseCRUDController {
 			}
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
-			
+
 			CourseDTO courseDTO = new CourseDTO();
-		    courseDTO.setCourseName(course.getCourseName());
-		    courseDTO.setCourseDesc(course.getCourseDesc());
-		    courseDTO.setProfessorId(course.getProfessor().getPersonId());
-			
+			courseDTO.setCourseName(course.getCourseName());
+			courseDTO.setCourseDesc(course.getCourseDesc());
+			courseDTO.setProfessorId(course.getProfessor().getPersonId());
+
 			model.addAttribute(COURSE_ATTRIBUTE, course);
 			model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
 
@@ -224,13 +227,13 @@ public class CourseCRUDController {
 		if (result.hasErrors()) {
 			try {
 				Course courseObj = courseCRUDService.retrieveById(courseId);
-				
+
 				CourseDTO courseDTO = new CourseDTO();
-			    courseDTO.setCourseName(course.getCourseName());
-			    courseDTO.setCourseDesc(course.getCourseDesc());
-			    courseDTO.setProfessorId(courseObj.getProfessor().getPersonId());
-			    
-			    model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
+				courseDTO.setCourseName(course.getCourseName());
+				courseDTO.setCourseDesc(course.getCourseDesc());
+				courseDTO.setProfessorId(courseObj.getProfessor().getPersonId());
+
+				model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
 				model.addAttribute(COURSE_ATTRIBUTE, courseObj);
 				return UPDATE_COURSE_PAGE;
 			} catch (Exception e) {
@@ -310,8 +313,10 @@ public class CourseCRUDController {
 			UUID courseId = UUID.fromString(courseIdStr);
 			UUID studentId = UUID.fromString(studentIdStr);
 
-			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 			Course course = courseCRUDService.retrieveById(courseId);
+			Student student = studentCRUDService.retrieveById(studentId);
+
+			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
