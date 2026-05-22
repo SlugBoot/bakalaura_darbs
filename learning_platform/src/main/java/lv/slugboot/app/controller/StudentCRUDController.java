@@ -78,6 +78,14 @@ public class StudentCRUDController {
 			Student student = studentCRUDService.retrieveByUsername(username);
 			model.addAttribute(STUDENT_STR, student);
 			model.addAttribute("studentId", student.getPersonId());
+
+			PersonDTO studentDTO = new PersonDTO();
+			studentDTO.setName(student.getName());
+			studentDTO.setMiddleName(student.getMiddleName());
+			studentDTO.setSurname(student.getSurname());
+			studentDTO.setEmail(student.getEmail());
+			model.addAttribute("studentDTO", studentDTO);
+
 			return UPDATE_STUDENT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_STR, e.getMessage());

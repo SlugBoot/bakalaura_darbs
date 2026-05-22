@@ -82,6 +82,14 @@ public class ProfessorCRUDController {
 			Professor professor = professorCRUDService.retrieveByUsername(username);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professor);
 			model.addAttribute("professorId", professor.getPersonId());
+
+			PersonDTO professorDTO = new PersonDTO();
+			professorDTO.setName(professor.getName());
+			professorDTO.setMiddleName(professor.getMiddleName());
+			professorDTO.setSurname(professor.getSurname());
+			professorDTO.setEmail(professor.getEmail());
+			model.addAttribute("professorDTO", professorDTO);
+
 			return UPDATE_PROFESSOR_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
