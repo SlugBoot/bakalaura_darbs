@@ -14,23 +14,17 @@
 	</nav>
 	<h1 th:text="${student.getName() + ' ' + student.getSurname()}"></h1>
 	<table border=1px id="course-table">
-		<th colspan="5"> Course List</th>
+		<th colspan="4"> Course List</th>
 		<tr>
 			<td>Course ID</td>
 			<td>Course Name</td>
 			<td>Course Description</td>
-			<td>Course Info</td>
 			<td>Remove Course</td>
 		</tr>
 		<tr th:each="course : ${filtered_courses}">
 			<td th:text="${course.getCId()}"></td>
 			<td th:text="${course.getCourseName()}"></td>
 			<td th:text="${course.getCourseDesc()}"></td>
-			<td>
-				<a th:href="@{/course/crud/{slug}(uuid=${course.getSlug()}, referer='/student/home')}">
-					<button type="button">Info</button>
-				</a>
-			</td>
 			<td>
 				<a th:href="@{/student/home/remove(courseId=${course.getCId()})}">
 					<button type="button">Remove Course</button>
@@ -56,7 +50,7 @@
 		                 i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurname() : 'Unknown Professor'}">
 			</td>
 
-			<td th:text="${i.getIpAddress() != null ? i.getIpAddress() : 'Assigning IP...'}"></td>
+			<td th:text="${i.getIpAddress() != null ? i.getIpAddress() : 'IP Not Assigned'}"></td>
 			<td th:text="${i.getStatus()}"></td>
 			<td>
 				<span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
