@@ -215,7 +215,14 @@ public class CourseCRUDController {
 
 		if (result.hasErrors()) {
 			try {
-				model.addAttribute("course", courseCRUDService.retrieveById(courseId));
+				Course courseObj = courseCRUDService.retrieveById(courseId);
+				
+				CourseDTO courseDTO = new CourseDTO();
+			    courseDTO.setCourseName(course.getCourseName());
+			    courseDTO.setCourseDesc(course.getCourseDesc());
+			    courseDTO.setProfessorId(courseObj.getProfessor().getPersonId());
+			    
+				model.addAttribute("course", courseObj);
 				return UPDATE_COURSE_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
