@@ -8,7 +8,7 @@
 		<a th:href="@{/professor/home}">
 			<button type="button">Home Page</button>
 		</a>
-		<a th:href="@{/course/crud/update}">
+		<a th:href="@{/course/crud/{slug}/update(slug=${course.getSlug()})}">
 			<button type="button">Update course Info</button>
 		</a>
 		<a th:href="@{/course/crud/delete(uuid=${course.getCId()})}">

@@ -5,7 +5,7 @@
 	<h2 th:text="${course.getCourseName()}"></h2>
     <form
       action="#"
-      th:action="@{/course/crud/update?{uuid}(uuid=${course.getCId()})}"
+      th:action="@{/course/crud/update}"
       th:object="${courseDTO}"
       method="post"
     >
