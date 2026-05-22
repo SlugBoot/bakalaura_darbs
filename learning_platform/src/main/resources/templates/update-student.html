@@ -1,47 +1,46 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
-  <head>
-    
-  </head>
-  <body>
+
+<head>
+
+</head>
+
+<body>
 	<button onclick="history.back()">Back</button>
-    <h1>Update info about Student:</h1>
+	<h1>Update info about Student:</h1>
 	<h2 th:text="${student.name} + ' ' + ${student.surname}"></h2>
-    <form
-      action="#"
-      th:action="@{/student/crud/update}"
-      th:object="${student}"
-      method="post"
-    >
-	<input type="hidden" name="uuid" th:value="${student.personId != null ? student.personId : studentId}" />
-      <table>
-        <tr>
-          <td>First Name:</td>
-          <td><input type="text" th:field="*{name}"/></td>
-		  <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
-        </tr>
-        <tr>
-          <td>Middle Name:</td>
-          <td><input type="text" th:field="*{middleName}" /></td>
-		  <td th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></td>
-        </tr>
-        <tr>
-          <td>Surname:</td>
-          <td><input type="text" th:field="*{surname}" /></td>
-		  <td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></td>
-        </tr>
-        <tr>
-          <td>E-mail:</td>
-          <td><input type="text" th:field="*{email}" /></td>
-		  <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
-        </tr>
-		<tr>
-		  <td><input type="submit" /></td>
-		</tr>
-      </table>
-	  <a th:href="@{/student/crud/update-password/{username}(username=${student instanceof T(lv.slugboot.app.models.Student) ? student.getUsername() : originalStudent.getUsername()}, referer='/student/home')}">
-	      <button type="button">Change Password</button>
-	  </a>
-    </form>
-  </body>
+	<form action="#" th:action="@{/student/crud/update}" th:object="${studentDTO}" method="post">
+		<input type="hidden" name="uuid" th:value="${studentId}" />
+		<table>
+			<tr>
+				<td>First Name:</td>
+				<td><input type="text" th:field="*{name}" /></td>
+				<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
+			</tr>
+			<tr>
+				<td>Middle Name:</td>
+				<td><input type="text" th:field="*{middleName}" /></td>
+				<td th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></td>
+			</tr>
+			<tr>
+				<td>Surname:</td>
+				<td><input type="text" th:field="*{surname}" /></td>
+				<td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></td>
+			</tr>
+			<tr>
+				<td>E-mail:</td>
+				<td><input type="text" th:field="*{email}" /></td>
+				<td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
+			</tr>
+			<tr>
+				<td><input type="submit" /></td>
+			</tr>
+		</table>
+		<a
+			th:href="@{/student/crud/update-password/{username}(username=${student?.username != null ? student.username : studentDTO.username})}">
+			<button type="button">Change Password</button>
+		</a>
+	</form>
+</body>
+
 </html>

@@ -79,7 +79,9 @@ public class ProfessorCRUDController {
 	public String getControllerUpdateProfessorByUsername(@PathVariable(name = "username") String username,
 			Model model) {
 		try {
-			model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+			Professor professor = professorCRUDService.retrieveByUsername(username);
+			model.addAttribute(PROFESSOR_ATTRIBUTE, professor);
+			model.addAttribute("professorId", professor.getPersonId());
 			return UPDATE_PROFESSOR_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -89,7 +91,7 @@ public class ProfessorCRUDController {
 
 	@PostMapping("/update")
 	public String postControllerUpdateProfessorById(HttpServletRequest request,
-			@Valid @ModelAttribute("professor") PersonDTO professorDTO, BindingResult result, Model model) {
+			@Valid @ModelAttribute("professorDTO") PersonDTO professorDTO, BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
 
@@ -98,6 +100,7 @@ public class ProfessorCRUDController {
 				Professor originalProfessor = professorCRUDService.retrieveById(professorId);
 				model.addAttribute("professorId", professorId);
 				model.addAttribute("originalProfessor", originalProfessor);
+				model.addAttribute("professorDTO", professorDTO);
 
 				return UPDATE_PROFESSOR_PAGE;
 			} catch (Exception e) {
