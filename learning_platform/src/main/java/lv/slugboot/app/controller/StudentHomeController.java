@@ -79,7 +79,7 @@ public class StudentHomeController {
 				throw new IllegalArgumentException("Cannot remove a course until its instance is uninitialized");
 			}
 
-			studentHomeService.removeCourseFromStudent(studentId, courseId);
+			courseCRUDService.removeStudentFromCourse(studentId, courseId);
 
 			Collection<Course> filteredCourses = studentHomeService.getAllCourses(studentId);
 			model.addAttribute(FILTERED_COURSE_ATTRIBUTE, filteredCourses);
