@@ -9,7 +9,7 @@
 	<h2 th:text="${student.getName()} + ' ' + ${student.getSurname()}"></h2>
     <form
       action="#"
-      th:action="@{/student/crud/update?{uuid}(uuid=${student.personId})}"
+      th:action="@{/student/crud/update(uuid=${student.personId})}"
       th:object="${student}"
       method="post"
     >
