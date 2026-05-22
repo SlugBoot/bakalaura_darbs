@@ -4,17 +4,18 @@ import java.util.List;
 import java.util.UUID;
 
 import lv.slugboot.app.dto.PasswordUpdateDTO;
+import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Student;
 
 public interface IStudentCRUDService {
 
-	public abstract void createStudent(String name, String middleName, String surname, String email);
+	public abstract void createStudent(PersonDTO studentDTO);
 
 	public abstract List<Student> retrieveAll() throws NoSuchFieldException;
 
 	public abstract Student retrieveById(UUID id) throws NoSuchFieldException;
 
-	public abstract void updateStudentById(UUID id, String name, String middleName, String surname, String email)
+	public abstract void updateStudentById(UUID id, PersonDTO studentDTO)
 			throws NoSuchFieldException;
 
 	public abstract void deleteById(UUID id) throws NoSuchFieldException;

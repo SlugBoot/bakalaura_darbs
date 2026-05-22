@@ -66,8 +66,7 @@ public class ProfessorCRUDController {
 		}
 
 		try {
-			professorCRUDService.createProfessor(professor.getName(), professor.getMiddleName(), professor.getSurname(),
-					professor.getEmail());
+			professorCRUDService.createProfessor(professor);
 			return PROFESSOR_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -103,8 +102,7 @@ public class ProfessorCRUDController {
 		}
 
 		try {
-			professorCRUDService.updateProfessorById(professorId, professor.getName(), professor.getMiddleName(),
-					professor.getSurname(), professor.getEmail());
+			professorCRUDService.updateProfessorById(professorId, professor);
 			return PROFESSOR_HOME_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());

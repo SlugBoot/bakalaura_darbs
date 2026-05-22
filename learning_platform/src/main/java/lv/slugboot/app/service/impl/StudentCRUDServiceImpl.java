@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
+import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
@@ -25,7 +26,13 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public void createStudent(String name, String middleName, String surname, String email) {
+	public void createStudent(PersonDTO studentDTO) {
+		String name = studentDTO.getName();
+		String middleName = studentDTO.getMiddleName();
+		String surname = studentDTO.getSurname();
+		String email = studentDTO.getEmail();
+		String rawPassword = studentDTO.getPassword();
+
 		if (name == null || surname == null || email == null) {
 			throw new NullPointerException("Student must have a name, surname and email");
 		}
@@ -33,15 +40,11 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 		if (studentRepo.existsByNameAndMiddleNameAndSurnameAndEmail(name, middleName, surname, email)) {
 			throw new IllegalArgumentException("A student with that info already exists");
 		}
+
 		if (personRepo.existsByEmail(email)) {
 			throw new IllegalArgumentException("The email has already been used for a different account");
 		} else {
 			Student newStudent = new Student(name, middleName, surname, email);
-
-			String rawPassword = PasswordGenerator.generateRandomPassword(12);
-
-			log.debug("[SECURITY DEBUG] Generated password for student: (" + newStudent.getUsername() + "), "
-					+ rawPassword);
 
 			newStudent.setPassword(passwordEncoder.encode(rawPassword));
 
@@ -71,9 +74,12 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 	}
 
 	@Override
-	public void updateStudentById(UUID id, String name, String middleName, String surname, String email)
-			throws NoSuchFieldException {
+	public void updateStudentById(UUID id, PersonDTO studentDTO) throws NoSuchFieldException {
 		Student studentToUpdate = retrieveById(id);
+		String name = studentDTO.getName();
+		String middleName = studentDTO.getMiddleName();
+		String surname = studentDTO.getSurname();
+		String email = studentDTO.getEmail();
 
 		String regexPattern = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 

@@ -65,8 +65,7 @@ public class StudentCRUDController {
 		}
 
 		try {
-			studentCRUDService.createStudent(student.getName(), student.getMiddleName(), student.getSurname(),
-					student.getEmail());
+			studentCRUDService.createStudent(student);
 			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
@@ -102,8 +101,7 @@ public class StudentCRUDController {
 		}
 
 		try {
-			studentCRUDService.updateStudentById(studentId, student.getName(), student.getMiddleName(),
-					student.getSurname(), student.getEmail());
+			studentCRUDService.updateStudentById(studentId, student);
 			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());

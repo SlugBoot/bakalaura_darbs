@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
+import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Professor;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IProfessorRepo;
@@ -25,7 +26,13 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
-	public void createProfessor(String name, String middleName, String surname, String email) {
+	public void createProfessor(PersonDTO professorDTO) {
+		String name = professorDTO.getName();
+		String middleName = professorDTO.getMiddleName();
+		String surname = professorDTO.getSurname();
+		String email = professorDTO.getEmail();
+		String rawPassword = professorDTO.getPassword();
+
 		if (name == null || surname == null || email == null) {
 			throw new NullPointerException("Professor must have a name, surname and email address");
 		}
@@ -41,11 +48,6 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 			throw new IllegalArgumentException("The email has already been used for a different account");
 		} else {
 			Professor newProfessor = new Professor(name, middleName, surname, email);
-
-			String rawPassword = PasswordGenerator.generateRandomPassword(12);
-
-			log.debug("[SECURITY DEBUG] Generated password for professor: (" + newProfessor.getUsername() + "), "
-					+ rawPassword);
 
 			newProfessor.setPassword(passwordEncoder.encode(rawPassword));
 
@@ -75,9 +77,14 @@ public class ProfessorCRUDServiceImpl implements IProfessorCRUDService {
 	}
 
 	@Override
-	public void updateProfessorById(UUID id, String name, String middleName, String surname, String email)
+	public void updateProfessorById(UUID id, PersonDTO professorDTO)
 			throws NoSuchFieldException {
 		Professor professorToUpdate = retrieveById(id);
+		String name = professorDTO.getName();
+		String middleName = professorDTO.getMiddleName();
+		String surname = professorDTO.getSurname();
+		String email = professorDTO.getEmail();
+		
 		String regexPattern = "([A-ZĀĒĪŪŽŠČĶĢĻŅ])([a-zāēīūžščļķģņ]){1,44}";
 
 		if (name == null || !name.matches(regexPattern)) {
