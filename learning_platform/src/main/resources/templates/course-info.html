@@ -5,17 +5,23 @@
 
 <body>
 	<nav>
-		<a th:href="@{/professor/home}">
-			<button type="button">Home Page</button>
-		</a>
-		<a th:href="@{/course/crud/{slug}/update(slug=${course.getSlug()})}">
-			<button type="button">Update course Info</button>
-		</a>
-		<form th:action="@{/course/crud/delete}" method=post>
-			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-			<input type="hidden" name="referer" th:value="${previousUrl}" />
-			<button type="submit">Delete all instances</button>
-		</form>
+		<ul>
+			<a th:href="@{/professor/home}">
+				<button type="button">Home Page</button>
+			</a>
+		</ul>
+		<ul>
+			<a th:href="@{/course/crud/{slug}/update(slug=${course.getSlug()})}">
+				<button type="button">Update course Info</button>
+			</a>
+		</ul>
+		<ul>
+			<form th:action="@{/course/crud/delete}" method=post>
+				<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+				<input type="hidden" name="referer" th:value="${previousUrl}" />
+				<button type="submit">Delete Course</button>
+			</form>
+		</ul>
 	</nav>
 	<h1 th:text="${course.getCourseName()}"></h1>
 	<h2 th:text="${course.getCourseDesc()}"></h2>

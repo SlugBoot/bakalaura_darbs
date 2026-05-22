@@ -105,7 +105,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/delete")
-	@PreAuthorize("hasRole('PROFESSOR')")
+	@PreAuthorize("hasRole('PROFESSOR')") 
 	public String postControllerDeleteCourse(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
