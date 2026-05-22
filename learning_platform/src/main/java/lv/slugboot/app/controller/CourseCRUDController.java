@@ -53,6 +53,7 @@ public class CourseCRUDController {
 	private static final String ERROR_ATTRIBUTE = "error";
 	private static final String PROFESSOR_ATTRIBUTE = "professor";
 	private static final String PREVIOUS_URL_ATTRIBUTE = "previousUrl";
+	private static final String COURSE_DTO_ATTRIBUTE = "courseDTO";
 
 	private static final String HOSTS_FILE = "hosts";
 
@@ -196,7 +197,14 @@ public class CourseCRUDController {
 			}
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
+			
+			CourseDTO courseDTO = new CourseDTO();
+		    courseDTO.setCourseName(course.getCourseName());
+		    courseDTO.setCourseDesc(course.getCourseDesc());
+		    courseDTO.setProfessorId(course.getProfessor().getPersonId());
+			
 			model.addAttribute(COURSE_ATTRIBUTE, course);
+			model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
 
 			return UPDATE_COURSE_PAGE;
 		} catch (NoSuchFieldException | NullPointerException e) {
