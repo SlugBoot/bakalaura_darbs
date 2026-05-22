@@ -94,6 +94,9 @@ public class ProfessorCRUDController {
 
 		if (result.hasErrors()) {
 			try {
+				Professor professorObj = professorCRUDService.retrieveById(professorId);
+				model.addAttribute(PROFESSOR_ATTRIBUTE, professorObj);
+				
 				return UPDATE_PROFESSOR_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());

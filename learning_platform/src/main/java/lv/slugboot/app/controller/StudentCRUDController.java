@@ -92,6 +92,9 @@ public class StudentCRUDController {
 
 		if (result.hasErrors()) {
 			try {
+				Student studentObj = studentCRUDService.retrieveById(studentId);
+				model.addAttribute(STUDENT_STR, studentObj);
+				
 				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_STR, e.getMessage());

@@ -13,7 +13,7 @@
       th:object="${student}"
       method="post"
     >
-	<input type="hidden" name="uuid" th:value="${student.personId}"/>
+	<input type="hidden" name="uuid" th:value="${student.getPersonId()}"/>
       <table>
         <tr>
           <td>First Name:</td>
