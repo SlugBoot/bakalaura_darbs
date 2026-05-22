@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.Student;
-import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
