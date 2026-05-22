@@ -5,7 +5,7 @@
 
 <body>
 	<nav>
-		<a th:href="@{/logout}">
+		<a th:href="@{/login?logout}">
 			<button type="button">Logout</button>
 		</a>
 		<a th:href="@{/student/crud/update/{username}(username=${student.getUsername()}, referer='/student/home')}">
