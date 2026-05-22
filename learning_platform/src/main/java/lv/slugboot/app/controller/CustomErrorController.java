@@ -1,5 +1,6 @@
 package lv.slugboot.app.controller;
 
+import org.springframework.boot.webmvc.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,14 +9,15 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
-public class CustomErrorController {
+@RequestMapping("/error")
+public class CustomErrorController implements ErrorController {
 
 	private static final String ERROR_PAGE = "show-error";
-	private static final String ERROR_CODE = "show-error";
-	private static final String ERROR_MESSAGE = "show-error";
+	private static final String ERROR_CODE = "errorCode";
+	private static final String ERROR_MESSAGE = "errorMessage";
 
 	
-	@RequestMapping("/error")
+	
     public String handleError(HttpServletRequest request, Model model) {
         // Retrieve the standard Spring Boot error attributes
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
@@ -33,8 +35,8 @@ public class CustomErrorController {
             errorMessage = "The page you are looking for does not exist.";
         }
 
-        model.addAttribute("errorCode", errorCode);
-        model.addAttribute("errorMessage", errorMessage);
+        model.addAttribute(ERROR_CODE, errorCode);
+        model.addAttribute(ERROR_MESSAGE, errorMessage);
 
         // Maps to templates/show-error.html
         return ERROR_PAGE;
