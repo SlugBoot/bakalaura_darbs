@@ -32,6 +32,7 @@ public class ProfessorCRUDController {
 	private static final String UPDATE_PROFESSOR_PAGE = "update-professor";
 	private static final String UPDATE_PASSWORD_PAGE = "update-password";
 	private static final String PROFESSOR_REDIRECT_PAGE = "redirect:/professor/crud/all";
+	private static final String PROFESSOR_HOME_REDIRECT_PAGE = "redirect:/professor/home";
 
 	private static final String PROFESSOR_ATTRIBUTE = "professor";
 	private static final String ERROR_ATTRIBUTE = "error";
@@ -104,7 +105,7 @@ public class ProfessorCRUDController {
 		try {
 			professorCRUDService.updateProfessorById(professorId, professor.getName(), professor.getMiddleName(),
 					professor.getSurname(), professor.getEmail());
-			return PROFESSOR_REDIRECT_PAGE;
+			return PROFESSOR_HOME_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
@@ -150,7 +151,7 @@ public class ProfessorCRUDController {
 
 		try {
 			professorCRUDService.updatePasswordById(professorId, passwordDto);
-			return PROFESSOR_REDIRECT_PAGE;
+			return PROFESSOR_HOME_REDIRECT_PAGE;
 		} catch (IllegalArgumentException e) {
 			result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 			populateErrorModel.run();
