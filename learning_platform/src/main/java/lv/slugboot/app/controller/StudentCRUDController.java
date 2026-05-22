@@ -2,6 +2,7 @@ package lv.slugboot.app.controller;
 
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +41,7 @@ public class StudentCRUDController {
 	private static final String USER_TYPE_STR = "userType";
 	private static final String USER_ID_STR = "userId";
 	private static final String UUID_STR = "uuid";
+	private static final String REDIRECT_STR = "redirect:/";
 
 	private static final String USERNAME_ATTRIBUTE = "username";
 
@@ -142,11 +144,24 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update-password")
-	public String postControllerUpdatePassword(HttpServletRequest request,
+	public String postControllerUpdatePassword(HttpServletRequest request, Authentication authentication,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
-
+		
+		var authorities = authentication.getAuthorities();
+		String redirectString = REDIRECT_STR;
+		
+		for (var authority : authorities) {
+			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
+				redirectString = STUDENT_REDIRECT_PAGE + "all";
+				break;
+			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
+				redirectString = REDIRECT_STR + "student/home";
+				break;
+			}
+		}
+		
 		Runnable populateErrorModel = () -> {
 			model.addAttribute(USER_ID_STR, studentId);
 			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
@@ -166,7 +181,7 @@ public class StudentCRUDController {
 
 		try {
 			studentCRUDService.updatePasswordById(studentId, passwordDto);
-			return STUDENT_REDIRECT_PAGE + "all";
+			return redirectString;
 		} catch (IllegalArgumentException e) {
 			result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 			populateErrorModel.run();
