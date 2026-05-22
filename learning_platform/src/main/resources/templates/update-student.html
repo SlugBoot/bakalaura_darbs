@@ -13,7 +13,7 @@
       th:object="${student}"
       method="post"
     >
-	<input type="hidden" name="uuid" th:value="${${student.personId != null ? student.personId : studentId}" />
+	<input type="hidden" name="uuid" th:value="${student.personId != null ? student.personId : studentId}" />
       <table>
         <tr>
           <td>First Name:</td>
