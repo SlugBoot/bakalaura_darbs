@@ -29,7 +29,7 @@ public class SecurityConfig {
 
 				.requestMatchers("/professor/**").hasRole("PROFESSOR")
 
-				.requestMatchers("/student/crud/**").hasRole("PROFESSOR")
+				.requestMatchers("/student/crud/**").hasAnyRole("PROFESSOR","STUDENT")
 
 				.requestMatchers("/student/**").hasRole("STUDENT")
 
