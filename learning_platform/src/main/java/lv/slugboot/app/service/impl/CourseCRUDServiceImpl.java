@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Professor;
@@ -58,7 +59,11 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	}
 
 	@Override
-	public void createCourse(String courseName, String courseDesc, UUID professorId) {
+	public void createCourse(CourseDTO courseDTO) {
+		String courseName = courseDTO.getCourseName();
+		String courseDesc = courseDTO.getCourseDesc();
+		UUID professorId = courseDTO.getProfessorId();
+
 		if (courseName == null) {
 			throw new NullPointerException("Course Name must not be null");
 		}
@@ -107,8 +112,11 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	}
 
 	@Override
-	public void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId)
-			throws NoSuchFieldException {
+	public void updateCourseById(UUID id, CourseDTO courseDTO) throws NoSuchFieldException {
+		String courseName = courseDTO.getCourseName();
+		String courseDesc = courseDTO.getCourseDesc();
+		UUID professorId = courseDTO.getProfessorId();
+
 		if (courseName == null) {
 			throw new NullPointerException("Course name cannot be empty");
 		}

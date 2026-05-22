@@ -172,7 +172,7 @@ public class CourseCRUDController {
 		}
 
 		try {
-			courseCRUDService.createCourse(course.getCourseName(), course.getCourseDesc(), course.getProfessorId());
+			courseCRUDService.createCourse(course);
 			if (referer != null && referer.startsWith("/")) {
 				return REDIRECT_STRING + referer;
 			}
@@ -209,7 +209,7 @@ public class CourseCRUDController {
 
 	@PostMapping("/update")
 	public String postControllerUpdateCourse(HttpServletRequest request,
-			@Valid @ModelAttribute("courseDTO") Course course, BindingResult result, Model model) {
+			@Valid @ModelAttribute("courseDTO") CourseDTO course, BindingResult result, Model model) {
 		String courseIdStr = request.getParameter(USERNAME_PARAMETER);
 		UUID courseId = UUID.fromString(courseIdStr);
 
@@ -224,9 +224,9 @@ public class CourseCRUDController {
 		}
 
 		try {
-			courseCRUDService.updateCourseById(courseId, course.getCourseName(), course.getCourseDesc(),
-					course.getProfessor().getPersonId());
-			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
+			Course courseObj = courseCRUDService.retrieveById(courseId);
+			courseCRUDService.updateCourseById(courseId, course);
+			return REDIRECT_COURSE_CRUD_NAME + courseObj.getSlug();
 		} catch (NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
 

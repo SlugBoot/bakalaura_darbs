@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
 
 public interface ICourseCRUDService {
-	public abstract void createCourse(String courseName, String courseDesc, UUID professorId);
+	public abstract void createCourse(CourseDTO courseDTO);
 
 	public abstract List<Course> retrieveAll() throws NoSuchFieldException;
 
 	public abstract Course retrieveById(UUID id) throws NoSuchFieldException;
 
-	public abstract void updateCourseById(UUID id, String courseName, String courseDesc, UUID professorId)
+	public abstract void updateCourseById(UUID id, CourseDTO courseDTO)
 			throws NoSuchFieldException;
 
 	public abstract void deleteCourseById(UUID id) throws NoSuchFieldException, IOException, InterruptedException;
@@ -33,4 +34,5 @@ public interface ICourseCRUDService {
 
 	public abstract void provisionCourseInfrastructure(UUID courseId)
 			throws NoSuchFieldException, IOException, InterruptedException;
+
 }
