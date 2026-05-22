@@ -97,17 +97,19 @@
 								var parser = new DOMParser();
 								var doc = parser.parseFromString(html, 'text/html');
 
-								var newInstancesTable = doc.getElementById('instances-table');
-								var oldInstancesTable = document.getElementById('instances-table');
-								if (oldInstancesTable && newInstancesTable) {
-									oldInstancesTable.innerHTML = newInstancesTable.innerHTML;
-								}
-
-								var newCourseTable = doc.getElementById('course-table');
-								var oldCourseTable = document.getElementById('course-table');
-								if (oldCourseTable && newCourseTable) {
-									oldCourseTable.innerHTML = newCourseTable.innerHTML;
-								}
+								const updateTable = (id) => {
+									var newTable = doc.getElementById(id);
+									var oldTable = document.getElementById(id);
+									if (newTable && oldTable) {
+										oldTable.innerHTML = newTable.innerHTML;
+										console.log("Successfully updated table: " + id);
+									} else {
+										console.warn("Could not find table with ID: " + id);
+									}
+								};
+								
+								updateTable("instances-table");
+								updateTable("course-table");
 							})
 							.catch(err => console.error("Failed to update status table fragment:", err));
 					}
