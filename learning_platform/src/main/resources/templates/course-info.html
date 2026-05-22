@@ -11,9 +11,11 @@
 		<a th:href="@{/course/crud/{slug}/update(slug=${course.getSlug()})}">
 			<button type="button">Update course Info</button>
 		</a>
-		<a th:href="@{/course/crud/delete(uuid=${course.getCId()})}">
-			<button type="button">Delete Course</button>
-		</a>
+		<form th:action="@{/course/crud/delete}" method=post>
+			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+			<button type="submit">Delete all instances</button>
+		</form>
 	</nav>
 	<h1 th:text="${course.getCourseName()}"></h1>
 	<h2 th:text="${course.getCourseDesc()}"></h2>
