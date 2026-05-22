@@ -129,6 +129,7 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/create")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
 			String referer = request.getParameter(REFERER_PARAMETER);
@@ -154,6 +155,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/create")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerCreateCourse(@Valid CourseDTO course, HttpServletRequest request, BindingResult result,
 			Model model) {
 		String referer = request.getParameter(REFERER_PARAMETER);
@@ -187,6 +189,7 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}/update")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
@@ -208,6 +211,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/update")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerUpdateCourse(HttpServletRequest request,
 			@Valid @ModelAttribute("courseDTO") Course course, BindingResult result, Model model) {
 		String courseIdStr = request.getParameter(USERNAME_PARAMETER);
@@ -236,6 +240,7 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/{slug}/add")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
@@ -257,6 +262,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/add-student")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerAddStudentToCourse(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
@@ -286,6 +292,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/remove-student")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerRemoveStudentFromCourse(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
@@ -307,6 +314,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/deploy")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerDeployLab(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
@@ -326,6 +334,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/cleanup")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerCleanupLab(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
@@ -344,6 +353,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/provision")
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerProvisionCourseInfrastructure(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_PARAMETER);
