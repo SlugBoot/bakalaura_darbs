@@ -13,7 +13,7 @@
       th:object="${student}"
       method="post"
     >
-	<input type="hidden" name="uuid" th:value="${student.getPersonId()}"/>
+	<input type="hidden" name="uuid" th:value="${${student.personId != null ? student.personId : studentId}" />
       <table>
         <tr>
           <td>First Name:</td>
@@ -39,7 +39,7 @@
 		  <td><input type="submit" /></td>
 		</tr>
       </table>
-	  <a th:href="@{/student/crud/update-password/{username}(username=${student.getUsername()}, referer='/student/home')}">
+	  <a th:href="@{/student/crud/update-password/{username}(username=${student instanceof T(lv.slugboot.app.models.Student) ? student.getUsername() : originalStudent.getUsername()}, referer='/student/home')}">
 	      <button type="button">Change Password</button>
 	  </a>
     </form>

@@ -9,8 +9,9 @@
 	<button onclick="history.back()">Back</button>
 	<h1>Update info about Professor:</h1>
 	<h2 th:text="${professor.name} + ' ' + ${professor.surname}"></h2>
-	<form action="#" th:action="@{/professor/crud/update(uuid=${professor.personId})}" th:object="${professor}"
-		method="post">
+	<form action="#" th:action="@{/professor/crud/update}" th:object="${professor}" method="post">
+		<input type="hidden" name="uuid"
+			th:value="${${professor.personId != null ? professor.personId : professorId}" />
 		<table>
 			<tr>
 				<td>First Name:</td>
@@ -36,8 +37,9 @@
 				<td><input type="submit" /></td>
 			</tr>
 		</table>
-		<a th:href="@{/professor/crud/update-password/{username}(username=${professor.getUsername()}, referer='/professor/home')}">
-		    <button type="button">Change Password</button>
+		<a
+			th:href="@{/professor/crud/update-password/{username}(username=${professor instanceof T(lv.slugboot.app.models.Professor) ? professor.getUsername() : originalProfessor.getUsername()}, referer='/professor/home')}">
+			<button type="button">Change Password</button>
 		</a>
 	</form>
 </body>

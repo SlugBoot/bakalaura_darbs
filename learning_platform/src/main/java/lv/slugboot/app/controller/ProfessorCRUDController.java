@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
 import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Professor;
+import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -87,15 +88,17 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateProfessorById(HttpServletRequest request, @Valid @ModelAttribute("professor") PersonDTO professorDTO,
-			BindingResult result, Model model) {
+	public String postControllerUpdateProfessorById(HttpServletRequest request,
+			@Valid @ModelAttribute("professor") PersonDTO professorDTO, BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
 
 		if (result.hasErrors()) {
 			try {
-				model.addAttribute(PROFESSOR_ATTRIBUTE, professorDTO);
-				
+				Professor originalProfessor = professorCRUDService.retrieveById(professorId);
+				model.addAttribute("professorId", professorId);
+				model.addAttribute("originalProfessor", originalProfessor);
+
 				return UPDATE_PROFESSOR_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());

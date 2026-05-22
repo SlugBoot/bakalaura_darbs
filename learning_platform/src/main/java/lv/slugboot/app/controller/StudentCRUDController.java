@@ -85,15 +85,17 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid @ModelAttribute("student") PersonDTO studentDTO,
-			BindingResult result, Model model) {
+	public String postControllerUpdateStudentById(HttpServletRequest request,
+			@Valid @ModelAttribute("student") PersonDTO studentDTO, BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
 		if (result.hasErrors()) {
 			try {
-				model.addAttribute(STUDENT_STR, studentDTO);
-				
+				Student originalStudent = studentCRUDService.retrieveById(studentId);
+				model.addAttribute("studentId", studentId);
+				model.addAttribute("originalStudent", originalStudent);
+
 				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_STR, e.getMessage());
