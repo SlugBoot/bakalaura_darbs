@@ -89,13 +89,13 @@ public class StudentHomeController {
 
 			return STUDENT_HOME_PAGE;
 		} catch (IllegalArgumentException e) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Sets HTTP 400
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
-			return ERROR_PAGE;
+		    model.addAttribute("errorCode", "400 (Bad Request)");
+		    model.addAttribute("errorMessage", e.getMessage());
+		    return ERROR_PAGE;
 		} catch (Exception e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Sets HTTP 500
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
-			return ERROR_PAGE;
+		    model.addAttribute("errorCode", "500 (Internal Server Error)");
+		    model.addAttribute("errorMessage", e.getMessage());
+		    return ERROR_PAGE;
 		}
 	}
 }
