@@ -150,18 +150,9 @@ public class StudentCRUDController {
 		UUID studentId = UUID.fromString(studentIdStr);
 		
 		var authorities = authentication.getAuthorities();
+		
 		String redirectString = REDIRECT_STR;
-		
-		for (var authority : authorities) {
-			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
-				redirectString = STUDENT_REDIRECT_PAGE + "all";
-				break;
-			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
-				redirectString = REDIRECT_STR + "student/home";
-				break;
-			}
-		}
-		
+
 		Runnable populateErrorModel = () -> {
 			model.addAttribute(USER_ID_STR, studentId);
 			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
@@ -178,6 +169,18 @@ public class StudentCRUDController {
 			populateErrorModel.run();
 			return UPDATE_PASSWORD_PAGE;
 		}
+		
+		
+		for (var authority : authorities) {
+			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
+				redirectString = STUDENT_REDIRECT_PAGE + "all";
+				break;
+			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
+				redirectString = REDIRECT_STR + "student/home";
+				break;
+			}
+		}
+		
 
 		try {
 			studentCRUDService.updatePasswordById(studentId, passwordDto);
