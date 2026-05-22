@@ -100,7 +100,7 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateStudentById(HttpServletRequest request,
+	public String postControllerUpdateStudentById(HttpServletRequest request, Authentication authentication,
 			@Valid @ModelAttribute("studentDTO") PersonDTO studentDTO, BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
@@ -121,8 +121,9 @@ public class StudentCRUDController {
 		}
 
 		try {
+			String redirectString = determineRedirectUrl(authentication);
 			studentCRUDService.updateStudentById(studentId, studentDTO);
-			return STUDENT_REDIRECT_PAGE + "all";
+			return redirectString;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
@@ -148,10 +149,6 @@ public class StudentCRUDController {
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
-		
-		var authorities = authentication.getAuthorities();
-		
-		String redirectString = REDIRECT_STR;
 
 		Runnable populateErrorModel = () -> {
 			model.addAttribute(USER_ID_STR, studentId);
@@ -170,19 +167,9 @@ public class StudentCRUDController {
 			return UPDATE_PASSWORD_PAGE;
 		}
 		
-		
-		for (var authority : authorities) {
-			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
-				redirectString = STUDENT_REDIRECT_PAGE + "all";
-				break;
-			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
-				redirectString = REDIRECT_STR + "student/home";
-				break;
-			}
-		}
-		
 
 		try {
+			String redirectString = determineRedirectUrl(authentication);
 			studentCRUDService.updatePasswordById(studentId, passwordDto);
 			return redirectString;
 		} catch (IllegalArgumentException e) {
@@ -208,5 +195,18 @@ public class StudentCRUDController {
 			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
+	}
+	
+	
+	private String determineRedirectUrl(Authentication authentication) {
+		var authorities = authentication.getAuthorities();
+		for (var authority : authorities) {
+			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
+	            return STUDENT_REDIRECT_PAGE + "all";
+	        } else if (authority.getAuthority().equals("ROLE_STUDENT")) {
+	            return REDIRECT_STR + "student/home";
+	        }
+		}
+		return REDIRECT_STR;
 	}
 }
