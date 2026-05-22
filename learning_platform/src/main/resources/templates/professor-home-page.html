@@ -8,7 +8,7 @@
 		<a th:href="@{/logout}">
 			<button type="button">Logout</button>
 		</a>
-		<a th:href="@{/student/crud/all, referer='/professor/home')}">
+		<a th:href="@{/student/crud/all(referer='/professor/home')}">
 			<button type="button">Student account management</button>
 		</a>
 		<a th:href="@{/professor/crud/update/username(username=${course.getProfessor().getUsername()}, referer='/professor/home')}">
