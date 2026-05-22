@@ -11,7 +11,7 @@
 		<a th:href="@{/student/crud/all(referer='/professor/home')}">
 			<button type="button">Student account management</button>
 		</a>
-		<a th:href="@{/professor/crud/update/username(username=${course.getProfessor().getUsername()}, referer='/professor/home')}">
+		<a th:href="@{/professor/crud/update/username(username=${professor.getUsername()}, referer='/professor/home')}">
 			<button type="button">Update Personal info</button>
 		</a>
 	</nav>
