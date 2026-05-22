@@ -34,21 +34,27 @@
 		<button type="button">Add student to Course</button>
 	</a>
 	<nav>
-		<form th:action="@{/course/crud/provision}" method=post>
-			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-			<input type="hidden" name="referer" th:value="${previousUrl}" />
-			<button type="submit">Create Instances</button>
-		</form>
-		<form th:action="@{/course/crud/deploy}" method=post>
-			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-			<input type="hidden" name="referer" th:value="${previousUrl}" />
-			<button type="submit">Start and Deploy Lab</button>
-		</form>
-		<form th:action="@{/course/crud/cleanup}" method=post>
-			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-			<input type="hidden" name="referer" th:value="${previousUrl}" />
-			<button type="submit">Delete all instances</button>
-		</form>
+		<ul>
+			<form th:action="@{/course/crud/provision}" method=post>
+				<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+				<input type="hidden" name="referer" th:value="${previousUrl}" />
+				<button type="submit">Create Instances</button>
+			</form>
+		</ul>
+		<ul>
+			<form th:action="@{/course/crud/deploy}" method=post>
+				<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+				<input type="hidden" name="referer" th:value="${previousUrl}" />
+				<button type="submit">Start and Deploy Lab</button>
+			</form>
+		</ul>
+		<ul>
+			<form th:action="@{/course/crud/cleanup}" method=post>
+				<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+				<input type="hidden" name="referer" th:value="${previousUrl}" />
+				<button type="submit">Delete all instances</button>
+			</form>
+		</ul>
 	</nav>
 	<p>Note: Initialization and Deployment can take some time.</p>
 	<p>It is recommended to refresh the page at least 5 minutes after deployment, to allow packages to install</p>
