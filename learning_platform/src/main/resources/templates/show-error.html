@@ -7,39 +7,28 @@
 	<title>Error</title>
 </head>
 
-<body class="bg-light">
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
-				<div class="error-template mt-5 shadow-sm bg-white rounded p-4">
-					<h1 class="text-danger">Oops!</h1>
+<body>
+	<a th:href="history.back()">
+		<button type="button">Back</button>
+	</a>
+	<h1 class="text-danger">Oops!</h1>
 
-					<h2 th:text="'Status Code: ' + ${errorCode}">Status Code: 500</h2>
+	<h2 th:text="'Status Code: ' + ${errorCode}">Status Code: 500</h2>
 
-					<div class="error-details my-4">
-						<p class="lead" th:text="${errorMessage}">
-							Sorry, an error has occurred, Requested page not found!
-						</p>
-					</div>
-
-					<div th:if="${stackTrace != null}" class="text-start border-top pt-4 mt-4">
-						<h4 class="text-secondary">Technical Details</h4>
-						<p class="fw-bold text-danger mb-2" th:text="${exceptionMessage}">Exception Message</p>
-
-						<pre class="bg-dark text-light p-3 rounded"
-							style="max-height: 250px; overflow-y: auto; font-size: 0.85rem;"
-							th:text="${stackTrace}">Stack trace info...</pre>
-					</div>
-
-					<div class="error-actions mt-4">
-						<a th:href="history.back()" class="btn btn-primary btn-lg">
-							Take Me Back
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
+	<div class="error-details my-4">
+		<p class="lead" th:text="${errorMessage}">
+			Sorry, an error has occurred, Requested page not found!
+		</p>
 	</div>
+
+	<div th:if="${stackTrace != null}" class="text-start border-top pt-4 mt-4">
+		<h4 class="text-secondary">Technical Details</h4>
+		<p class="fw-bold text-danger mb-2" th:text="${exceptionMessage}">Exception Message</p>
+
+		<pre class="bg-dark text-light p-3 rounded" style="max-height: 250px; overflow-y: auto; font-size: 0.85rem;"
+			th:text="${stackTrace}">Stack trace info...</pre>
+	</div>
+
 </body>
 
 </html>
