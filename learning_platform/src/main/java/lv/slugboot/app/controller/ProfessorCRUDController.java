@@ -41,6 +41,7 @@ public class ProfessorCRUDController {
 	private static final String PASSWORD_ATTRIBUTE = "password";
 	private static final String USER_TYPE_ATTRIBUTE = "userType";
 	private static final String USER_ID_ATTRIBUTE = "userId";
+	private static final String USERNAME_ATTRIBUTE = "username";
 
 	private static final String UUID_PARAMETER = "uuid";
 
@@ -83,6 +84,7 @@ public class ProfessorCRUDController {
 			Professor professor = professorCRUDService.retrieveByUsername(username);
 			model.addAttribute(PROFESSOR_ATTRIBUTE, professor);
 			model.addAttribute("professorId", professor.getPersonId());
+			model.addAttribute(USERNAME_ATTRIBUTE, professor.getUsername());
 
 			PersonDTO professorDTO = new PersonDTO();
 			professorDTO.setName(professor.getName());
@@ -110,6 +112,7 @@ public class ProfessorCRUDController {
 				model.addAttribute("professorId", professorId);
 				model.addAttribute("originalProfessor", originalProfessor);
 				model.addAttribute("professorDTO", professorDTO);
+				model.addAttribute(USERNAME_ATTRIBUTE, originalProfessor.getUsername());
 
 				return UPDATE_PROFESSOR_PAGE;
 			} catch (Exception e) {

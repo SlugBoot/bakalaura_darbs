@@ -41,6 +41,8 @@ public class StudentCRUDController {
 	private static final String USER_ID_STR = "userId";
 	private static final String UUID_STR = "uuid";
 
+	private static final String USERNAME_ATTRIBUTE = "username";
+
 	@GetMapping("/all")
 	public String getControllerGetAllStudents(Model model) {
 		try {
@@ -79,6 +81,7 @@ public class StudentCRUDController {
 			Student student = studentCRUDService.retrieveByUsername(username);
 			model.addAttribute(STUDENT_STR, student);
 			model.addAttribute("studentId", student.getPersonId());
+			model.addAttribute(USERNAME_ATTRIBUTE, student.getUsername());
 
 			PersonDTO studentDTO = new PersonDTO();
 			studentDTO.setName(student.getName());
@@ -106,6 +109,7 @@ public class StudentCRUDController {
 				model.addAttribute("studentId", studentId);
 				model.addAttribute("originalStudent", originalStudent);
 				model.addAttribute("studentDTO", studentDTO);
+				model.addAttribute(USERNAME_ATTRIBUTE, originalStudent.getUsername());
 
 				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
