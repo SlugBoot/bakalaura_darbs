@@ -16,8 +16,7 @@ public class CustomErrorController implements ErrorController {
 	private static final String ERROR_CODE = "errorCode";
 	private static final String ERROR_MESSAGE = "errorMessage";
 
-	
-	
+	@RequestMapping
     public String handleError(HttpServletRequest request, Model model) {
         // Retrieve the standard Spring Boot error attributes
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
