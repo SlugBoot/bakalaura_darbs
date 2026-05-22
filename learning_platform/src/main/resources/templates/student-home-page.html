@@ -13,8 +13,8 @@
 		</a>
 	</nav>
 	<h1 th:text="${student.getName() + ' ' + student.getSurname()}"></h1>
-	<table border=1px>
-		<thead> Course List</thead>
+	<table border=1px id="course-table">
+		<th colspan="5"> Course List</th>
 		<tr>
 			<td>Course ID</td>
 			<td>Course Name</td>
@@ -97,12 +97,16 @@
 								var parser = new DOMParser();
 								var doc = parser.parseFromString(html, 'text/html');
 
-								var newTable = doc.getElementById('instances-table');
-								var oldTable = document.getElementById('instances-table');
+								var newInstancesTable = doc.getElementById('instances-table');
+								var oldInstancesTable = document.getElementById('instances-table');
+								if (oldInstancesTable && newInstancesTable) {
+									oldInstancesTable.innerHTML = newInstancesTable.innerHTML;
+								}
 
-								if (oldTable && newTable) {
-									oldTable.innerHTML = newTable.innerHTML;
-									console.log("Student instance table refreshed successfully!");
+								var newCourseTable = doc.getElementById('course-table');
+								var oldCourseTable = document.getElementById('course-table');
+								if (oldCourseTable && newCourseTable) {
+									oldCourseTable.innerHTML = newCourseTable.innerHTML;
 								}
 							})
 							.catch(err => console.error("Failed to update status table fragment:", err));
