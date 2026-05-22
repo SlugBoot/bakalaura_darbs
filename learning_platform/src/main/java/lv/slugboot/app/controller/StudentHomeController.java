@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
 import lv.slugboot.app.models.LabInstance;
@@ -61,8 +62,8 @@ public class StudentHomeController {
 	}
 
 	@GetMapping("/remove")
-	public String getControllerRemoveCourseFromStudent(HttpServletRequest request, Authentication authentication,
-			Model model) {
+	public String getControllerRemoveCourseFromStudent(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication, Model model) {
 		try {
 			String courseIdStr = request.getParameter(COURSE_ID_PARAMETER);
 			UUID courseId = UUID.fromString(courseIdStr);
@@ -71,23 +72,28 @@ public class StudentHomeController {
 			Student student = studentHomeService.getStudentByUsername(username);
 			UUID studentId = student.getPersonId();
 			LabInstance instance = instanceCRUDService.retrieveByCourseAndStudent(course, student);
-			
+
 			model.addAttribute(STUDENT_ATTRIBUTE, student);
-			
+
 			if (instance.getStatus() != LabInstanceStatus.UNINITIALIZED) {
 				throw new IllegalArgumentException("Cannot remove a course until its instance is uninitialized");
 			}
-			
+
 			studentHomeService.removeCourseFromStudent(studentId, courseId);
 
 			Collection<Course> filteredCourses = studentHomeService.getAllCourses(studentId);
 			model.addAttribute(FILTERED_COURSE_ATTRIBUTE, filteredCourses);
-			
+
 			Collection<LabInstance> instances = studentHomeService.getLabInstancesForStudent(student);
 			model.addAttribute(INSTANCE_ATTRIBUTE, instances);
 
 			return STUDENT_HOME_PAGE;
+		} catch (IllegalArgumentException e) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Sets HTTP 400
+			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Sets HTTP 500
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
 			return ERROR_PAGE;
 		}
