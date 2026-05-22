@@ -85,7 +85,7 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid PersonDTO student,
+	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid @ModelAttribute("student") PersonDTO student,
 			BindingResult result, Model model) {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);

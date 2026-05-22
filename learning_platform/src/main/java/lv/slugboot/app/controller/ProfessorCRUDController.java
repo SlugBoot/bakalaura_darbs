@@ -87,7 +87,7 @@ public class ProfessorCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateProfessorById(HttpServletRequest request, @Valid PersonDTO professor,
+	public String postControllerUpdateProfessorById(HttpServletRequest request, @Valid @ModelAttribute("professor") PersonDTO professorDTO,
 			BindingResult result, Model model) {
 		String professorIdStr = request.getParameter(UUID_PARAMETER);
 		UUID professorId = UUID.fromString(professorIdStr);
@@ -102,7 +102,7 @@ public class ProfessorCRUDController {
 		}
 
 		try {
-			professorCRUDService.updateProfessorById(professorId, professor);
+			professorCRUDService.updateProfessorById(professorId, professorDTO);
 			return PROFESSOR_HOME_REDIRECT_PAGE;
 		} catch (Exception e) {
 			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
