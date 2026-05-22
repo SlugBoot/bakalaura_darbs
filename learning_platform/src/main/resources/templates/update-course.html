@@ -6,7 +6,7 @@
     <form
       action="#"
       th:action="@{/course/crud/update?{uuid}(uuid=${course.getCId()})}"
-      th:object="${course}"
+      th:object="${courseDTO}"
       method="post"
     >
       <table>

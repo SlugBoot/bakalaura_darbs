@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.dto.PasswordUpdateDTO;
 import lv.slugboot.app.dto.PersonDTO;
 import lv.slugboot.app.models.Professor;
-import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IProfessorCRUDService;
 import org.springframework.web.bind.annotation.PostMapping;
 

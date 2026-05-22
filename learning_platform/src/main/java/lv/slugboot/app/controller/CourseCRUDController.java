@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -207,13 +208,19 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/update")
-	public String postControllerUpdateCourse(HttpServletRequest request, @Valid Course course, BindingResult result,
-			Model model) {
+	public String postControllerUpdateCourse(HttpServletRequest request,
+			@Valid @ModelAttribute("courseDTO") Course course, BindingResult result, Model model) {
 		String courseIdStr = request.getParameter(USERNAME_PARAMETER);
 		UUID courseId = UUID.fromString(courseIdStr);
 
 		if (result.hasErrors()) {
-			return UPDATE_COURSE_PAGE;
+			try {
+				model.addAttribute("course", courseCRUDService.retrieveById(courseId));
+				return UPDATE_COURSE_PAGE;
+			} catch (Exception e) {
+				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+				return ERROR_PAGE;
+			}
 		}
 
 		try {
@@ -346,7 +353,7 @@ public class CourseCRUDController {
 			log.info("Starting provisioning for course: {}", courseId);
 			courseCRUDService.provisionCourseInfrastructure(courseId);
 
-			return REDIRECT_COURSE_CRUD_NAME+ course.getSlug();
+			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 		} catch (NoSuchFieldException | IOException | InterruptedException e) {
 			Thread.currentThread().interrupt();
 
