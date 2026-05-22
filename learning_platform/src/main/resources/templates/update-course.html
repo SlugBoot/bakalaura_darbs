@@ -21,6 +21,7 @@
 		  <td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
         </tr>
 		<input type="hidden" th:field="*{professorId}" />
+		<input type="hidden" name="uuid" th:value="${course.getCId()}" />
 		<tr>
 		  <td><input type="submit" /></td>
 		</tr>

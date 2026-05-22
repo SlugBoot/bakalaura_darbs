@@ -218,7 +218,7 @@ public class CourseCRUDController {
 	@PostMapping("/update")
 	public String postControllerUpdateCourse(HttpServletRequest request,
 			@Valid @ModelAttribute("courseDTO") CourseDTO course, BindingResult result, Model model) {
-		String courseIdStr = request.getParameter(USERNAME_PARAMETER);
+		String courseIdStr = request.getParameter(UUID_PARAMETER);
 		UUID courseId = UUID.fromString(courseIdStr);
 
 		if (result.hasErrors()) {
@@ -230,7 +230,8 @@ public class CourseCRUDController {
 			    courseDTO.setCourseDesc(course.getCourseDesc());
 			    courseDTO.setProfessorId(courseObj.getProfessor().getPersonId());
 			    
-				model.addAttribute("course", courseObj);
+			    model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
+				model.addAttribute(COURSE_ATTRIBUTE, courseObj);
 				return UPDATE_COURSE_PAGE;
 			} catch (Exception e) {
 				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
