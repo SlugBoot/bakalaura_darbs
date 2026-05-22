@@ -86,7 +86,7 @@
 
 			var courseIds = [];
 			/*[th:each="course : ${filtered_courses}"]*/
-			courseIds.push([[${course.getCId().toString()}]]);
+			courseIds.push(/*[[${course.getCId().toString()}]]*/);
 			/*[/]*/
 
 			courseIds.forEach(function (courseId) {
