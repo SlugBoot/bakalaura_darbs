@@ -33,28 +33,27 @@ public class StudentCRUDController {
 	private static final String UPDATE_PASSWORD_PAGE = "update-password";
 	private static final String STUDENT_REDIRECT_PAGE = "redirect:/student/crud/";
 
-	private static final String STUDENT_ATTRIBUTE = "student";
-	private static final String ERROR_ATTRIBUTE = "error";
-	private static final String PASSWORD_ATTRIBUTE = "password";
-	private static final String USER_TYPE_ATTRIBUTE = "userType";
-	private static final String USER_ID_ATTRIBUTE = "userId";
-
-	private static final String UUID_PARAMETER = "uuid";
+	private static final String STUDENT_STR = "student";
+	private static final String ERROR_STR = "error";
+	private static final String PASSWORD_STR = "password";
+	private static final String USER_TYPE_STR = "userType";
+	private static final String USER_ID_STR = "userId";
+	private static final String UUID_STR = "uuid";
 
 	@GetMapping("/all")
 	public String getControllerGetAllStudents(Model model) {
 		try {
-			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
+			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
 
 	@GetMapping("/create")
 	public String getControllerCreateStudent(Model model) {
-		model.addAttribute(STUDENT_ATTRIBUTE, new PersonDTO());
+		model.addAttribute(STUDENT_STR, new PersonDTO());
 		return CREATE_STUDENT_PAGE;
 	}
 
@@ -68,7 +67,7 @@ public class StudentCRUDController {
 			studentCRUDService.createStudent(student);
 			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -77,10 +76,10 @@ public class StudentCRUDController {
 	public String getControllerUpdateStudentById(@PathVariable(name = "username") String username, Model model) {
 		try {
 			Student student = studentCRUDService.retrieveByUsername(username);
-			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveById(student.getPersonId()));
+			model.addAttribute(STUDENT_STR, student);
 			return UPDATE_STUDENT_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -88,14 +87,14 @@ public class StudentCRUDController {
 	@PostMapping("/update")
 	public String postControllerUpdateStudentById(HttpServletRequest request, @Valid PersonDTO student,
 			BindingResult result, Model model) {
-		String studentIdStr = request.getParameter(UUID_PARAMETER);
+		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
 		if (result.hasErrors()) {
 			try {
 				return UPDATE_STUDENT_PAGE;
 			} catch (Exception e) {
-				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+				model.addAttribute(ERROR_STR, e.getMessage());
 				return ERROR_PAGE;
 			}
 		}
@@ -104,7 +103,7 @@ public class StudentCRUDController {
 			studentCRUDService.updateStudentById(studentId, student);
 			return STUDENT_REDIRECT_PAGE + "all";
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -113,12 +112,12 @@ public class StudentCRUDController {
 	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model) {
 		try {
 			Student student = studentCRUDService.retrieveByUsername(username);
-			model.addAttribute(USER_ID_ATTRIBUTE, student.getPersonId());
-			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
-			model.addAttribute(PASSWORD_ATTRIBUTE, new PasswordUpdateDTO());
-			return "update-password";
+			model.addAttribute(USER_ID_STR, student.getPersonId());
+			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
+			model.addAttribute(PASSWORD_STR, new PasswordUpdateDTO());
+			return UPDATE_PASSWORD_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -126,13 +125,13 @@ public class StudentCRUDController {
 	@PostMapping("/update-password")
 	public String postControllerUpdatePassword(HttpServletRequest request,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
-		String studentIdStr = request.getParameter(UUID_PARAMETER);
+		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
 		Runnable populateErrorModel = () -> {
-			model.addAttribute(USER_ID_ATTRIBUTE, studentId);
-			model.addAttribute(USER_TYPE_ATTRIBUTE, "student");
-			model.addAttribute(PASSWORD_ATTRIBUTE, passwordDto);
+			model.addAttribute(USER_ID_STR, studentId);
+			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
+			model.addAttribute(PASSWORD_STR, passwordDto);
 		};
 
 		if (result.hasErrors()) {
@@ -154,7 +153,7 @@ public class StudentCRUDController {
 			populateErrorModel.run();
 			return UPDATE_PASSWORD_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -162,14 +161,14 @@ public class StudentCRUDController {
 	@PostMapping("/delete")
 	public String postControllerDeleteStudent(HttpServletRequest request, Model model) {
 		try {
-			String studentIdStr = request.getParameter(UUID_PARAMETER);
+			String studentIdStr = request.getParameter(UUID_STR);
 			UUID studentId = UUID.fromString(studentIdStr);
 
 			studentCRUDService.deleteById(studentId);
-			model.addAttribute(STUDENT_ATTRIBUTE, studentCRUDService.retrieveAll());
+			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
