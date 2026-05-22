@@ -49,23 +49,26 @@
 			<td>Action</td>
 		</tr>
 		<tr th:each="i : ${instance}">
-		    <td th:text="${i.getCourse() != null ? i.getCourse().getCourseName() : 'No Course Assigned'}"></td>
-		    
-		    <td th:text="${i.getCourse() != null && i.getCourse().getProfessor() != null ? 
-		                 i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurname() : 'Unknown Professor'}"></td>
-		                 
-		    <td th:text="${i.getIpAddress() != null ? i.getIpAddress() : 'Assigning IP...'}"></td>
-		    <td th:text="${i.getStatus()}"></td>
-		    <td>
-		        <span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
-		            <a th:href="@{/course/crud/instance/terminal(instanceId=${i.getInstanceId()})}" target="_blank">
-		                <button type="button">Connect to Console</button>
-		            </a>
-		        </span>
-		        <span th:unless="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}" style="color: #888; font-style: italic;">
-		            Offline
-		        </span>
-		    </td>
+			<td th:text="${i.getCourse() != null ? i.getCourse().getCourseName() : 'No Course Assigned'}"></td>
+
+			<td
+				th:text="${i.getCourse() != null && i.getCourse().getProfessor() != null ? 
+		                 i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurname() : 'Unknown Professor'}">
+			</td>
+
+			<td th:text="${i.getIpAddress() != null ? i.getIpAddress() : 'Assigning IP...'}"></td>
+			<td th:text="${i.getStatus()}"></td>
+			<td>
+				<span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
+					<a th:href="@{/course/crud/instance/terminal(instanceId=${i.getInstanceId()})}" target="_blank">
+						<button type="button">Connect to Console</button>
+					</a>
+				</span>
+				<span th:unless="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}"
+					style="color: #888; font-style: italic;">
+					Offline
+				</span>
+			</td>
 		</tr>
 	</table>
 
@@ -82,10 +85,7 @@
 		stompClient.connect({}, function (frame) {
 			console.log('Connected to Status WebSocket');
 
-			var courseIds = [];
-			/*[th:each="course : ${filtered_courses}"]*/
-			courseIds.push(/*[[${course.getCId().toString()}]]*/);
-			/*[/]*/
+			var courseIds = /*[[${filtered_courses.![cId.toString()]}]]*/[];
 
 			courseIds.forEach(function (courseId) {
 				stompClient.subscribe('/topic/course/' + courseId, function (message) {
