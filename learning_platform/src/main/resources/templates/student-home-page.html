@@ -38,35 +38,9 @@
 			</td>
 		</tr>
 	</table>
-	
-	<table border=1px>
-		<thead> Instance List</thead>
-		<tr>
-			<td></td>
-			<td>Course Name</td>
-			<td>Course Description</td>
-			<td>Course Info</td>
-			<td>Remove Course</td>
-		</tr>
-		<tr th:each="course : ${filtered_courses}">
-			<td th:text="${course.getCId()}"></td>
-			<td th:text="${course.getCourseName()}"></td>
-			<td th:text="${course.getCourseDesc()}"></td>
-			<td>
-				<a th:href="@{/course/crud/{slug}(uuid=${course.getSlug()}, referer='/student/home')}">
-					<button type="button">Info</button>
-				</a>
-			</td>
-			<td>
-				<a th:href="@{/student/home/remove?(courseId=${course.getCId()})">
-					<button type="button">Remove Course</button>
-				</a>
-			</td>
-		</tr>
-	</table>
-	
+
 	<table border="1px" id="instances-table">
-		<th colspan="3"> Instance List</th>
+		<th colspan="5"> Instance List</th>
 		<tr>
 			<td>Course name</td>
 			<td>Course Professor</td>
@@ -76,7 +50,8 @@
 		</tr>
 		<tr th:each="i : ${instance}">
 			<td th:text="${i.getCourse().getCourseName()}"></td>
-			<td th:text="${i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurname()}"></td>
+			<td th:text="${i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurnam()}">
+			</td>
 			<td th:text="${i.getIpAddress()}"></td>
 			<td th:text="${i.getStatus()}"></td>
 			<td>
@@ -95,24 +70,29 @@
 			</td>
 		</tr>
 	</table>
-	
+
 	<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
-		<script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
+	<script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
 
-		<script th:inline="javascript">
-			var courseId = [[${course.getCId().toString()}]];
-			var socket = new SockJS('/ws-status');
-			var stompClient = Stomp.over(socket);
+	<script th:inline="javascript">
+		var socket = new SockJS('/ws-status');
+		var stompClient = Stomp.over(socket);
 
-			stompClient.heartbeat.outgoing = 10000;
-			stompClient.heartbeat.incoming = 10000;
+		stompClient.heartbeat.outgoing = 10000;
+		stompClient.heartbeat.incoming = 10000;
 
-			stompClient.connect({}, function (frame) {
-				console.log('Connected to Status WebSocket');
+		stompClient.connect({}, function (frame) {
+			console.log('Connected to Status WebSocket');
 
+			var courseIds = [];
+			/*[th:each="course : ${filtered_courses}"]*/
+			courseIds.push([[${course.getCId().toString()}]]);
+			/*[/]*/
+
+			courseIds.forEach(function (courseId) {
 				stompClient.subscribe('/topic/course/' + courseId, function (message) {
 					if (message.body === "refresh") {
-						console.log("Status update received. Refreshing page...");
+						console.log("Status update received for course " + courseId + ". Refreshing page component...");
 						fetch(window.location.href)
 							.then(response => response.text())
 							.then(html => {
@@ -124,14 +104,15 @@
 
 								if (oldTable && newTable) {
 									oldTable.innerHTML = newTable.innerHTML;
-									console.log("Table updated successfully!");
+									console.log("Student instance table refreshed successfully!");
 								}
 							})
 							.catch(err => console.error("Failed to update status table fragment:", err));
 					}
 				});
 			});
-		</script>
+		});
+	</script>
 </body>
 
 </html>

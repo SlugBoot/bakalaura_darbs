@@ -1,5 +1,6 @@
 package lv.slugboot.app.repo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,5 +15,7 @@ public interface ILabInstanceRepo extends JpaRepository<LabInstance, UUID> {
 	List<LabInstance> findByCourse(Course course);
 
 	LabInstance findByCourseAndStudent(Course course, Student student);
+
+	Collection<LabInstance> findByStudent(Student student);
 
 }

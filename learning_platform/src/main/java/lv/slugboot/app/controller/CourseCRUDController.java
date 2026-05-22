@@ -64,7 +64,6 @@ public class CourseCRUDController {
 	private static final String REDIRECT_STRING = "redirect:";
 	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
 	private static final String REDIRECT_COURSE_CRUD_NAME = REDIRECT_COURSE_CRUD + "name/";
-	private static final String REDIRECT_PROFESSOR_HOME = "redirect:/professor/home";
 
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {

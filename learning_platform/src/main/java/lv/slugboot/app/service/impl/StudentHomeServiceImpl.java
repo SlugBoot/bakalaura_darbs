@@ -3,13 +3,17 @@ package lv.slugboot.app.service.impl;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.models.Course;
+import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.repo.ICourseRepo;
+import lv.slugboot.app.repo.ILabInstanceRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentHomeService;
 
@@ -19,7 +23,8 @@ public class StudentHomeServiceImpl implements IStudentHomeService {
 
 	private final IStudentRepo studentRepo;
 	private final ICourseRepo courseRepo;
-
+	private final ILabInstanceRepo instanceRepo;
+	
 	@Override
 	public Collection<Course> getAllCourses(UUID studentId) {
 
@@ -48,6 +53,11 @@ public class StudentHomeServiceImpl implements IStudentHomeService {
 	@Transactional(readOnly = true)
 	public Student getStudentByUsername(String username) {
 		return studentRepo.findByUsername(username);
+	}
+
+	@Override
+	public Collection<LabInstance> getLabInstancesForStudent(Student student) {
+		return instanceRepo.findByStudent(student);
 	}
 
 }

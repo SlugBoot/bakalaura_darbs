@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Course;
+import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
 import lv.slugboot.app.service.IStudentHomeService;
 
@@ -31,6 +32,8 @@ public class StudentHomeController {
 
 	private static final String COURSE_ID_PARAMETER = "courseId";
 
+	private static final String INSTANCE_ATTRIBUTE = "instance";
+
 	@GetMapping
 	public String getControllerStudentHomePage(Authentication authentication, Model model) {
 		try {
@@ -40,6 +43,10 @@ public class StudentHomeController {
 
 			Collection<Course> filteredCourses = studentHomeService.getAllCourses(student.getPersonId());
 			model.addAttribute(FILTERED_COURSE_ATTRIBUTE, filteredCourses);
+
+			// NEW: Add lab
+			Collection<LabInstance> instances = studentHomeService.getLabInstancesForStudent(student);
+			model.addAttribute(INSTANCE_ATTRIBUTE, instances);
 
 			return STUDENT_HOME_PAGE;
 		} catch (Exception e) {
@@ -64,6 +71,9 @@ public class StudentHomeController {
 
 			Collection<Course> filteredCourses = studentHomeService.getAllCourses(studentId);
 			model.addAttribute(FILTERED_COURSE_ATTRIBUTE, filteredCourses);
+			
+			Collection<LabInstance> instances = studentHomeService.getLabInstancesForStudent(student);
+			model.addAttribute(INSTANCE_ATTRIBUTE, instances);
 
 			return STUDENT_HOME_PAGE;
 		} catch (Exception e) {
