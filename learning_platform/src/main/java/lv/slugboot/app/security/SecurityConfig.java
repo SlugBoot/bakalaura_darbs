@@ -23,19 +23,20 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests(auth -> auth
 
-				.requestMatchers("/css/**", "/login", "/error", "/js/**", "/images/**", "/webjars/**").permitAll()
+				.requestMatchers("/css/**", "/error", "/js/**", "/images/**", "/webjars/**").permitAll()
 
 				.requestMatchers("/login").permitAll()
 
 				.requestMatchers("/professor/**").hasRole("PROFESSOR")
 
-				.requestMatchers("/student/crud/**").hasAnyRole("PROFESSOR","STUDENT")
+				.requestMatchers("/student/crud/**").hasAnyRole("PROFESSOR", "STUDENT")
 
 				.requestMatchers("/student/**").hasRole("STUDENT")
 
 				.requestMatchers("/course/crud/**").authenticated()
 
-				.anyRequest().authenticated()).formLogin(form -> form.successHandler(successHandler).permitAll())
+				.anyRequest().authenticated())
+				.formLogin(form -> form.loginPage("/login").successHandler(successHandler).permitAll())
 				.logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
 
 		return http.build();
