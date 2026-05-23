@@ -47,21 +47,25 @@ public class CourseCRUDController {
 	private static final String UPDATE_COURSE_PAGE = "update-course";
 	private static final String CONTAINER_TERMINAL_PAGE = "container-terminal";
 
-	private static final String STUDENT_ATTRIBUTE = "student";
-	private static final String COURSE_ATTRIBUTE = "course";
-	private static final String INSTANCE_ATTRIBUTE = "instance";
-	private static final String ERROR_ATTRIBUTE = "error";
-	private static final String PROFESSOR_ATTRIBUTE = "professor";
-	private static final String PREVIOUS_URL_ATTRIBUTE = "previousUrl";
-	private static final String COURSE_DTO_ATTRIBUTE = "courseDTO";
+	private static final String STUDENT_STR = "student";
+	private static final String STUDENT_ID_STR = "studentId";
+	private static final String COURSE_STR = "course";
+	private static final String COURSE_DTO_STR = "courseDTO";
+	private static final String INSTANCE_STR = "instance";
+	private static final String INSTANCE_ID_STR = "instanceId";
+	private static final String ERROR_STR = "error";
+	private static final String ERROR_MESSAGE_STR = "errorMessage";
+	private static final String ERROR_CODE_STR = "errorCode";
+	private static final String ERROR_CODE_400_STR = "400 (Bad Request)";
+	private static final String ERROR_CODE_500_STR = "500 (Internal Server Error)";
+	private static final String PROFESSOR_STR = "professor";
+	private static final String PREVIOUS_URL_STR = "previousUrl";
+	private static final String REFERER_STR = "referer";
+	private static final String USERNAME_STR = "username";
+	private static final String UUID_STR = "uuid";
 
 	private static final String HOSTS_FILE = "hosts";
 
-	private static final String REFERER_PARAMETER = "referer";
-	private static final String USERNAME_PARAMETER = "username";
-	private static final String UUID_PARAMETER = "uuid";
-	private static final String STUDENT_ID_PARAMETER = "studentId";
-	private static final String INSTANCE_ID_PARAMETER = "instanceId";
 
 	private static final String REDIRECT_STRING = "redirect:";
 	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
@@ -70,12 +74,12 @@ public class CourseCRUDController {
 	@GetMapping("/all")
 	public String getControllerAllCourses(Model model) {
 		try {
-			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
+			model.addAttribute(COURSE_STR, courseCRUDService.retrieveAll());
 			return COURSE_LIST;
 		} catch (Exception e) {
 			Thread.currentThread().interrupt();
 
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -84,20 +88,25 @@ public class CourseCRUDController {
 	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
-			String referer = request.getParameter(REFERER_PARAMETER);
+			String referer = request.getParameter(REFERER_STR);
 
 			if (referer != null) {
-				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+				model.addAttribute(PREVIOUS_URL_STR, referer);
 			}
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
-			model.addAttribute(COURSE_ATTRIBUTE, course);
-			model.addAttribute(INSTANCE_ATTRIBUTE, instanceCRUDService.retrieveByCourseId(course.getCId()));
+			model.addAttribute(COURSE_STR, course);
+			model.addAttribute(INSTANCE_STR, instanceCRUDService.retrieveByCourseId(course.getCId()));
 			return COURSE_INFO_PAGE;
-		} catch (NullPointerException | NoSuchFieldException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -106,7 +115,7 @@ public class CourseCRUDController {
 	@PreAuthorize("hasRole('PROFESSOR')") 
 	public String postControllerDeleteCourse(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId;
 			if (courseIdStr != null) {
 				courseId = UUID.fromString(courseIdStr);
@@ -114,17 +123,22 @@ public class CourseCRUDController {
 				ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
 			}
 
-			String referer = request.getParameter(REFERER_PARAMETER);
+			String referer = request.getParameter(REFERER_STR);
 			if (referer != null) {
-				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+				model.addAttribute(PREVIOUS_URL_STR, referer);
 			}
 
-			model.addAttribute(COURSE_ATTRIBUTE, courseCRUDService.retrieveAll());
+			model.addAttribute(COURSE_STR, courseCRUDService.retrieveAll());
 			return COURSE_LIST;
-		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException | IOException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -132,24 +146,29 @@ public class CourseCRUDController {
 	@GetMapping("/create")
 	public String getControllerCreateCourse(HttpServletRequest request, Model model) {
 		try {
-			String referer = request.getParameter(REFERER_PARAMETER);
+			String referer = request.getParameter(REFERER_STR);
 
 			if (referer != null) {
-				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+				model.addAttribute(PREVIOUS_URL_STR, referer);
 			}
 
-			String username = request.getParameter(USERNAME_PARAMETER);
+			String username = request.getParameter(USERNAME_STR);
 			if (username != null) {
-				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+				model.addAttribute(PROFESSOR_STR, professorCRUDService.retrieveByUsername(username));
 			}
 
-			model.addAttribute(COURSE_ATTRIBUTE, new CourseDTO());
+			model.addAttribute(COURSE_STR, new CourseDTO());
 
 			return CREATE_COURSE_PAGE;
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -157,14 +176,14 @@ public class CourseCRUDController {
 	@PostMapping("/create")
 	public String postControllerCreateCourse(@Valid CourseDTO course, HttpServletRequest request, BindingResult result,
 			Model model) {
-		String referer = request.getParameter(REFERER_PARAMETER);
+		String referer = request.getParameter(REFERER_STR);
 		if (result.hasErrors()) {
 			try {
 				if (referer != null) {
-					model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+					model.addAttribute(PREVIOUS_URL_STR, referer);
 				}
 
-				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveById(course.getProfessorId()));
+				model.addAttribute(PROFESSOR_STR, professorCRUDService.retrieveById(course.getProfessorId()));
 
 			} catch (Exception ignored) {
 			}
@@ -179,10 +198,15 @@ public class CourseCRUDController {
 			}
 
 			return REDIRECT_COURSE_CRUD + "all";
-		} catch (NullPointerException | IllegalArgumentException e) {
+		} catch (IllegalArgumentException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -191,9 +215,9 @@ public class CourseCRUDController {
 	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
-			String username = request.getParameter(USERNAME_PARAMETER);
+			String username = request.getParameter(USERNAME_STR);
 			if (username != null) {
-				model.addAttribute(PROFESSOR_ATTRIBUTE, professorCRUDService.retrieveByUsername(username));
+				model.addAttribute(PROFESSOR_STR, professorCRUDService.retrieveByUsername(username));
 			}
 
 			Course course = courseCRUDService.retrieveBySlug(slug);
@@ -203,14 +227,19 @@ public class CourseCRUDController {
 			courseDTO.setCourseDesc(course.getCourseDesc());
 			courseDTO.setProfessorId(course.getProfessor().getPersonId());
 
-			model.addAttribute(COURSE_ATTRIBUTE, course);
-			model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
+			model.addAttribute(COURSE_STR, course);
+			model.addAttribute(COURSE_DTO_STR, courseDTO);
 
 			return UPDATE_COURSE_PAGE;
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -218,7 +247,7 @@ public class CourseCRUDController {
 	@PostMapping("/update")
 	public String postControllerUpdateCourse(HttpServletRequest request,
 			@Valid @ModelAttribute("courseDTO") CourseDTO course, BindingResult result, Model model) {
-		String courseIdStr = request.getParameter(UUID_PARAMETER);
+		String courseIdStr = request.getParameter(UUID_STR);
 		UUID courseId = UUID.fromString(courseIdStr);
 
 		if (result.hasErrors()) {
@@ -230,11 +259,18 @@ public class CourseCRUDController {
 				courseDTO.setCourseDesc(course.getCourseDesc());
 				courseDTO.setProfessorId(courseObj.getProfessor().getPersonId());
 
-				model.addAttribute(COURSE_DTO_ATTRIBUTE, courseDTO);
-				model.addAttribute(COURSE_ATTRIBUTE, courseObj);
+				model.addAttribute(COURSE_DTO_STR, courseDTO);
+				model.addAttribute(COURSE_STR, courseObj);
 				return UPDATE_COURSE_PAGE;
+			} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
+				Thread.currentThread().interrupt();
+				model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+				model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+				return ERROR_PAGE;
 			} catch (Exception e) {
-				model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+				Thread.currentThread().interrupt();
+				model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+				model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 				return ERROR_PAGE;
 			}
 		}
@@ -243,10 +279,15 @@ public class CourseCRUDController {
 			Course courseObj = courseCRUDService.retrieveById(courseId);
 			courseCRUDService.updateCourseById(courseId, course);
 			return REDIRECT_COURSE_CRUD_NAME + courseObj.getSlug();
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -255,19 +296,24 @@ public class CourseCRUDController {
 	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
 			Model model) {
 		try {
-			String referer = request.getParameter(REFERER_PARAMETER);
+			String referer = request.getParameter(REFERER_STR);
 			if (referer != null) {
-				model.addAttribute(PREVIOUS_URL_ATTRIBUTE, referer);
+				model.addAttribute(PREVIOUS_URL_STR, referer);
 			}
 			Course course = courseCRUDService.retrieveBySlug(slug);
 			Collection<Student> studentsNotInCourse = filterService.studentsNotInCourse(course.getCId());
-			model.addAttribute(STUDENT_ATTRIBUTE, studentsNotInCourse);
-			model.addAttribute(COURSE_ATTRIBUTE, course);
+			model.addAttribute(STUDENT_STR, studentsNotInCourse);
+			model.addAttribute(COURSE_STR, course);
 			return ADD_STUDENTS_PAGE;
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -275,13 +321,13 @@ public class CourseCRUDController {
 	@PostMapping("/add-student")
 	public String postControllerAddStudentToCourse(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
-			String studentIdStr = request.getParameter(STUDENT_ID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
+			String studentIdStr = request.getParameter(STUDENT_ID_STR);
 
 			UUID courseId = UUID.fromString(courseIdStr);
 			UUID studentId = UUID.fromString(studentIdStr);
 
-			String referer = request.getParameter(REFERER_PARAMETER);
+			String referer = request.getParameter(REFERER_STR);
 
 			courseCRUDService.addStudentToCourse(courseId, studentId);
 
@@ -293,10 +339,15 @@ public class CourseCRUDController {
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -304,8 +355,8 @@ public class CourseCRUDController {
 	@PostMapping("/remove-student")
 	public String postControllerRemoveStudentFromCourse(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
-			String studentIdStr = request.getParameter(STUDENT_ID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
+			String studentIdStr = request.getParameter(STUDENT_ID_STR);
 
 			UUID courseId = UUID.fromString(courseIdStr);
 			UUID studentId = UUID.fromString(studentIdStr);
@@ -315,10 +366,15 @@ public class CourseCRUDController {
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
-		} catch (NoSuchFieldException | NullPointerException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -326,7 +382,7 @@ public class CourseCRUDController {
 	@PostMapping("/deploy")
 	public String postControllerDeployLab(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId = UUID.fromString(courseIdStr);
 
 			courseCRUDService.deployLab(courseId);
@@ -334,10 +390,15 @@ public class CourseCRUDController {
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
 
-		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException | IOException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -345,17 +406,22 @@ public class CourseCRUDController {
 	@PostMapping("/cleanup")
 	public String postControllerCleanupLab(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId = UUID.fromString(courseIdStr);
 
 			courseCRUDService.cleanupLab(courseId);
 			Course course = courseCRUDService.retrieveById(courseId);
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
-		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException | IOException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -363,7 +429,7 @@ public class CourseCRUDController {
 	@PostMapping("/provision")
 	public String postControllerProvisionCourseInfrastructure(HttpServletRequest request, Model model) {
 		try {
-			String courseIdStr = request.getParameter(UUID_PARAMETER);
+			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId = UUID.fromString(courseIdStr);
 			Course course = courseCRUDService.retrieveById(courseId);
 
@@ -371,10 +437,15 @@ public class CourseCRUDController {
 			courseCRUDService.provisionCourseInfrastructure(courseId);
 
 			return REDIRECT_COURSE_CRUD_NAME + course.getSlug();
-		} catch (NoSuchFieldException | IOException | InterruptedException e) {
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException | IOException e) {
 			Thread.currentThread().interrupt();
-
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
+		} catch (Exception e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -382,14 +453,21 @@ public class CourseCRUDController {
 	@GetMapping("/instance/terminal")
 	public String getControllerDisplayContainerTerminal(HttpServletRequest request, Model model) {
 		try {
-			String instanceIdStr = request.getParameter(INSTANCE_ID_PARAMETER);
+			String instanceIdStr = request.getParameter(INSTANCE_ID_STR);
 			UUID instanceId = UUID.fromString(instanceIdStr);
 
-			model.addAttribute(INSTANCE_ATTRIBUTE, instanceIdStr);
+			model.addAttribute(INSTANCE_STR, instanceIdStr);
 			request.getSession().setAttribute("instanceId", instanceId);
 			return CONTAINER_TERMINAL_PAGE;
+		} catch (IllegalArgumentException | NullPointerException e) {
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_ATTRIBUTE, e.getMessage());
+			Thread.currentThread().interrupt();
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
