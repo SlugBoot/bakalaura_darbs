@@ -9,6 +9,10 @@ public class RootController {
 	
 	@GetMapping("/")
 	public String redirectToDashboard(Authentication authentication) {
+		if (authentication == null) {
+			return "redirect:/login";
+		}
+		
 		if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PROFESSOR"))) {
             return "redirect:/professor/home";
         }
