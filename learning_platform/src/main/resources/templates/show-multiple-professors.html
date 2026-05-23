@@ -1,47 +1,63 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
+
 <head>
+	<title>All Professors</title>
 	<link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
+
 <body>
-	<button onclick="history.back()">Back</button>
-	<h1>Information about all professors</h1>
-	<table border="1px">
-		<tr>
-			<td>UUID</td>
-			<td>First Name</td>
-			<td>Middle Name</td>
-			<td>Surname</td>
-			<td>Email</td>
-			<td>Username</td>
-			<td>Delete</td>
-			<td>Update</td>
-		</tr>
-		<tr th:each="temp : ${professor}">
-			<td th:text="${temp.getPersonId()}"></td>
-			<td th:text="${temp.getName()}"></td>
-			<td th:text="${temp.getMiddleName()}"></td>
-			<td th:text="${temp.getSurname()}"></td>
-			<td th:text="${temp.getEmail()}"></td>
-			<td th:text="${temp.getUsername()}"></td>
-			<td>
-				<form th:action="@{/professor/crud/delete}" method=post>
-					<input type="hidden" name="uuid" th:value="${temp.getPersonId()}" />
-					<input type="hidden" name="referer" th:value="${previousUrl}" />
-					<button type="submit">Delete</button>
-				</form>
-			</td>
-			<td>
-				<a
-					th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()}, referer='/professor/home')}">
-					<button type="button">Update info</button>
-				</a>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="9"><button onclick="location.href='/professor/crud/create'">Create New Professor</button></td>
-		</tr>
-	</table>
+	<div class="container">
+		<button onclick="history.back()" class="btn btn-primary" style="margin-bottom: 20px;">Back</button>
+		<h1>Information about all professors</h1>
+
+		<table>
+			<thead>
+				<tr>
+					<th>UUID</th>
+					<th>First Name</th>
+					<th>Middle Name</th>
+					<th>Surname</th>
+					<th>Email</th>
+					<th>Username</th>
+					<th>Delete</th>
+					<th>Update</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="temp : ${professor}">
+					<td th:text="${temp.getPersonId()}"></td>
+					<td th:text="${temp.getName()}"></td>
+					<td th:text="${temp.getMiddleName()}"></td>
+					<td th:text="${temp.getSurname()}"></td>
+					<td th:text="${temp.getEmail()}"></td>
+					<td th:text="${temp.getUsername()}"></td>
+					<td>
+						<form th:action="@{/professor/crud/delete}" method="post">
+							<input type="hidden" name="uuid" th:value="${temp.getPersonId()}" />
+							<input type="hidden" name="referer" th:value="${previousUrl}" />
+							<button type="submit" class="btn btn-danger"
+								style="padding: 6px 12px; font-size: 0.85rem;">Delete</button>
+						</form>
+					</td>
+					<td>
+						<a th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()}, referer='/professor/home')}"
+							class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">
+							Update info
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="8" style="text-align: center;">
+						<button onclick="location.href='/professor/crud/create'" class="btn btn-success"
+							style="margin-top: 10px;">
+							Create New Professor
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
 
 </html>

@@ -2,33 +2,35 @@
 <html xmlns:th="https://www.thymeleaf.org">
 
 <head>
+	<title>Create Course</title>
 	<link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
 <body>
-	<button onclick="history.back()">Back</button>
-	<h1>Create new Course</h1>
-	<form action="#" th:action="@{/course/crud/create}" th:object="${courseDTO}" method="post">
-		<table>
-			<tr>
-				<td>Course Name:</td>
-				<td><input type="text" th:field="*{courseName}" /></td>
-				<td th:if="${#fields.hasErrors('courseName')}" th:errors="*{courseName}"></td>
-			</tr>
-			<tr>
-				<td>Course Description:</td>
-				<td><input type="text" th:field="*{courseDesc}" /></td>
-				<td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
-			</tr>
-			<input type="hidden" name="professorId" th:value="${professor.getPersonId()}" />
-			<tr>
-			</tr>
-			<tr>
-				<td><input type="submit" /></td>
-			</tr>
-		</table>
-		<input type="hidden" name="referer" th:value="${previousUrl}" />
-	</form>
+	<div class="container">
+		<button onclick="history.back()" class="btn btn-primary" style="margin-bottom: 20px;">Back</button>
+		<h1>Create new Course</h1>
+		<form action="#" th:action="@{/course/crud/create}" th:object="${courseDTO}" method="post">
+			<table>
+				<tr>
+					<td>Course Name:</td>
+					<td><input type="text" th:field="*{courseName}" /></td>
+					<td th:if="${#fields.hasErrors('courseName')}" th:errors="*{courseName}"></td>
+				</tr>
+				<tr>
+					<td>Course Description:</td>
+					<td><input type="text" th:field="*{courseDesc}" /></td>
+					<td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
+				</tr>
+				<input type="hidden" name="professorId" th:value="${professor.getPersonId()}" />
+				<tr>
+					<td colspan="2"><input type="submit" value="Submit" class="btn btn-success"
+							style="margin-top: 10px;" /></td>
+				</tr>
+			</table>
+			<input type="hidden" name="referer" th:value="${previousUrl}" />
+		</form>
+	</div>
 </body>
 
 </html>

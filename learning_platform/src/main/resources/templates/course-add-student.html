@@ -1,41 +1,57 @@
-<!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org">
+<<!DOCTYPE html>
+	<html xmlns:th="https://www.thymeleaf.org">
+
 	<head>
+		<title>Add Student to Course</title>
 		<link rel="stylesheet" th:href="@{/css/styles.css}">
 	</head>
+
 	<body>
-		<button onclick="history.back()">Back</button>
-		<h1 th:text="${course.getCourseName()}"></h1>
-		<h2 th:text="${course.getCourseDesc()}"></h2>
-		<p th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}"></p>
-		<table border = 1px>
-			<th colspan="7">Available Students</th>
-			<tr>
-				<td>Student ID</td>
-				<td>Student Name</td>
-				<td>Student Middle Name</td>
-				<td>Student Surname</td>
-				<td>Student Email</td>
-				<td>Student Username</td>
-				<td>Add Student</td>
-			</tr>
-			<tr th:each="temp : ${student}">
-				<td th:text="${temp.getPersonId()}"></td>
-				<td th:text="${temp.getName()}"></td>
-				<td th:text="${temp.getMiddleName()}"></td>
-				<td th:text="${temp.getSurname()}"></td>
-				<td th:text="${temp.getEmail()}"></td>
-				<td th:text="${temp.getUsername()}"></td>
-				<td>
-					<form th:action="@{/course/crud/add-student}" method=post>
-						<input type="hidden" name="uuid" th:value="${course.getCId()}" />
-						<input type="hidden" name="studentId" th:value="${temp.getPersonId()}" />
-						<input type="hidden" name="referer" th:value="${previousUrl}" />
-						<button type="submit">Add to Course</button>
-					</form>
-					</a>
-				</td>
-			</tr>
-		</table>
+		<div class="container">
+			<button onclick="history.back()" class="btn btn-primary" style="margin-bottom: 20px;">Back</button>
+
+			<h1 th:text="${course.getCourseName()}"></h1>
+			<h2 th:text="${course.getCourseDesc()}"></h2>
+			<p
+				th:text="'Teaching professor: ' + ${course.getProfessor().getName()} + ' ' + ${course.getProfessor().getSurname()}">
+			</p>
+
+			<table>
+				<thead>
+					<tr>
+						<th colspan="7">Available Students</th>
+					</tr>
+					<tr>
+						<th>Student ID</th>
+						<th>Student Name</th>
+						<th>Student Middle Name</th>
+						<th>Student Surname</th>
+						<th>Student Email</th>
+						<th>Student Username</th>
+						<th>Add Student</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="temp : ${student}">
+						<td th:text="${temp.getPersonId()}"></td>
+						<td th:text="${temp.getName()}"></td>
+						<td th:text="${temp.getMiddleName()}"></td>
+						<td th:text="${temp.getSurname()}"></td>
+						<td th:text="${temp.getEmail()}"></td>
+						<td th:text="${temp.getUsername()}"></td>
+						<td>
+							<form th:action="@{/course/crud/add-student}" method="post">
+								<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+								<input type="hidden" name="studentId" th:value="${temp.getPersonId()}" />
+								<input type="hidden" name="referer" th:value="${previousUrl}" />
+								<button type="submit" class="btn btn-success"
+									style="padding: 6px 12px; font-size: 0.85rem;">Add to Course</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</body>
-</html>
+
+	</html>

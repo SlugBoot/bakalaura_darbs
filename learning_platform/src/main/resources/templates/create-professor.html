@@ -2,44 +2,47 @@
 <html xmlns:th="https://www.thymeleaf.org">
 
 <head>
+	<title>Create Professor</title>
 	<link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
 <body>
-	<button onclick="history.back()">Back</button>
-	<h1>Create new Professor</h1>
-	<form action="#" th:action="@{/professor/crud/create}" th:object="${professor}" method="post">
-		<table>
-			<tr>
-				<td>First Name:</td>
-				<td><input type="text" th:field="*{name}" /></td>
-				<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
-			</tr>
-			<tr>
-				<td>Middle Name:</td>
-				<td><input type="text" th:field="*{middleName}" /></td>
-				<td th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></td>
-			</tr>
-			<tr>
-				<td>Surname:</td>
-				<td><input type="text" th:field="*{surname}" /></td>
-				<td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></td>
-			</tr>
-			<tr>
-				<td>E-mail:</td>
-				<td><input type="text" th:field="*{email}" /></td>
-				<td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
-			</tr>
-			<tr>
-				<td>Password:</td>
-				<td><input type="password" th:field="*{password}" /></td>
-				<td th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></td>
-			</tr>
-			<tr>
-				<td><input type="submit" /></td>
-			</tr>
-		</table>
-	</form>
+	<div class="container">
+		<button onclick="history.back()" class="btn btn-primary" style="margin-bottom: 20px;">Back</button>
+		<h1>Create new Professor</h1>
+		<form action="#" th:action="@{/professor/crud/create}" th:object="${professor}" method="post">
+			<table>
+				<tr>
+					<td>First Name:</td>
+					<td><input type="text" th:field="*{name}" /></td>
+					<td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
+				</tr>
+				<tr>
+					<td>Middle Name:</td>
+					<td><input type="text" th:field="*{middleName}" /></td>
+					<td th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></td>
+				</tr>
+				<tr>
+					<td>Surname:</td>
+					<td><input type="text" th:field="*{surname}" /></td>
+					<td th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></td>
+				</tr>
+				<tr>
+					<td>E-mail:</td>
+					<td><input type="text" th:field="*{email}" /></td>
+					<td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
+				</tr>
+				<tr>
+					<td>Password:</td>
+					<td><input type="password" th:field="*{password}" /></td>
+					<td th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="submit" value="Submit" class="btn btn-success" style="margin-top: 10px;" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
 </body>
 
 </html>
