@@ -33,15 +33,22 @@ public class Student extends Person {
 	private Collection<LabInstance> labs;
 
 	private String createUsername() {
-		String year = Integer.toString(LocalDate.now().getYear());
+		String surnameStr = (this.getSurname() != null) ? this.getSurname().trim().toLowerCase() : "";
+	    String nameStr = (this.getName() != null) ? this.getName().trim().toLowerCase() : "";
+		
+	    String safeSurname = surnameStr.substring(0, Math.min(surnameStr.length(), 4));
+	    String safeName = nameStr.substring(0, Math.min(nameStr.length(), 4));
+	    
+	    String yearTwoDigits = String.valueOf(LocalDate.now().getYear() % 100);
 		// Lietotāja 4 uzvārda burti, 4 vārda burti, lietotāja izveidošanas gads
-		String usernameBase = this.getSurname().toLowerCase().substring(0, 4)
-				.concat(this.getName().toLowerCase().substring(0, 4)).concat(year.substring(2, 4));
-
+	    String usernameBase = safeSurname + safeName + yearTwoDigits;
+	    
 		String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
 		java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
-		return pattern.matcher(usernameDecomposed).replaceAll("");
+		String cleanUsername =  pattern.matcher(usernameDecomposed).replaceAll("");
+		
+		return cleanUsername.replaceAll("[^a-z0-9]", "");
 	}
 
 	public Student(String name, String surname, String email) {

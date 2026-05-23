@@ -29,17 +29,26 @@ public class Professor extends Person {
 	private Collection<Course> course;
 
 	private String createUsername() {
-		// Lietotāja vards.uzvards
-		String usernameBase = this.getSurname().toLowerCase().concat(".").concat(this.getName().toLowerCase());
-
-		if (this.getMiddleName() != null) {
-			usernameBase = usernameBase.concat(".").concat(this.getMiddleName().toLowerCase());
-		}
+		String nameStr = (this.getName() != null) ? this.getName().trim().toLowerCase() : "";
+	    String surnameStr = (this.getSurname() != null) ? this.getSurname().trim().toLowerCase() : "";
+		
+	    nameStr = nameStr.replaceAll("[^a-z\\p{L}]", "");
+	    surnameStr = surnameStr.replaceAll("[^a-z\\p{L}]", "");
+		
+	    String usernameBase = surnameStr + "." + nameStr;
+	    
+	    if (this.getMiddleName() != null && !this.getMiddleName().trim().isEmpty()) {
+	        String middleStr = this.getMiddleName().trim().toLowerCase().replaceAll("[^a-z\\p{L}]", "");
+	        if (!middleStr.isEmpty()) {
+	            usernameBase = usernameBase + "." + middleStr;
+	        }
+	    }
 
 		String usernameDecomposed = Normalizer.normalize(usernameBase, Normalizer.Form.NFD);
 		java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
 
-		return pattern.matcher(usernameDecomposed).replaceAll("");
+		String cleanUsername = pattern.matcher(usernameDecomposed).replaceAll("");
+		return cleanUsername.toLowerCase();
 	}
 
 	public Professor(String name, String surname, String email) {

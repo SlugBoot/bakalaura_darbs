@@ -159,3 +159,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Pārveidota kļūdu apstrādes loģika
 2. Pievienots stilizējums lapas elementiem
 3. Pievienots RootController
+4. Uzlabota lietotājvārdu ģenerēšana
