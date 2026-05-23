@@ -3,10 +3,8 @@ package lv.slugboot.app.service.impl;
 import java.util.Collection;
 import java.util.UUID;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lv.slugboot.app.models.Student;

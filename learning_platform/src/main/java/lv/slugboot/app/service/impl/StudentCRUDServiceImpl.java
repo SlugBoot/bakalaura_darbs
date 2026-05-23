@@ -14,7 +14,6 @@ import lv.slugboot.app.models.Student;
 import lv.slugboot.app.repo.IPersonRepo;
 import lv.slugboot.app.repo.IStudentRepo;
 import lv.slugboot.app.service.IStudentCRUDService;
-import lv.slugboot.app.utils.PasswordGenerator;
 
 @Service
 @Slf4j

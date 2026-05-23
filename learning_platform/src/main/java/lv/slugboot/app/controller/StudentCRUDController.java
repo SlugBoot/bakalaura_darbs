@@ -37,6 +37,10 @@ public class StudentCRUDController {
 
 	private static final String STUDENT_STR = "student";
 	private static final String ERROR_STR = "error";
+	private static final String ERROR_MESSAGE_STR = "errorMessage";
+	private static final String ERROR_CODE_STR = "errorCode";
+	private static final String ERROR_CODE_400_STR = "400 (Bad Request)";
+	private static final String ERROR_CODE_500_STR = "500 (Internal Server Error)";
 	private static final String PASSWORD_STR = "password";
 	private static final String USER_TYPE_STR = "userType";
 	private static final String USER_ID_STR = "userId";
@@ -50,8 +54,13 @@ public class StudentCRUDController {
 		try {
 			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -63,7 +72,8 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateStudent(@Validated(PersonDTO.OnCreate.class) PersonDTO student, BindingResult result, Model model) {
+	public String postControllerCreateStudent(@Validated(PersonDTO.OnCreate.class) PersonDTO student,
+			BindingResult result, Model model) {
 		if (result.hasErrors()) {
 			return CREATE_STUDENT_PAGE;
 		}
@@ -71,8 +81,13 @@ public class StudentCRUDController {
 		try {
 			studentCRUDService.createStudent(student);
 			return STUDENT_REDIRECT_PAGE + "all";
+		} catch (IllegalArgumentException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -93,8 +108,13 @@ public class StudentCRUDController {
 			model.addAttribute("studentDTO", studentDTO);
 
 			return UPDATE_STUDENT_PAGE;
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -124,8 +144,13 @@ public class StudentCRUDController {
 			String redirectString = determineRedirectUrl(authentication);
 			studentCRUDService.updateStudentById(studentId, studentDTO);
 			return redirectString;
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -138,8 +163,13 @@ public class StudentCRUDController {
 			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
 			model.addAttribute(PASSWORD_STR, new PasswordUpdateDTO());
 			return UPDATE_PASSWORD_PAGE;
+		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -166,7 +196,6 @@ public class StudentCRUDController {
 			populateErrorModel.run();
 			return UPDATE_PASSWORD_PAGE;
 		}
-		
 
 		try {
 			String redirectString = determineRedirectUrl(authentication);
@@ -176,8 +205,13 @@ public class StudentCRUDController {
 			result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 			populateErrorModel.run();
 			return UPDATE_PASSWORD_PAGE;
+		} catch (NullPointerException | NoSuchFieldException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
@@ -191,21 +225,25 @@ public class StudentCRUDController {
 			studentCRUDService.deleteById(studentId);
 			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;
+		} catch (NullPointerException | NoSuchFieldException | IllegalArgumentException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute(ERROR_STR, e.getMessage());
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
 			return ERROR_PAGE;
 		}
 	}
-	
-	
+
 	private String determineRedirectUrl(Authentication authentication) {
 		var authorities = authentication.getAuthorities();
 		for (var authority : authorities) {
 			if (authority.getAuthority().equals("ROLE_PROFESSOR")) {
-	            return STUDENT_REDIRECT_PAGE + "all";
-	        } else if (authority.getAuthority().equals("ROLE_STUDENT")) {
-	            return REDIRECT_STR + "student/home";
-	        }
+				return STUDENT_REDIRECT_PAGE + "all";
+			} else if (authority.getAuthority().equals("ROLE_STUDENT")) {
+				return REDIRECT_STR + "student/home";
+			}
 		}
 		return REDIRECT_STR;
 	}

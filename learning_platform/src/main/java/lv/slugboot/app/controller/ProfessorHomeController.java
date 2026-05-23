@@ -20,6 +20,12 @@ public class ProfessorHomeController {
 
 	private final IProfessorHomeService professorHomeService;
 
+	private static final String ERROR_PAGE = "show-error";
+	private static final String ERROR_MESSAGE_STR = "errorMessage";
+	private static final String ERROR_CODE_STR = "errorCode";
+	private static final String ERROR_CODE_400_STR = "400 (Bad Request)";
+	private static final String ERROR_CODE_500_STR = "500 (Internal Server Error)";
+	
 	@GetMapping
 	public String getControllerProfessorHomePage(Authentication authentication, Model model) {
 		try {
@@ -32,9 +38,14 @@ public class ProfessorHomeController {
 			model.addAttribute("filtered_courses", filteredCourses);
 
 			return "professor-home-page";
+		} catch (IllegalArgumentException | NullPointerException e) {
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		} catch (Exception e) {
-			model.addAttribute("package", e.getMessage());
-			return "show-error";
+			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
+			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
+			return ERROR_PAGE;
 		}
 	}
 

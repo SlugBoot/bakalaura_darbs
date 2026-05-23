@@ -26,7 +26,6 @@ import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
 import lv.slugboot.app.service.ILabInstanceCRUDService;
 import lv.slugboot.app.service.IProfessorCRUDService;
-import lv.slugboot.app.service.IStudentCRUDService;
 
 @Controller
 @RequestMapping("/course/crud")
@@ -35,7 +34,6 @@ import lv.slugboot.app.service.IStudentCRUDService;
 public class CourseCRUDController {
 
 	private final ICourseCRUDService courseCRUDService;
-	private final IStudentCRUDService studentCRUDService;
 	private final IFilterService filterService;
 	private final IProfessorCRUDService professorCRUDService;
 	private final ILabInstanceCRUDService instanceCRUDService;
@@ -313,7 +311,6 @@ public class CourseCRUDController {
 			UUID studentId = UUID.fromString(studentIdStr);
 
 			Course course = courseCRUDService.retrieveById(courseId);
-			Student student = studentCRUDService.retrieveById(studentId);
 
 			courseCRUDService.removeStudentFromCourse(courseId, studentId);
 

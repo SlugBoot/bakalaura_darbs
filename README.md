@@ -153,3 +153,7 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 1. Izmainīta lapu struktūra
 2. Pievienots CustomErrorController
 3. Pievienots LoginController
+
+## 23. maijs
+
+1. Pārveidota kļūdu apstrādes loģika
