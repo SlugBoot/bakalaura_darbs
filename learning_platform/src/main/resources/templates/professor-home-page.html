@@ -37,7 +37,7 @@
 					<td th:text="${course.getCourseDesc()}"></td>
 					<td>
 						<a th:href="@{/course/crud/name/{slug}(slug=${course.getSlug()}, referer='/professor/home')}">
-							<button type="button">Manage</button>
+							<button type="button" class="btn btn-primary">Manage</button>
 						</a>
 					</td>
 				</tr>
