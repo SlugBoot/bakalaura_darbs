@@ -59,7 +59,7 @@ public class CustomErrorController implements ErrorController {
         model.addAttribute(ERROR_MESSAGE, errorMessage);
         
         model.addAttribute(EXCEPTION_MESSAGE, exceptionTypeAndMessage);
-        model.addAttribute(STACK_TRACE, stackTrace);
+//        model.addAttribute(STACK_TRACE, stackTrace);
 
         // Maps to templates/show-error.html
         return ERROR_PAGE;
