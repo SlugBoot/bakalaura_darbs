@@ -35,8 +35,8 @@
 				<tr th:each="inst : ${instance}" th:id="'instance-row-' + ${inst.instanceId}">
 					<td th:text="${inst.course.courseName}">Course Name</td>
 					<td>
-						<span th:id="'status-' + ${instance.instanceId}"
-							th:class="'status status-' + ${instance.status}" th:text="${instance.status}">STATUS</span>
+						<span th:id="'status-' + ${inst.instanceId}"
+							th:class="'status status-' + ${inst.status}" th:text="${inst.status}">STATUS</span>
 					</td>
 					<td>
 						<a th:href="@{/student/home/remove(courseId=${course.getCId()})}">
@@ -44,8 +44,8 @@
 						</a>
 					</td>
 					<td>
-						<div th:id="'action-' + ${instance.instanceId}">
-							<a th:if="${instance.status.name() == 'RUNNING'}"
+						<div th:id="'action-' + ${inst.instanceId}">
+							<a th:if="${inst.status.name() == 'RUNNING'}"
 								th:href="@{/course/crud/instance/terminal(instanceId=${inst.instanceId})}"
 								target="_blank" class="btn btn-success">Open
 								Terminal</a>
