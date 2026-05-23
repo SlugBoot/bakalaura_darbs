@@ -44,7 +44,7 @@ public class StudentCRUDController {
 	private static final String USERNAME_ATTRIBUTE = "username";
 
 	@GetMapping("/all")
-	public String getControllerGetAllStudents(Model model) throws Exception {
+	public String getControllerGetAllStudents(Model model) throws NoSuchFieldException {
 		model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 		return MULTIPLE_STUDENTS_PAGE;
 	}
@@ -68,7 +68,7 @@ public class StudentCRUDController {
 
 	@GetMapping("/update/{username}")
 	public String getControllerUpdateStudentById(@PathVariable(name = "username") String username, Model model)
-			throws Exception {
+			throws NoSuchFieldException {
 		Student student = studentCRUDService.retrieveByUsername(username);
 		model.addAttribute(STUDENT_STR, student);
 		model.addAttribute("studentId", student.getPersonId());
@@ -87,7 +87,7 @@ public class StudentCRUDController {
 	@PostMapping("/update")
 	public String postControllerUpdateStudentById(HttpServletRequest request, Authentication authentication,
 			@Valid @ModelAttribute("studentDTO") PersonDTO studentDTO, BindingResult result, Model model)
-			throws Exception {
+			throws NoSuchFieldException {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
@@ -109,7 +109,7 @@ public class StudentCRUDController {
 
 	@GetMapping("/update-password/{username}")
 	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model)
-			throws Exception {
+			throws NoSuchFieldException {
 		Student student = studentCRUDService.retrieveByUsername(username);
 		model.addAttribute(USER_ID_STR, student.getPersonId());
 		model.addAttribute(USER_TYPE_STR, STUDENT_STR);
@@ -120,7 +120,7 @@ public class StudentCRUDController {
 	@PostMapping("/update-password")
 	public String postControllerUpdatePassword(HttpServletRequest request, Authentication authentication,
 			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model)
-			throws Exception {
+			throws NoSuchFieldException {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
@@ -153,13 +153,13 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/delete")
-	public String postControllerDeleteStudent(HttpServletRequest request, Model model) throws Exception {
-			String studentIdStr = request.getParameter(UUID_STR);
-			UUID studentId = UUID.fromString(studentIdStr);
+	public String postControllerDeleteStudent(HttpServletRequest request, Model model) throws NoSuchFieldException {
+		String studentIdStr = request.getParameter(UUID_STR);
+		UUID studentId = UUID.fromString(studentIdStr);
 
-			studentCRUDService.deleteById(studentId);
-			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
-			return MULTIPLE_STUDENTS_PAGE;
+		studentCRUDService.deleteById(studentId);
+		model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
+		return MULTIPLE_STUDENTS_PAGE;
 	}
 
 	private String determineRedirectUrl(Authentication authentication) {

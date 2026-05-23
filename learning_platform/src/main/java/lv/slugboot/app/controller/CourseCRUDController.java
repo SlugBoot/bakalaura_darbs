@@ -1,5 +1,6 @@
 package lv.slugboot.app.controller;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -67,7 +68,7 @@ public class CourseCRUDController {
 	private static final String REDIRECT_COURSE_CRUD_NAME = REDIRECT_COURSE_CRUD + "name/";
 
 	@GetMapping("/all")
-	public String getControllerAllCourses(Model model) throws Exception {
+	public String getControllerAllCourses(Model model) throws NoSuchFieldException {
 		model.addAttribute(COURSE_STR, courseCRUDService.retrieveAll());
 		return COURSE_LIST;
 
@@ -75,7 +76,7 @@ public class CourseCRUDController {
 
 	@GetMapping("/name/{slug}")
 	public String getControllerCourseInfo(@PathVariable(name = "slug") String slug, HttpServletRequest request,
-			Model model) throws Exception {
+			Model model) throws NoSuchFieldException {
 		String referer = request.getParameter(REFERER_STR);
 
 		if (referer != null) {
@@ -90,7 +91,7 @@ public class CourseCRUDController {
 
 	@PostMapping("/delete")
 	@PreAuthorize("hasRole('PROFESSOR')")
-	public String postControllerDeleteCourse(HttpServletRequest request, Model model) throws Exception {
+	public String postControllerDeleteCourse(HttpServletRequest request, Model model) throws NoSuchFieldException, IOException, InterruptedException {
 		String courseIdStr = request.getParameter(UUID_STR);
 		UUID courseId;
 		if (courseIdStr != null) {
@@ -121,7 +122,7 @@ public class CourseCRUDController {
 	}
 
 	@GetMapping("/create")
-	public String getControllerCreateCourse(HttpServletRequest request, Model model) throws Exception {
+	public String getControllerCreateCourse(HttpServletRequest request, Model model) throws NoSuchFieldException {
 
 		String referer = request.getParameter(REFERER_STR);
 
@@ -168,7 +169,7 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}/update")
 	public String getControllerUpdateCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
-			Model model) throws Exception {
+			Model model) throws NoSuchFieldException {
 		String username = request.getParameter(USERNAME_STR);
 		if (username != null) {
 			model.addAttribute(PROFESSOR_STR, professorCRUDService.retrieveByUsername(username));
@@ -189,7 +190,7 @@ public class CourseCRUDController {
 
 	@PostMapping("/update")
 	public String postControllerUpdateCourse(HttpServletRequest request,
-			@Valid @ModelAttribute("courseDTO") CourseDTO course, BindingResult result, Model model) throws Exception {
+			@Valid @ModelAttribute("courseDTO") CourseDTO course, BindingResult result, Model model) throws NoSuchFieldException {
 		String courseIdStr = request.getParameter(UUID_STR);
 		UUID courseId = UUID.fromString(courseIdStr);
 
@@ -214,7 +215,7 @@ public class CourseCRUDController {
 
 	@GetMapping("/{slug}/add")
 	public String getControllerStudentsNotInCourse(@PathVariable(name = "slug") String slug, HttpServletRequest request,
-			Model model) throws Exception {
+			Model model) throws NoSuchFieldException {
 		String referer = request.getParameter(REFERER_STR);
 		if (referer != null) {
 			model.addAttribute(PREVIOUS_URL_STR, referer);
@@ -227,7 +228,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/add-student")
-	public String postControllerAddStudentToCourse(HttpServletRequest request, Model model) throws Exception {
+	public String postControllerAddStudentToCourse(HttpServletRequest request, Model model) throws NoSuchFieldException {
 		String courseIdStr = request.getParameter(UUID_STR);
 		String studentIdStr = request.getParameter(STUDENT_ID_STR);
 
@@ -248,7 +249,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/remove-student")
-	public String postControllerRemoveStudentFromCourse(HttpServletRequest request, Model model) throws Exception {
+	public String postControllerRemoveStudentFromCourse(HttpServletRequest request, Model model) throws NoSuchFieldException {
 		String courseIdStr = request.getParameter(UUID_STR);
 		String studentIdStr = request.getParameter(STUDENT_ID_STR);
 
@@ -263,7 +264,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/deploy")
-	public String postControllerDeployLab(HttpServletRequest request, Model model) throws Exception {
+	public String postControllerDeployLab(HttpServletRequest request, Model model) throws NoSuchFieldException, IOException, InterruptedException {
 			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId = UUID.fromString(courseIdStr);
 
@@ -274,7 +275,7 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/cleanup")
-	public String postControllerCleanupLab(HttpServletRequest request, Model model) throws Exception{
+	public String postControllerCleanupLab(HttpServletRequest request, Model model) throws NoSuchFieldException, IOException, InterruptedException {
 			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId = UUID.fromString(courseIdStr);
 
