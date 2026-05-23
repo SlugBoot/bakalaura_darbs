@@ -65,30 +65,42 @@
 			stompClient.connect({}, function (frame) {
 				console.log('Connected to Status WebSocket');
 
+				var subscribedCourses = {};
+
 				/*[# th:each="inst : ${instance}"]*/
-				stompClient.subscribe('/topic/course/[[${inst.course.getCId().toString()}]]', function (message) {
-					if (message.body === "refresh") {
-						console.log("Status update received. Refreshing student table fragment...");
+				(function () {
+					var courseId = [[${inst.course.getCId().toString()}]];
 
-						// Fetch the current page content and hot-swap the table body seamlessly
-						fetch(window.location.href)
-							.then(response => response.text())
-							.then(html => {
-								var parser = new DOMParser();
-								var doc = parser.parseFromString(html, 'text/html');
+					if (!subscribedCourses[courseId]) {
+						subscribedCourses[courseId] = true;
 
-								var newTable = doc.getElementById('instances-table');
-								var oldTable = document.getElementById('instances-table');
+						stompClient.subscribe('/topic/course/' + courseId, function (message) {
+							if (message.body === "refresh") {
+								console.log("Status update received for course " + courseId + ". Refreshing student table fragment...");
 
-								if (oldTable && newTable) {
-									oldTable.innerHTML = newTable.innerHTML;
-									console.log("Student dashboard table updated successfully!");
-								}
-							})
-							.catch(err => console.error("Failed to update student table fragment:", err));
+								fetch(window.location.href)
+									.then(response => response.text())
+									.then(html => {
+										var parser = new DOMParser();
+										var doc = parser.parseFromString(html, 'text/html');
+
+										var newTable = doc.getElementById('instances-table');
+										var oldTable = document.getElementById('instances-table');
+
+										if (oldTable && newTable) {
+											oldTable.innerHTML = newTable.innerHTML;
+											console.log("Student dashboard table updated successfully!");
+										}
+									})
+									.catch(err => console.error("Failed to update student table fragment:", err));
+							}
+						});
 					}
-				});
-			/*[/]*/
+				})();
+				/*[/]*/
+			}, function (error) {
+				console.error("WebSocket transport error: ", error);
+			});
 		</script>
 	</div>
 </body>
