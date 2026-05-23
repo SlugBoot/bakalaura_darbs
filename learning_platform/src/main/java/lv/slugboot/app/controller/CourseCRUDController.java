@@ -2,6 +2,7 @@ package lv.slugboot.app.controller;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lv.slugboot.app.dto.CourseDTO;
 import lv.slugboot.app.models.Course;
+import lv.slugboot.app.models.LabInstance;
 import lv.slugboot.app.models.Student;
+import lv.slugboot.app.models.enums.LabInstanceStatus;
 import lv.slugboot.app.service.IAnsibleService;
 import lv.slugboot.app.service.ICourseCRUDService;
 import lv.slugboot.app.service.IFilterService;
@@ -65,7 +68,6 @@ public class CourseCRUDController {
 	private static final String UUID_STR = "uuid";
 
 	private static final String HOSTS_FILE = "hosts";
-
 
 	private static final String REDIRECT_STRING = "redirect:";
 	private static final String REDIRECT_COURSE_CRUD = "redirect:/course/crud/";
@@ -112,15 +114,27 @@ public class CourseCRUDController {
 	}
 
 	@PostMapping("/delete")
-	@PreAuthorize("hasRole('PROFESSOR')") 
+	@PreAuthorize("hasRole('PROFESSOR')")
 	public String postControllerDeleteCourse(HttpServletRequest request, Model model) {
 		try {
 			String courseIdStr = request.getParameter(UUID_STR);
 			UUID courseId;
 			if (courseIdStr != null) {
 				courseId = UUID.fromString(courseIdStr);
+				boolean allInstancesUninitialized = true;
+				List<LabInstance> instances = instanceCRUDService.retrieveByCourseId(courseId);
+				for (LabInstance instance : instances) {
+					if (instance.getStatus() != LabInstanceStatus.UNINITIALIZED) {
+						allInstancesUninitialized = false;
+					}
+				}
+
+				if (allInstancesUninitialized == false) {
+					ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
+				}
+
 				courseCRUDService.deleteCourseById(courseId);
-				ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
+
 			}
 
 			String referer = request.getParameter(REFERER_STR);
