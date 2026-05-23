@@ -13,10 +13,10 @@
 		<h1 th:text="'Student Dashboard: ' + ${student.name}">Student Home</h1>
 		<nav>
 			<a th:href="@{/login?logout}">
-				<button type="button">Logout</button>
+				Logout
 			</a>
 			<a th:href="@{/student/crud/update/{username}(username=${student.getUsername()}, referer='/student/home')}">
-				<button type="button">Update Personal info</button>
+				Update Personal info
 			</a>
 		</nav>
 	</header>

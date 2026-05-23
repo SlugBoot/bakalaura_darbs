@@ -13,7 +13,10 @@
 			<a th:href="@{/professor/home}">Dashboard</a>
 			<a th:href="@{/course/crud/create(username=${professor.username},referer='/professor/home')}">Create Course</a>
 			<a th:href="@{/student/crud/all(referer='/professor/home')}">Student Account Management</a>
-			<a th:href="@{/logout}">Logout</a>
+			<a th:href="@{/professor/crud/update/{username}(username=${professor.username}, referer='/professor/home')}">
+				Update Personal info
+			</a>
+			<a th:href="@{/login?logout}">Logout</a>
 		</nav>
 	</header>
 	<div class="container">
