@@ -160,3 +160,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 2. Pievienots stilizējums lapas elementiem
 3. Pievienots RootController
 4. Uzlabota lietotājvārdu ģenerēšana
+5. Pievienots globāls izņēmumu apstrādātājs

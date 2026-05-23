@@ -29,18 +29,12 @@ public class StudentCRUDController {
 	private final IStudentCRUDService studentCRUDService;
 
 	private static final String MULTIPLE_STUDENTS_PAGE = "show-multiple-students";
-	private static final String ERROR_PAGE = "show-error";
 	private static final String CREATE_STUDENT_PAGE = "create-student";
 	private static final String UPDATE_STUDENT_PAGE = "update-student";
 	private static final String UPDATE_PASSWORD_PAGE = "update-password";
 	private static final String STUDENT_REDIRECT_PAGE = "redirect:/student/crud/";
 
 	private static final String STUDENT_STR = "student";
-	private static final String ERROR_STR = "error";
-	private static final String ERROR_MESSAGE_STR = "errorMessage";
-	private static final String ERROR_CODE_STR = "errorCode";
-	private static final String ERROR_CODE_400_STR = "400 (Bad Request)";
-	private static final String ERROR_CODE_500_STR = "500 (Internal Server Error)";
 	private static final String PASSWORD_STR = "password";
 	private static final String USER_TYPE_STR = "userType";
 	private static final String USER_ID_STR = "userId";
@@ -50,19 +44,9 @@ public class StudentCRUDController {
 	private static final String USERNAME_ATTRIBUTE = "username";
 
 	@GetMapping("/all")
-	public String getControllerGetAllStudents(Model model) {
-		try {
-			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
-			return MULTIPLE_STUDENTS_PAGE;
-		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
+	public String getControllerGetAllStudents(Model model) throws Exception {
+		model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
+		return MULTIPLE_STUDENTS_PAGE;
 	}
 
 	@GetMapping("/create")
@@ -78,105 +62,65 @@ public class StudentCRUDController {
 			return CREATE_STUDENT_PAGE;
 		}
 
-		try {
-			studentCRUDService.createStudent(student);
-			return STUDENT_REDIRECT_PAGE + "all";
-		} catch (IllegalArgumentException | NullPointerException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
+		studentCRUDService.createStudent(student);
+		return STUDENT_REDIRECT_PAGE + "all";
 	}
 
 	@GetMapping("/update/{username}")
-	public String getControllerUpdateStudentById(@PathVariable(name = "username") String username, Model model) {
-		try {
-			Student student = studentCRUDService.retrieveByUsername(username);
-			model.addAttribute(STUDENT_STR, student);
-			model.addAttribute("studentId", student.getPersonId());
-			model.addAttribute(USERNAME_ATTRIBUTE, student.getUsername());
+	public String getControllerUpdateStudentById(@PathVariable(name = "username") String username, Model model)
+			throws Exception {
+		Student student = studentCRUDService.retrieveByUsername(username);
+		model.addAttribute(STUDENT_STR, student);
+		model.addAttribute("studentId", student.getPersonId());
+		model.addAttribute(USERNAME_ATTRIBUTE, student.getUsername());
 
-			PersonDTO studentDTO = new PersonDTO();
-			studentDTO.setName(student.getName());
-			studentDTO.setMiddleName(student.getMiddleName());
-			studentDTO.setSurname(student.getSurname());
-			studentDTO.setEmail(student.getEmail());
-			model.addAttribute("studentDTO", studentDTO);
+		PersonDTO studentDTO = new PersonDTO();
+		studentDTO.setName(student.getName());
+		studentDTO.setMiddleName(student.getMiddleName());
+		studentDTO.setSurname(student.getSurname());
+		studentDTO.setEmail(student.getEmail());
+		model.addAttribute("studentDTO", studentDTO);
 
-			return UPDATE_STUDENT_PAGE;
-		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
+		return UPDATE_STUDENT_PAGE;
 	}
 
 	@PostMapping("/update")
 	public String postControllerUpdateStudentById(HttpServletRequest request, Authentication authentication,
-			@Valid @ModelAttribute("studentDTO") PersonDTO studentDTO, BindingResult result, Model model) {
+			@Valid @ModelAttribute("studentDTO") PersonDTO studentDTO, BindingResult result, Model model)
+			throws Exception {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
 		if (result.hasErrors()) {
-			try {
-				Student originalStudent = studentCRUDService.retrieveById(studentId);
-				model.addAttribute("studentId", studentId);
-				model.addAttribute("originalStudent", originalStudent);
-				model.addAttribute("studentDTO", studentDTO);
-				model.addAttribute(USERNAME_ATTRIBUTE, originalStudent.getUsername());
+			Student originalStudent = studentCRUDService.retrieveById(studentId);
+			model.addAttribute("studentId", studentId);
+			model.addAttribute("originalStudent", originalStudent);
+			model.addAttribute("studentDTO", studentDTO);
+			model.addAttribute(USERNAME_ATTRIBUTE, originalStudent.getUsername());
 
-				return UPDATE_STUDENT_PAGE;
-			} catch (Exception e) {
-				model.addAttribute(ERROR_STR, e.getMessage());
-				return ERROR_PAGE;
-			}
+			return UPDATE_STUDENT_PAGE;
+
 		}
 
-		try {
-			String redirectString = determineRedirectUrl(authentication);
-			studentCRUDService.updateStudentById(studentId, studentDTO);
-			return redirectString;
-		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
+		String redirectString = determineRedirectUrl(authentication);
+		studentCRUDService.updateStudentById(studentId, studentDTO);
+		return redirectString;
 	}
 
 	@GetMapping("/update-password/{username}")
-	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model) {
-		try {
-			Student student = studentCRUDService.retrieveByUsername(username);
-			model.addAttribute(USER_ID_STR, student.getPersonId());
-			model.addAttribute(USER_TYPE_STR, STUDENT_STR);
-			model.addAttribute(PASSWORD_STR, new PasswordUpdateDTO());
-			return UPDATE_PASSWORD_PAGE;
-		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
+	public String getControllerUpdatePassword(@PathVariable(name = "username") String username, Model model)
+			throws Exception {
+		Student student = studentCRUDService.retrieveByUsername(username);
+		model.addAttribute(USER_ID_STR, student.getPersonId());
+		model.addAttribute(USER_TYPE_STR, STUDENT_STR);
+		model.addAttribute(PASSWORD_STR, new PasswordUpdateDTO());
+		return UPDATE_PASSWORD_PAGE;
 	}
 
 	@PostMapping("/update-password")
 	public String postControllerUpdatePassword(HttpServletRequest request, Authentication authentication,
-			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model) {
+			@Valid @ModelAttribute("password") PasswordUpdateDTO passwordDto, BindingResult result, Model model)
+			throws Exception {
 		String studentIdStr = request.getParameter(UUID_STR);
 		UUID studentId = UUID.fromString(studentIdStr);
 
@@ -205,35 +149,17 @@ public class StudentCRUDController {
 			result.rejectValue("currentPassword", "error.passwordDto", e.getMessage());
 			populateErrorModel.run();
 			return UPDATE_PASSWORD_PAGE;
-		} catch (NullPointerException | NoSuchFieldException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
 		}
 	}
 
 	@PostMapping("/delete")
-	public String postControllerDeleteStudent(HttpServletRequest request, Model model) {
-		try {
+	public String postControllerDeleteStudent(HttpServletRequest request, Model model) throws Exception {
 			String studentIdStr = request.getParameter(UUID_STR);
 			UUID studentId = UUID.fromString(studentIdStr);
 
 			studentCRUDService.deleteById(studentId);
 			model.addAttribute(STUDENT_STR, studentCRUDService.retrieveAll());
 			return MULTIPLE_STUDENTS_PAGE;
-		} catch (NullPointerException | NoSuchFieldException | IllegalArgumentException e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_400_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		} catch (Exception e) {
-			model.addAttribute(ERROR_CODE_STR, ERROR_CODE_500_STR);
-			model.addAttribute(ERROR_MESSAGE_STR, e.getMessage());
-			return ERROR_PAGE;
-		}
 	}
 
 	private String determineRedirectUrl(Authentication authentication) {
