@@ -23,7 +23,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http.authorizeHttpRequests(auth -> auth
 
-				.requestMatchers("/css/**", "/error", "/js/**", "/images/**", "/webjars/**").permitAll()
+				.requestMatchers("/","/css/**", "/error", "/js/**", "/images/**", "/webjars/**").permitAll()
 
 				.requestMatchers("/login").permitAll()
 
