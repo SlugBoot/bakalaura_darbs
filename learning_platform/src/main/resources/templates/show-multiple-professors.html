@@ -1,34 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
-  <body>
+
+<body>
 	<button onclick="history.back()">Back</button>
-    <h1>Information about all professors</h1>
-    <table border="1px">
-		<tr> 
+	<h1>Information about all professors</h1>
+	<table border="1px">
+		<tr>
 			<td>UUID</td>
 			<td>First Name</td>
 			<td>Middle Name</td>
 			<td>Surname</td>
 			<td>Email</td>
 			<td>Username</td>
-			<td>Courses</td>
 			<td>Delete</td>
 			<td>Update</td>
 		</tr>
-      <tr th:each="temp : ${professor}">
-        <td th:text="${temp.getPersonId()}"></td>
-        <td th:text="${temp.getName()}"></td>
-        <td th:text="${temp.getMiddleName()}"></td>
-        <td th:text="${temp.getSurname()}"></td>
-        <td th:text="${temp.getEmail()}"></td>
-		<td th:text="${temp.getUsername()}"></td>
-		<td><a th:href="@{/professor/home}"><button type="button">Profile</button></a></td>
-		<td><a th:href="@{/professor/crud/delete?{uuid}(uuid=${temp.getPersonId()})}"><button type="button">Delete</button></a></td>
-		<td><a th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()})}"><button type="button">Update</button></a></td>
-      </tr>
-	  <tr>
-		<td colspan="9"><button onclick="location.href='/professor/crud/create'">Create New Professor</button></td>
-	  </tr>
-    </table>
-  </body>
+		<tr th:each="temp : ${professor}">
+			<td th:text="${temp.getPersonId()}"></td>
+			<td th:text="${temp.getName()}"></td>
+			<td th:text="${temp.getMiddleName()}"></td>
+			<td th:text="${temp.getSurname()}"></td>
+			<td th:text="${temp.getEmail()}"></td>
+			<td th:text="${temp.getUsername()}"></td>
+			<td>
+				<form th:action="@{/professor/crud/delete}" method=post>
+					<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+					<input type="hidden" name="referer" th:value="${previousUrl}" />
+					<button type="submit">Delete</button>
+				</form>
+			</td>
+			<td>
+				<a
+					th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()}, referer='/professor/home')}">
+					<button type="button">Update info</button>
+				</a>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="9"><button onclick="location.href='/professor/crud/create'">Create New Professor</button></td>
+		</tr>
+	</table>
+</body>
+
 </html>
