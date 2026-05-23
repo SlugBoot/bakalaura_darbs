@@ -1,34 +1,62 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Error</title>
+    <title>Kļūda - Sistēma</title>
+    <!-- REFACTORED: Pievienots kopējais stila fails -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <style>
+        /* Specifiski stili kļūdu lapai, lai izceltu brīdinājumu */
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .error-code {
+            font-size: 4rem;
+            color: var(--danger-red);
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .error-message {
+            font-size: 1.5rem;
+            color: var(--secondary-gray);
+            margin-bottom: 30px;
+        }
+        .technical-details {
+            text-align: left;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 20px;
+            display: inline-block;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    </style>
 </head>
-
 <body>
-	<a th:href="'javascript:history.back()'">
-		<button type="button">Back</button>
-	</a>
-	<h1 class="text-danger">Oops!</h1>
+    <header>
+        <h1>Akadēmiskā vadības sistēma</h1>
+        <nav>
+            <a th:href="@{/}">Home</a>
+        </nav>
+    </header>
 
-	<h2 th:text="'Status Code: ' + ${errorCode}">Status Code: 500</h2>
+    <div class="container error-container">
+        <p class="error-code" th:text="${errorCode}">500</p>
+        <h2 class="text-danger">An unexpected error has occured!</h2>
+        <p class="error-message" th:text="${errorMessage}">Internal Server Error</p>
+        
+        <p>We apologize for any inconveniences cause by this. Please contact the system administrator.</p>
 
-	<div class="error-details my-4">
-		<p class="lead" th:text="${errorMessage}">
-			Sorry, an error has occurred, Requested page not found!
-		</p>
-	</div>
+        <div style="margin-top: 30px;">
+            <a th:href="@{/}" class="btn btn-primary">Return to Dashboard</a>
+        </div>
 
-	<div th:if="${stackTrace != null}" class="text-start border-top pt-4 mt-4">
-		<h4 class="text-secondary">Technical Details</h4>
-		<p class="fw-bold text-danger mb-2" th:text="${exceptionMessage}">Exception Message</p>
-
-		<pre class="bg-dark text-light p-3 rounded" style="max-height: 250px; overflow-y: auto; font-size: 0.85rem;"
-			th:text="${stackTrace}">Stack trace info...</pre>
-	</div>
-
+        <div th:if="${exceptionMessage}" class="technical-details">
+            <strong>Technical details</strong> <span th:text="${exceptionMessage}">Error detail message</span>
+        </div>
+    </div>
 </body>
-
 </html>
