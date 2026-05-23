@@ -7,6 +7,7 @@ import org.springframework.boot.webmvc.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class CustomErrorController implements ErrorController {
 	private static final String EXCEPTION_MESSAGE = "exceptionMessage";
 	private static final String STACK_TRACE = "stackTrace";
 
-	@RequestMapping
+	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     public String handleError(HttpServletRequest request, Model model) {
         // Retrieve the standard Spring Boot error attributes
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
