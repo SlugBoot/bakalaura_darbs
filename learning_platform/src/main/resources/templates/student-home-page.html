@@ -39,7 +39,7 @@
 							th:class="'status status-' + ${inst.status}" th:text="${inst.status}">STATUS</span>
 					</td>
 					<td>
-						<a th:href="@{/student/home/remove(courseId=${course.getCId()})}">
+						<a th:href="@{/student/home/remove(courseId=${inst.course.getCId()})}">
 							<button type="button">Remove Course</button>
 						</a>
 					</td>
