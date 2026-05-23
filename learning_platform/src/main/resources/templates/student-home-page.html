@@ -23,7 +23,7 @@
 
 	<div class="container">
 		<h2>My Lab Instances</h2>
-		<table>
+		<table id="instances-table">
 			<thead>
 				<tr>
 					<th>Course</th>
@@ -35,8 +35,8 @@
 				<tr th:each="inst : ${instance}" th:id="'instance-row-' + ${inst.instanceId}">
 					<td th:text="${inst.course.courseName}">Course Name</td>
 					<td>
-						<span th:id="'status-' + ${inst.instanceId}"
-							th:class="'status status-' + ${inst.status}" th:text="${inst.status}">STATUS</span>
+						<span th:id="'status-' + ${inst.instanceId}" th:class="'status status-' + ${inst.status}"
+							th:text="${inst.status}">STATUS</span>
 					</td>
 					<td>
 						<a th:href="@{/student/home/remove(courseId=${inst.course.getCId()})}">
@@ -53,6 +53,7 @@
 					</td>
 				</tr>
 			</tbody>
+		</table>
 
 		<script th:inline="javascript">
 			var socket = new SockJS('/ws-status');
@@ -61,29 +62,35 @@
 			stompClient.heartbeat.outgoing = 10000;
 			stompClient.heartbeat.incoming = 10000;
 
-			/*[# th:each="instance : ${labInstances}"]*/
-			stompClient.subscribe('/topic/course/[[${instance.course.courseId}]]', function (message) {
-				var update = JSON.parse(message.body);
-				updateStatus(update.instanceId, update.status);
-			});
-			/*[/]*/
+			stompClient.connect({}, function (frame) {
+				console.log('Connected to Status WebSocket');
 
-			function updateStatus(instanceId, newStatus) {
-				var statusElement = document.getElementById('status-' + instanceId);
-				var actionElement = document.getElementById('action-' + instanceId);
-				if (statusElement) {
-					statusElement.innerText = newStatus;
-					statusElement.className = 'status status-' + newStatus;
-					if (newStatus === 'RUNNING') {
-						actionElement.innerHTML = '<a href="/terminal/' + instanceId + '" class="btn btn-success">Open Terminal</a>';
-					} else {
-						actionElement.innerHTML = '';
+				/*[# th:each="inst : ${instance}"]*/
+				stompClient.subscribe('/topic/course/[[${inst.course.getCId().toString()}]]', function (message) {
+					if (message.body === "refresh") {
+						console.log("Status update received. Refreshing student table fragment...");
+
+						// Fetch the current page content and hot-swap the table body seamlessly
+						fetch(window.location.href)
+							.then(response => response.text())
+							.then(html => {
+								var parser = new DOMParser();
+								var doc = parser.parseFromString(html, 'text/html');
+
+								var newTable = doc.getElementById('instances-table');
+								var oldTable = document.getElementById('instances-table');
+
+								if (oldTable && newTable) {
+									oldTable.innerHTML = newTable.innerHTML;
+									console.log("Student dashboard table updated successfully!");
+								}
+							})
+							.catch(err => console.error("Failed to update student table fragment:", err));
 					}
-				}
-			}
-
-
+				});
+			/*[/]*/
 		</script>
+	</div>
 </body>
 
 </html>
