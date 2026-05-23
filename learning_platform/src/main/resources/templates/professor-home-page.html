@@ -11,7 +11,7 @@
 		<h1 th:text="'Welcome, Prof. ' + ${professor.name}">Professor Home</h1>
 		<nav>
 			<a th:href="@{/professor/home}">Dashboard</a>
-			<a th:href="@{/course/crud/create(username=${professor.getUsername()},referer='/professor/home')}">Create Course</a>
+			<a th:href="@{/course/crud/create(username=${professor.username},referer='/professor/home')}">Create Course</a>
 			<a th:href="@{/logout}">Logout</a>
 		</nav>
 	</header>
