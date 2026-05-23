@@ -10,7 +10,7 @@ public class RootController {
 	@GetMapping("/")
 	public String redirectToDashboard(Authentication authentication) {
 		if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_PROFESSOR"))) {
-            return "redirect:/professor/dashboard";
+            return "redirect:/professor/home";
         }
 		
 		if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {

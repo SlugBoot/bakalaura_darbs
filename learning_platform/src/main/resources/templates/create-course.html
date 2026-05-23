@@ -8,7 +8,7 @@
 <body>
 	<button onclick="history.back()">Back</button>
 	<h1>Create new Course</h1>
-	<form action="#" th:action="@{/course/crud/create}" th:object="${course}" method="post">
+	<form action="#" th:action="@{/course/crud/create}" th:object="${courseDTO}" method="post">
 		<table>
 			<tr>
 				<td>Course Name:</td>
@@ -22,7 +22,6 @@
 			</tr>
 			<input type="hidden" name="professorId" th:value="${professor.getPersonId()}" />
 			<tr>
-				<td th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></td>
 			</tr>
 			<tr>
 				<td><input type="submit" /></td>

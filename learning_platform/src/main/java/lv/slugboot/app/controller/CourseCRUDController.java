@@ -171,7 +171,7 @@ public class CourseCRUDController {
 				model.addAttribute(PROFESSOR_STR, professorCRUDService.retrieveByUsername(username));
 			}
 
-			model.addAttribute(COURSE_STR, new CourseDTO());
+			model.addAttribute(COURSE_DTO_STR, new CourseDTO());
 
 			return CREATE_COURSE_PAGE;
 		} catch (IllegalArgumentException | NoSuchFieldException | NullPointerException e) {
