@@ -24,7 +24,7 @@
 			<td th:text="${temp.getUsername()}"></td>
 			<td>
 				<form th:action="@{/professor/crud/delete}" method=post>
-					<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+					<input type="hidden" name="uuid" th:value="${temp.getPersonId()}" />
 					<input type="hidden" name="referer" th:value="${previousUrl}" />
 					<button type="submit">Delete</button>
 				</form>
