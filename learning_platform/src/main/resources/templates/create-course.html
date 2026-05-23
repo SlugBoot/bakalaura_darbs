@@ -22,7 +22,7 @@
 			</tr>
 			<input type="hidden" name="professorId" th:value="${professor.getPersonId()}" />
 			<tr>
-				<td th:if="${#fields.hasErrors('slug')" th:errors="*{slug}"></td>
+				<td th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></td>
 			</tr>
 			<tr>
 				<td><input type="submit" /></td>
