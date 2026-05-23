@@ -182,11 +182,12 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 
 		if (student.getCourse().contains(course)) {
 			LabInstanceStatus status = instanceRepo.findByCourseAndStudent(course, student).getStatus();
-			
+
 			if (status != LabInstanceStatus.UNINITIALIZED) {
-				throw new IllegalArgumentException("Cannot remove student from course until instances are Uninitialized");
+				throw new IllegalArgumentException(
+						"Cannot remove student from course until instances are Uninitialized");
 			}
-			
+
 			student.getCourse().remove(course);
 			course.getStudents().remove(student);
 			instanceRepo.delete(instance);
@@ -298,9 +299,18 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	@Async("taskExecutor")
 	@Override
 	public void cleanupLab(UUID courseId) throws IOException, InterruptedException, NoSuchFieldException {
-		ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
+		boolean allInstancesUninitialized = true;
 		Course course = retrieveById(courseId);
 		List<LabInstance> instances = instanceRepo.findByCourse(course);
+		for (LabInstance inst : instances) {
+			if (inst.getStatus() != LabInstanceStatus.UNINITIALIZED) {
+				allInstancesUninitialized = false;
+			}
+		}
+
+		if (allInstancesUninitialized == false) {
+			ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
+		}
 
 		for (LabInstance inst : instances) {
 			inst.setIpAddress(null);
