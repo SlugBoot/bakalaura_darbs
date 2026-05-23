@@ -157,3 +157,4 @@ Pasniedzējs pārvalda un novērtē dažādus uzdevumus izmantojot virtuālas ie
 ## 23. maijs
 
 1. Pārveidota kļūdu apstrādes loģika
+2. Pievienots stilizējums lapas elementiem

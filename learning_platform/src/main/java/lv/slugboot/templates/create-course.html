@@ -1,14 +1,14 @@
 <!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
 
 <head>
-	<link rel="stylesheet" th:href="@{/css/styles.css}">
+
 </head>
 
 <body>
 	<button onclick="history.back()">Back</button>
-	<h1>Update Course</h1>
-	<h2 th:text="${course.getCourseName()}"></h2>
-	<form action="#" th:action="@{/course/crud/update}" th:object="${courseDTO}" method="post">
+	<h1>Create new Course</h1>
+	<form action="#" th:action="@{/course/crud/create}" th:object="${course}" method="post">
 		<table>
 			<tr>
 				<td>Course Name:</td>
@@ -20,12 +20,15 @@
 				<td><input type="text" th:field="*{courseDesc}" /></td>
 				<td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
 			</tr>
-			<input type="hidden" th:field="*{professorId}" />
-			<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+			<input type="hidden" name="professorId" th:value="${professor.getPersonId()}" />
+			<tr>
+				<td th:if="${#fields.hasErrors('slug')" th:errors="*{slug}"></td>
+			</tr>
 			<tr>
 				<td><input type="submit" /></td>
 			</tr>
 		</table>
+		<input type="hidden" name="referer" th:value="${previousUrl}" />
 	</form>
 </body>
 

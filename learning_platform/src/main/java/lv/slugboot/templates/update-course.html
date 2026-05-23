@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<body>
+	<button onclick="history.back()">Back</button>
+    <h1>Update Course</h1>
+	<h2 th:text="${course.getCourseName()}"></h2>
+    <form
+      action="#"
+      th:action="@{/course/crud/update}"
+      th:object="${courseDTO}"
+      method="post"
+    >
+      <table>
+        <tr>
+          <td>Course Name:</td>
+          <td><input type="text" th:field="*{courseName}" /></td>
+		  <td th:if="${#fields.hasErrors('courseName')}" th:errors="*{courseName}"></td>
+        </tr>
+        <tr>
+          <td>Course Description:</td>
+          <td><input type="text" th:field="*{courseDesc}" /></td>
+		  <td th:if="${#fields.hasErrors('courseDesc')}" th:errors="*{courseDesc}"></td>
+        </tr>
+		<input type="hidden" th:field="*{professorId}" />
+		<input type="hidden" name="uuid" th:value="${course.getCId()}" />
+		<tr>
+		  <td><input type="submit" /></td>
+		</tr>
+      </table>
+    </form>
+  </body>
+</html>

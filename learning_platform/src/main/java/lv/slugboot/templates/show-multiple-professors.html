@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 
-<head>
-	<link rel="stylesheet" th:href="@{/css/styles.css}">
-</head>
-
 <body>
 	<button onclick="history.back()">Back</button>
-	<p>Information about all students</p>
+	<h1>Information about all professors</h1>
 	<table border="1px">
 		<tr>
-			<td>Student ID</td>
-			<td>Student Name</td>
-			<td>Student Middle Name</td>
-			<td>Student Surname</td>
-			<td>Student Email</td>
-			<td>Student Username</td>
-			<td>Courses</td>
+			<td>UUID</td>
+			<td>First Name</td>
+			<td>Middle Name</td>
+			<td>Surname</td>
+			<td>Email</td>
+			<td>Username</td>
 			<td>Delete</td>
 			<td>Update</td>
 		</tr>
-		<tr th:each="temp : ${student}">
+		<tr th:each="temp : ${professor}">
 			<td th:text="${temp.getPersonId()}"></td>
 			<td th:text="${temp.getName()}"></td>
 			<td th:text="${temp.getMiddleName()}"></td>
@@ -42,7 +37,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="9"><button onclick="location.href='/student/crud/create'">Create New Student</button></td>
+			<td colspan="9"><button onclick="location.href='/professor/crud/create'">Create New Professor</button></td>
 		</tr>
 	</table>
 </body>

@@ -1,116 +1,89 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 
-<head></head>
-
-<body>
-	<nav>
-		<a th:href="@{/login?logout}">
-			<button type="button">Logout</button>
-		</a>
-		<a th:href="@{/student/crud/update/{username}(username=${student.getUsername()}, referer='/student/home')}">
-			<button type="button">Update Personal info</button>
-		</a>
-	</nav>
-	<h1 th:text="${student.getName() + ' ' + student.getSurname()}"></h1>
-	<table border=1px id="course-table">
-		<th colspan="4"> Course List</th>
-		<tr>
-			<td>Course ID</td>
-			<td>Course Name</td>
-			<td>Course Description</td>
-			<td>Remove Course</td>
-		</tr>
-		<tr th:each="course : ${filtered_courses}">
-			<td th:text="${course.getCId()}"></td>
-			<td th:text="${course.getCourseName()}"></td>
-			<td th:text="${course.getCourseDesc()}"></td>
-			<td>
-				<a th:href="@{/student/home/remove(courseId=${course.getCId()})}">
-					<button type="button">Remove Course</button>
-				</a>
-			</td>
-		</tr>
-	</table>
-
-	<table border="1px" id="instances-table">
-		<th colspan="5"> Instance List</th>
-		<tr>
-			<td>Course name</td>
-			<td>Course Professor</td>
-			<td>IP address</td>
-			<td>Instance status</td>
-			<td>Action</td>
-		</tr>
-		<tr th:each="i : ${instance}">
-			<td th:text="${i.getCourse() != null ? i.getCourse().getCourseName() : 'No Course Assigned'}"></td>
-
-			<td
-				th:text="${i.getCourse() != null && i.getCourse().getProfessor() != null ? 
-		                 i.getCourse().getProfessor().getName() + ' ' + i.getCourse().getProfessor().getSurname() : 'Unknown Professor'}">
-			</td>
-
-			<td th:text="${i.getIpAddress() != null ? i.getIpAddress() : 'IP Not Assigned'}"></td>
-			<td th:text="${i.getStatus()}"></td>
-			<td>
-				<span th:if="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}">
-					<a th:href="@{/course/crud/instance/terminal(instanceId=${i.getInstanceId()})}" target="_blank">
-						<button type="button">Connect to Console</button>
-					</a>
-				</span>
-				<span th:unless="${i.getStatus() != null && i.getStatus().name() == 'RUNNING'}"
-					style="color: #888; font-style: italic;">
-					Offline
-				</span>
-			</td>
-		</tr>
-	</table>
-
+<head>
+	<title>Student Dashboard</title>
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
 	<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
 	<script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
+</head>
 
-	<script th:inline="javascript">
-		var socket = new SockJS('/ws-status');
-		var stompClient = Stomp.over(socket);
+<body>
+	<header>
+		<h1 th:text="'Student Dashboard: ' + ${student.name}">Student Home</h1>
+		<nav>
+			<a th:href="@{/login?logout}">
+				<button type="button">Logout</button>
+			</a>
+			<a th:href="@{/student/crud/update/{username}(username=${student.getUsername()}, referer='/student/home')}">
+				<button type="button">Update Personal info</button>
+			</a>
+		</nav>
+	</header>
 
-		stompClient.heartbeat.outgoing = 10000;
-		stompClient.heartbeat.incoming = 10000;
+	<div class="container">
+		<h2>My Lab Instances</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Course</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="inst : ${instance}" th:id="'instance-row-' + ${inst.instanceId}">
+					<td th:text="${inst.course.courseName}">Course Name</td>
+					<td>
+						<span th:id="'status-' + ${instance.instanceId}"
+							th:class="'status status-' + ${instance.status}" th:text="${instance.status}">STATUS</span>
+					</td>
+					<td>
+						<a th:href="@{/student/home/remove(courseId=${course.getCId()})}">
+							<button type="button">Remove Course</button>
+						</a>
+					</td>
+					<td>
+						<div th:id="'action-' + ${instance.instanceId}">
+							<a th:if="${instance.status.name() == 'RUNNING'}"
+								th:href="@{/course/crud/instance/terminal(instanceId=${inst.instanceId})}"
+								target="_blank" class="btn btn-success">Open
+								Terminal</a>
+						</div>
+					</td>
+				</tr>
+			</tbody>
 
-		stompClient.connect({}, function (frame) {
-			console.log('Connected to Status WebSocket');
+		<script th:inline="javascript">
+			var socket = new SockJS('/ws-status');
+			var stompClient = Stomp.over(socket);
 
-			var courseIds = /*[[${filtered_courses.![cId.toString()]}]]*/[];
+			stompClient.heartbeat.outgoing = 10000;
+			stompClient.heartbeat.incoming = 10000;
 
-			courseIds.forEach(function (courseId) {
-				stompClient.subscribe('/topic/course/' + courseId, function (message) {
-					if (message.body === "refresh") {
-						console.log("Status update received for course " + courseId + ". Refreshing page component...");
-						fetch(window.location.href)
-							.then(response => response.text())
-							.then(html => {
-								var parser = new DOMParser();
-								var doc = parser.parseFromString(html, 'text/html');
-
-								const updateTable = (id) => {
-									var newTable = doc.getElementById(id);
-									var oldTable = document.getElementById(id);
-									if (newTable && oldTable) {
-										oldTable.innerHTML = newTable.innerHTML;
-										console.log("Successfully updated table: " + id);
-									} else {
-										console.warn("Could not find table with ID: " + id);
-									}
-								};
-								
-								updateTable("instances-table");
-								updateTable("course-table");
-							})
-							.catch(err => console.error("Failed to update status table fragment:", err));
-					}
-				});
+			/*[# th:each="instance : ${labInstances}"]*/
+			stompClient.subscribe('/topic/course/[[${instance.course.courseId}]]', function (message) {
+				var update = JSON.parse(message.body);
+				updateStatus(update.instanceId, update.status);
 			});
-		});
-	</script>
+			/*[/]*/
+
+			function updateStatus(instanceId, newStatus) {
+				var statusElement = document.getElementById('status-' + instanceId);
+				var actionElement = document.getElementById('action-' + instanceId);
+				if (statusElement) {
+					statusElement.innerText = newStatus;
+					statusElement.className = 'status status-' + newStatus;
+					if (newStatus === 'RUNNING') {
+						actionElement.innerHTML = '<a href="/terminal/' + instanceId + '" class="btn btn-success">Open Terminal</a>';
+					} else {
+						actionElement.innerHTML = '';
+					}
+				}
+			}
+
+
+		</script>
 </body>
 
 </html>

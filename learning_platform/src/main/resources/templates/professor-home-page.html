@@ -1,46 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org">
 
-<head></head>
+<head>
+	<title>Professor Home</title>
+	<link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
 
 <body>
-	<nav>
-		<a th:href="@{/login?logout}">
-			<button type="button">Logout</button>
-		</a>
-		<a th:href="@{/student/crud/all(referer='/professor/home')}">
-			<button type="button">Student account management</button>
-		</a>
-		<a th:href="@{/professor/crud/update/{username}(username=${professor.getUsername()}, referer='/professor/home')}">
-			<button type="button">Update Personal info</button>
-		</a>
-	</nav>
-	<h1 th:text="${professor.getName() + ' ' + professor.getSurname()}"></h1>
-	<table border=1px>
-		<tr>
-			<td>Course ID</td>
-			<td>Course Name</td>
-			<td>Course Description</td>
-			<td>Course Info</td>
-		</tr>
-		<tr th:each="course : ${filtered_courses}">
-			<td th:text="${course.getCId()}"></td>
-			<td th:text="${course.getCourseName()}"></td>
-			<td th:text="${course.getCourseDesc()}"></td>
-			<td>
-				<a th:href="@{/course/crud/name/{slug}(slug=${course.getSlug()}, referer='/professor/home')}">
-					<button type="button">Info</button>
-				</a>
-			</td>
-		</tr>
-		<tr>
-			<td colspan="4">
-				<a th:href="@{/course/crud/create(username=${professor.getUsername()},referer='/professor/home')}">
-					<button type="button"> New Course</button>
-				</a>
-			</td>
-		</tr>
-	</table>
+	<header>
+		<h1 th:text="'Welcome, Prof. ' + ${professor.name}">Professor Home</h1>
+		<nav>
+			<a th:href="@{/professor/home}">Dashboard</a>
+			<a th:href="@{/course/crud/create/{username}(username=${professor.getUsername()},referer='/professor/home')}">Create Course</a>
+			<a th:href="@{/logout}">Logout</a>
+		</nav>
+	</header>
+	<div class="container">
+		<h2>Your Courses</h2>
+		<table border=1px>
+			<thead>
+				<tr>
+					<td>Course ID</td>
+					<td>Course Name</td>
+					<td>Course Description</td>
+					<td>Course Info</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="course : ${filtered_courses}">
+					<td th:text="${course.getCId()}"></td>
+					<td th:text="${course.getCourseName()}"></td>
+					<td th:text="${course.getCourseDesc()}"></td>
+					<td>
+						<a th:href="@{/course/crud/name/{slug}(slug=${course.getSlug()}, referer='/professor/home')}">
+							<button type="button">Manage</button>
+						</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </body>
 
 </html>

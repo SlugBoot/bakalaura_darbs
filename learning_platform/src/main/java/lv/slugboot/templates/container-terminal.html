@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Container Interactive Terminal</title>
+	<style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			background-color: #1a1a1a;
+			font-family: monospace;
+			overflow: hidden;
+		}
+
+		#terminal-header {
+			background-color: #2d2d2d;
+			color: #fff;
+			padding: 10px 20px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		#display-viewport {
+			width: 100%;
+			height: calc(100vh - 45px);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		canvas {
+			display: block;
+			margin: 0 auto;
+			cursor: text;
+		}
+		
+		#display-viewport canvas:focus {
+		    outline: none;
+		}
+		
+	</style>
+</head>
+
+<body>
+
+	<input type="hidden" id="backendInstanceId" th:value="${instance}" />
+
+	<div id="terminal-header">
+		<span>⚙️ Proxmox Container Live Console Session</span>
+		<span style="color: #a3be8c;" id="status-text">Connecting Tunnel...</span>
+	</div>
+
+	<div id="display-viewport"></div>
+
+	<script th:src="@{/js/guacamole-common.min.js}"></script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const instanceId = document.getElementById('backendInstanceId').value;
+		const displayElement = document.getElementById("display-viewport");
+		const statusText = document.getElementById("status-text");
+		
+		cleanedInstanceId = instanceId.replace(/[^a-fA-F0-9\-]/g, '');
+
+		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+		const wsUrl = `${protocol}//${window.location.host}/guacamole-tunnel?instanceId=${encodeURIComponent(cleanedInstanceId)}`;
+
+		const tunnel = new Guacamole.WebSocketTunnel(wsUrl);
+		const client = new Guacamole.Client(tunnel);
+
+		displayElement.appendChild(client.getDisplay().getElement());
+
+		client.onerror = function (error) {
+			statusText.innerText = "Error encountered: " + error.message;
+			statusText.style.color = "#bf616a";
+		};
+
+		client.onstatechange = function (state) {
+			if (state === 3) { // Connected
+				statusText.innerText = "Connected Active Session";
+				statusText.style.color = "#a3be8c";
+				client.getDisplay().getElement().focus();
+			} else if (state === 5) { // Disconnected
+				statusText.innerText = "Disconnected.";
+				statusText.style.color = "#d8dee9";
+			}
+		};
+		
+		function sendCurrentOptimalSize() {
+		    if (client.getDisplay()) {
+		        const width = displayElement.clientWidth;
+		        const height = displayElement.clientHeight;
+		        // Guacamole instruction: size, width, height
+		        client.sendSize(width, height);
+		    }
+		}
+
+		// Fire size configuration changes dynamically down the pipe
+		window.onresize = function() {
+		    sendCurrentOptimalSize();
+		};
+
+		// Pass optimal resolution metrics right inside connection argument metadata
+		client.connect();
+
+		// Pass Keyboard Input Matrix Events
+		const keyboard = new Guacamole.Keyboard(document);
+		keyboard.onkeydown = function (keysym) {
+			client.sendKeyEvent(1, keysym);
+		};
+		keyboard.onkeyup = function (keysym) {
+			client.sendKeyEvent(0, keysym);
+		};
+
+		// Route Mouse tracking vectors
+		const mouse = new Guacamole.Mouse(displayElement);
+		mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function (e) {
+			if (e.type === 'mousedown') {
+				client.getDisplay().getElement().focus();
+			}
+			client.sendMouseState(e.state);
+		});
+		/*]]>*/
+	</script>
+</body>
+
+</html>
