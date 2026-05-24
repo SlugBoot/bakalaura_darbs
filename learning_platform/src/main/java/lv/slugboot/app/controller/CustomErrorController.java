@@ -24,7 +24,6 @@ public class CustomErrorController implements ErrorController {
 
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
     public String handleError(HttpServletRequest request, Model model) {
-        // Retrieve the standard Spring Boot error attributes
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         Object message = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
         Object exception = request.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
@@ -35,7 +34,6 @@ public class CustomErrorController implements ErrorController {
                                ? message.toString() 
                                : "An unexpected error occurred on the server.";
 
-        // If it's a 404, provide a more user-friendly message
         if ("404".equals(errorCode)) {
             errorMessage = "The page you are looking for does not exist.";
         }
@@ -45,10 +43,8 @@ public class CustomErrorController implements ErrorController {
 
         if (exception instanceof Throwable) {
             Throwable throwable = (Throwable) exception;
-            // Capture the exception class name and message (e.g., "java.lang.NullPointerException: Cannot invoke...")
             exceptionTypeAndMessage = throwable.getClass().getName() + ": " + throwable.getMessage();
 
-            // Convert stack trace to a readable String block
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             throwable.printStackTrace(pw);
@@ -61,7 +57,6 @@ public class CustomErrorController implements ErrorController {
         model.addAttribute(EXCEPTION_MESSAGE, exceptionTypeAndMessage);
 //        model.addAttribute(STACK_TRACE, stackTrace);
 
-        // Maps to templates/show-error.html
         return ERROR_PAGE;
     }
 }
