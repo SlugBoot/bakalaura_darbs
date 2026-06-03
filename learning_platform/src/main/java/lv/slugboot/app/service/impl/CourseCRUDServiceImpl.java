@@ -147,12 +147,26 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteCourseById(UUID id) throws NoSuchFieldException, IOException, InterruptedException {
-		Course courseToDelete = retrieveById(id);
+		Course course = courseRepo.findById(id)
+	            .orElseThrow(() -> new NoSuchFieldException("Course not found"));
 
-		cleanupLab(id);
+		if (course.getStudents() != null) {
+	        for (Student student : course.getStudents()) {
+	            student.getCourse().remove(course);
+	        }
+	        
+	        course.getStudents().clear();
+	    }
+		
+		if (course.getLabs() != null) {
+	        instanceRepo.deleteAll(course.getLabs());
+	    }
+		
+		courseRepo.saveAndFlush(course);
 
-		courseRepo.delete(courseToDelete);
+		courseRepo.delete(course);
 	}
 
 	@Override
