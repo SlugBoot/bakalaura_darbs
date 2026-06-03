@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,6 +103,7 @@ public class AnsibleServiceImpl implements IAnsibleService {
 	}
 
 	@Override
+	@Transactional
 	public void createProxmoxVarsFile(UUID courseId, List<LabInstance> instances)
 			throws IOException, InterruptedException {
 		String path = Paths.get(ANSIBLE_BASE_PATH, courseId.toString(), "multi-container.yml").toString();

@@ -44,7 +44,11 @@ public class StudentCRUDServiceImpl implements IStudentCRUDService {
 			throw new IllegalArgumentException("The email has already been used for a different account");
 		} else {
 			Student newStudent = new Student(name, middleName, surname, email);
-
+			
+			if (rawPassword.length() < 8 || rawPassword.length() > 64) {
+				throw new IllegalArgumentException("Password must be between 8 and 64 characters long");
+			}
+			
 			newStudent.setPassword(passwordEncoder.encode(rawPassword));
 
 			studentRepo.save(newStudent);

@@ -2,6 +2,7 @@ package lv.slugboot.app.models;
 
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,7 +38,7 @@ public class LabInstance {
 	@JoinColumn(name = "StudentId")
 	private Student student;
 
-	@ManyToOne
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "CourseId")
 	private Course course;
 

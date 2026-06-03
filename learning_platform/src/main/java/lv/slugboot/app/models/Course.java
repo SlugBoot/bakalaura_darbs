@@ -4,6 +4,7 @@ import java.text.Normalizer;
 import java.util.Collection;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,7 +53,7 @@ public class Course {
 	@ToString.Exclude
 	private Collection<Student> students;
 
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
 	private Collection<LabInstance> labs;
 
