@@ -120,7 +120,7 @@ public class CourseCRUDController {
 		}
 
 		model.addAttribute(COURSE_STR, courseCRUDService.retrieveAll());
-		return referer;
+		return REDIRECT_STRING + referer;
 	}
 
 	@GetMapping("/create")
