@@ -149,23 +149,22 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 	@Override
 	@Transactional
 	public void deleteCourseById(UUID id) throws NoSuchFieldException, IOException, InterruptedException {
-		Course course = courseRepo.findById(id)
-	            .orElseThrow(() -> new NoSuchFieldException("Course not found"));
+		Course course = courseRepo.findById(id).orElseThrow(() -> new NoSuchFieldException("Course not found"));
 
 		if (course.getStudents() != null) {
-	        for (Student student : course.getStudents()) {
-	            student.getCourse().remove(course);
-	        }
-	        
-	        course.getStudents().clear();
-	    }
-		
+			for (Student student : course.getStudents()) {
+				student.getCourse().remove(course);
+			}
+
+			course.getStudents().clear();
+		}
+
 		if (course.getLabs() != null) {
-	        instanceRepo.deleteAll(course.getLabs());
-	        
-	        course.getLabs().clear();
-	    }
-		
+			instanceRepo.deleteAll(course.getLabs());
+
+			course.getLabs().clear();
+		}
+
 		courseRepo.saveAndFlush(course);
 
 		courseRepo.delete(course);
@@ -324,15 +323,18 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 			}
 		}
 
-		if (allInstancesUninitialized == false) {
+		if (!allInstancesUninitialized) {
 			ansibleService.runPlaybook(courseId, REMOVE_VMS_FILE, HOSTS_FILE);
 		}
 
-		for (LabInstance inst : instances) {
-			inst.setIpAddress(null);
-			inst.setStatus(LabInstanceStatus.UNINITIALIZED);
-			instanceRepo.save(inst);
-		}
+		transactionTemplate.executeWithoutResult(transactionStatus -> {
+			List<LabInstance> freshInstances = instanceRepo.findByCourse(course);
+			for (LabInstance inst : freshInstances) {
+				inst.setIpAddress(null);
+				inst.setStatus(LabInstanceStatus.UNINITIALIZED);
+				instanceRepo.save(inst);
+			}
+		});
 
 		notifyStatusChange(courseId);
 
