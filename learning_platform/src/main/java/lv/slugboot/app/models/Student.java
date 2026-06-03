@@ -4,6 +4,9 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
@@ -21,6 +24,7 @@ import lombok.ToString;
 public class Student extends Person {
 
 	@ManyToMany
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@ToString.Exclude
 	private Collection<Course> course;
 
