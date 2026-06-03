@@ -33,7 +33,7 @@
 					<td th:text="${temp.getEmail()}"></td>
 					<td th:text="${temp.getUsername()}"></td>
 					<td>
-						<form th:action="@{/professor/crud/delete}" method="post">
+						<form th:action="@{/student/crud/delete}" method="post">
 							<input type="hidden" name="uuid" th:value="${temp.getPersonId()}" />
 							<input type="hidden" name="referer" th:value="${previousUrl}" />
 							<button type="submit" class="btn btn-danger"
@@ -41,7 +41,7 @@
 						</form>
 					</td>
 					<td>
-						<a th:href="@{/professor/crud/update/{username}(username=${temp.getUsername()}, referer='/professor/home')}"
+						<a th:href="@{/student/crud/update/{username}(username=${temp.getUsername()}, referer='/professor/home')}"
 							class="btn btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">
 							Update info
 						</a>
