@@ -56,8 +56,9 @@ public class StudentCRUDController {
 	}
 
 	@PostMapping("/create")
-	public String postControllerCreateStudent(@Validated(PersonDTO.OnCreate.class) PersonDTO student,
-			BindingResult result, Model model) {
+	public String postControllerCreateStudent(
+			@Validated(PersonDTO.OnCreate.class) @ModelAttribute("student") PersonDTO student, BindingResult result,
+			Model model) {
 		if (result.hasErrors()) {
 			return CREATE_STUDENT_PAGE;
 		}
