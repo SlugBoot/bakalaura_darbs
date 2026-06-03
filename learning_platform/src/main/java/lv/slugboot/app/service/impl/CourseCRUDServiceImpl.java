@@ -162,6 +162,8 @@ public class CourseCRUDServiceImpl implements ICourseCRUDService {
 		
 		if (course.getLabs() != null) {
 	        instanceRepo.deleteAll(course.getLabs());
+	        
+	        course.getLabs().clear();
 	    }
 		
 		courseRepo.saveAndFlush(course);
