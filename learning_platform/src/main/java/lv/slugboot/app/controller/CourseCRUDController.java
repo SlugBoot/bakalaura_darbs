@@ -107,7 +107,9 @@ public class CourseCRUDController {
 			if (allInstancesUninitialized == false) {
 				ansibleService.runPlaybook(courseId, "remove_vms", HOSTS_FILE);
 			}
-
+			
+			courseCRUDService.cleanupLab(courseId);
+			
 			courseCRUDService.deleteCourseById(courseId);
 
 		}

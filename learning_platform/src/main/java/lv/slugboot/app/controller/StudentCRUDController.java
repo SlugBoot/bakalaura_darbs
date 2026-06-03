@@ -62,8 +62,13 @@ public class StudentCRUDController {
 			return CREATE_STUDENT_PAGE;
 		}
 
-		studentCRUDService.createStudent(student);
-		return STUDENT_REDIRECT_PAGE + "all";
+		try {
+			studentCRUDService.createStudent(student);
+			return STUDENT_REDIRECT_PAGE + "all";
+		} catch (IllegalArgumentException e) {
+			result.rejectValue(PASSWORD_STR, "error.student", e.getMessage());
+			return CREATE_STUDENT_PAGE;
+		}
 	}
 
 	@GetMapping("/update/{username}")
